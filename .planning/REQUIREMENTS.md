@@ -11,13 +11,15 @@
 
 - [x] **ACT-01
 **: User can activate listening via a configurable **push-to-talk** key/button (evdev grab, works on Wayland)
-- [ ] **ACT-02**: User can activate listening via a configurable **wake word** (on-device model, no cloud)
+- [x] **ACT-02
+**: User can activate listening via a configurable **wake word** (on-device model, no cloud)
 - [ ] **ACT-03**: User can switch between PTT and wake-word mode from the config UI at any time
 - [ ] **ACT-04**: A visible status indicator (tray icon) reflects current listening state (idle / listening / muted)
 
 ### Speech Recognition
 
-- [ ] **STT-01**: Speech recognition runs **fully on-device** using a bundled local model (whisper.cpp or equivalent)
+- [x] **STT-01
+**: Speech recognition runs **fully on-device** using a bundled local model (whisper.cpp or equivalent)
 - [ ] **STT-02**: Phrase matching uses a **confidence threshold** (fuzzy matching) to handle slight mispronunciations
 - [ ] **STT-03**: User can configure the confidence threshold from the config UI
 - [x] **STT-04

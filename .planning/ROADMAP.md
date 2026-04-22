@@ -17,6 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 3: Phrase Matching + Dispatch** — Fuzzy phrase engine, macro dispatcher, conditional logic, sound feedback; first playable HD2 stratagem demo
 - [ ] **Phase 4: Pack System + HD2 Bundle** — .hdpack format, all 80+ HD2 stratagems, ProfileManager, import/export, built-in editor
 - [ ] **Phase 5: UI + Distribution** — egui config window, system tray, first-run wizard, AppImage, AUR/PKGBUILD
+- [ ] **Phase 6: Documentation** — Usage docs, troubleshooting, and contributor guides
 
 ## Phase Details
 
@@ -94,15 +95,30 @@ Plans:
 **Plans**: TBD
 **UI hint**: yes
 
+### Phase 6: Documentation
+
+**Goal**: Provide clear, concise documentation for users and contributors covering installation, configuration, troubleshooting, and development workflows
+**Depends on**: Phase 5
+**Requirements**: TBD
+**Success Criteria** (what must be TRUE):
+  1. A new user can install (AUR + AppImage) and reach a working voice-macro session following only repo docs
+  2. Common failures (uinput permissions, input group membership, mic device selection, Wayland focus edge cases) have troubleshooting steps with copy/paste commands
+  3. Developer docs cover local build/test, feature flags (e.g. `stt`), and release packaging steps
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 6 to break down)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete    | 2026-04-22 |
-| 2. Pipeline Core | 2/4 | Executing | - |
+| 2. Pipeline Core | 3/4 | Executing | - |
 | 3. Phrase Matching + Dispatch | 0/? | Not started | - |
 | 4. Pack System + HD2 Bundle | 0/? | Not started | - |
 | 5. UI + Distribution | 0/? | Not started | - |
+| 6. Documentation | 0/0 | Not started | - |

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-pipeline-core-02-PLAN.md
-last_updated: "2026-04-22T12:19:22.014Z"
+status: verifying
+stopped_at: Completed 02-pipeline-core-03-PLAN.md
+last_updated: "2026-04-22T12:33:04.448Z"
 last_activity: 2026-04-22
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 1
   total_plans: 9
-  completed_plans: 7
-  percent: 78
+  completed_plans: 8
+  percent: 89
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 2 (Pipeline Core) — EXECUTING
-Plan: 3 of 4
-Status: Ready to execute
+Plan: 4 of 4
+Status: Phase complete — ready for verification
 Last activity: 2026-04-22
 
-Progress: [████████░░] 78%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
@@ -58,6 +58,8 @@ Progress: [████████░░] 78%
 | Phase 01-foundation P05 | 15m | 2 tasks | 6 files |
 | Phase 02-pipeline-core P01 | 161s | 3 tasks | 8 files |
 | Phase 02-pipeline-core P02 | 200s | 2 tasks | 7 files |
+| Phase 02 P03 | 420s | 2 tasks | 11 files |
+| Phase 02-pipeline-core P03 | 420s | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -88,6 +90,8 @@ Recent decisions affecting current work:
 - PTT thread join is best-effort 500ms timeout — fetch_events blocks; AudioHandle drop stops CPAL stream
 - Pin ort to 2.0.0-rc.10 for silero-vad-rust compile stability
 - Gate whisper-rs behind opt-in stt feature to keep default cargo test green without cmake
+- Moved PTT gating out of CPAL callback so wake word can run without PTT (callback remains allocation-free)
+- Dedicated output thread is the only stdout writer (stdout JSONL stays clean; compute threads avoid IO stalls)
 
 ### Pending Todos
 
@@ -109,8 +113,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-22T12:19:22.012Z
-Stopped at: Completed 02-pipeline-core-02-PLAN.md
+Last session: 2026-04-22T12:33:04.446Z
+Stopped at: Completed 02-pipeline-core-03-PLAN.md
 Resume file: None
 
 **Planned Phase:** 2 (Pipeline Core) — 4 plans — 2026-04-22T12:03:27.007Z
