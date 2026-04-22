@@ -1,19 +1,7 @@
-use crossbeam_channel::{Receiver, Sender, TrySendError};
+use crossbeam_channel::{Receiver, Sender};
 
-fn try_send_drop_oldest<T>(tx: &Sender<T>, rx: &Receiver<T>, mut item: T) -> Result<(), T> {
-    match tx.try_send(item) {
-        Ok(()) => Ok(()),
-        Err(TrySendError::Full(v)) => {
-            item = v;
-            let _ = rx.try_recv();
-            match tx.try_send(item) {
-                Ok(()) => Ok(()),
-                Err(TrySendError::Full(v)) => Err(v),
-                Err(TrySendError::Disconnected(v)) => Err(v),
-            }
-        }
-        Err(TrySendError::Disconnected(v)) => Err(v),
-    }
+fn try_send_drop_oldest<T>(tx: &Sender<T>, rx: &Receiver<T>, item: T) -> Result<(), T> {
+    hd_linux_voice::vad::try_send_drop_oldest(tx, rx, item)
 }
 
 #[test]
