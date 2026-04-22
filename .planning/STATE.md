@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 2 context gathered
-last_updated: "2026-04-22T12:03:27.009Z"
+status: executing
+stopped_at: Completed 02-pipeline-core-01-PLAN.md
+last_updated: "2026-04-22T12:10:46.936Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 9
-  completed_plans: 5
-  percent: 56
+  completed_plans: 6
+  percent: 67
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** During Helldivers 2 gameplay, the player can fire the right stratagem reliably by voice with minimal delay and without breaking flow — wake word or push-to-talk, fully local speech processing, Wayland-first input delivery.
-**Current focus:** Phase 01 — foundation
+**Current focus:** Phase 2 — Pipeline Core
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
-Status: Ready to plan
+Phase: 2 (Pipeline Core) — EXECUTING
+Plan: 2 of 4
+Status: Ready to execute
 Last activity: 2026-04-22
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 01-foundation P03 | 12m | 2 tasks | 2 files |
 | Phase 01-foundation P04 | 8m | 2 tasks | 4 files |
 | Phase 01-foundation P05 | 15m | 2 tasks | 6 files |
+| Phase 02-pipeline-core P01 | 161s | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - Preflight-before-threads pattern: all fail-hard checks happen before any std::thread::spawn (D-11, D-15)
 - about.toml AGPL-3.0-only in accepted list; about.hbs template guards exclude self from LICENSES.md output (D-16)
 - PTT thread join is best-effort 500ms timeout — fetch_events blocks; AudioHandle drop stops CPAL stream
+- Pin ort to 2.0.0-rc.10 for silero-vad-rust compile stability
+- Gate whisper-rs behind opt-in stt feature to keep default cargo test green without cmake
 
 ### Pending Todos
 
@@ -105,8 +108,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: --stopped-at
-Stopped at: Phase 2 context gathered
-Resume file: --resume-file
+Last session: 2026-04-22T12:10:46.934Z
+Stopped at: Completed 02-pipeline-core-01-PLAN.md
+Resume file: None
 
 **Planned Phase:** 2 (Pipeline Core) — 4 plans — 2026-04-22T12:03:27.007Z
