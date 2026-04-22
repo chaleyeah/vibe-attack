@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 5 plans across 5 sequential waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Toolchain + Cargo.toml (13 deps) + module skeleton + test stubs (Wave 1)
+- [x] 01-01-PLAN.md — Toolchain + Cargo.toml (13 deps) + module skeleton + test stubs (Wave 1) ✓ 2026-04-22
 - [ ] 01-02-PLAN.md — Config structs + XDG YAML load + clap CLI + tracing init (Wave 2)
 - [ ] 01-03-PLAN.md — CPAL audio capture (warm PTT-gated stream) + evdev PTT scanner (Wave 3)
 - [ ] 01-04-PLAN.md — uinput VirtualDevice + injection thread + dwell/gap timing (Wave 4)

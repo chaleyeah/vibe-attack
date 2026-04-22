@@ -39,7 +39,8 @@
 
 ### UI and Configuration
 
-- [ ] **UI-01**: App runs as a **headless daemon** by default (no window required for core gameplay)
+- [x] **UI-01
+**: App runs as a **headless daemon** by default (no window required for core gameplay)
 - [ ] **UI-02**: A **system tray icon** provides quick access to status and controls (mute, profile switch, open config)
 - [ ] **UI-03**: A **config window** allows setting audio input device, activation mode, confidence threshold, and keybindings
 - [ ] **UI-04**: A **first-run wizard** guides new users through microphone test, PTT binding, and loading the HD2 pack
@@ -48,7 +49,8 @@
 
 - [ ] **DIST-01**: App is packaged as an **AppImage** for distro-agnostic install
 - [ ] **DIST-02**: App provides an **AUR / PKGBUILD** for Arch Linux and CachyOS users
-- [ ] **DIST-03**: App is licensed **AGPL-3.0**; all bundled dependencies are AGPL-compatible (MIT/Apache-2.0/LGPL)
+- [x] **DIST-03
+**: App is licensed **AGPL-3.0**; all bundled dependencies are AGPL-compatible (MIT/Apache-2.0/LGPL)
 
 ---
 
