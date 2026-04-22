@@ -12,7 +12,7 @@ Build a Rust-based, AGPL-3.0 voice-macro daemon for Linux that lets Helldivers 2
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** — Audio capture, uinput/evdev injection backend, config store, headless daemon, PTT via evdev grab
+- [x] **Phase 1: Foundation** — Audio capture, uinput/evdev injection backend, config store, headless daemon, PTT via evdev grab (completed 2026-04-22)
 - [ ] **Phase 2: Pipeline Core** — VAD (Silero), STT engine (whisper.cpp), end-to-end latency instrumentation and baseline proof
 - [ ] **Phase 3: Phrase Matching + Dispatch** — Fuzzy phrase engine, macro dispatcher, conditional logic, sound feedback; first playable HD2 stratagem demo
 - [ ] **Phase 4: Pack System + HD2 Bundle** — .hdpack format, all 80+ HD2 stratagems, ProfileManager, import/export, built-in editor
@@ -34,10 +34,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — Toolchain + Cargo.toml (13 deps) + module skeleton + test stubs (Wave 1) ✓ 2026-04-22
-- [ ] 01-02-PLAN.md — Config structs + XDG YAML load + clap CLI + tracing init (Wave 2)
-- [ ] 01-03-PLAN.md — CPAL audio capture (warm PTT-gated stream) + evdev PTT scanner (Wave 3)
-- [ ] 01-04-PLAN.md — uinput VirtualDevice + injection thread + dwell/gap timing (Wave 4)
-- [ ] 01-05-PLAN.md — Daemon main loop + SIGTERM handling + LICENSES.md + docs (Wave 5)
+- [x] 01-02-PLAN.md — Config structs + XDG YAML load + clap CLI + tracing init (Wave 2)
+- [x] 01-03-PLAN.md — CPAL audio capture (warm PTT-gated stream) + evdev PTT scanner (Wave 3)
+- [x] 01-04-PLAN.md — uinput VirtualDevice + injection thread + dwell/gap timing (Wave 4)
+- [x] 01-05-PLAN.md — Daemon main loop + SIGTERM handling + LICENSES.md + docs (Wave 5)
 
 ### Phase 2: Pipeline Core
 **Goal**: Speaking any phrase into the microphone produces a timestamped transcript on stdout, with per-stage latency instrumented and the full pipeline proven to meet the < 500 ms end-to-end budget on target hardware
@@ -95,7 +95,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 5/5 | Complete    | 2026-04-22 |
 | 2. Pipeline Core | 0/? | Not started | - |
 | 3. Phrase Matching + Dispatch | 0/? | Not started | - |
 | 4. Pack System + HD2 Bundle | 0/? | Not started | - |

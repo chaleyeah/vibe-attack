@@ -100,7 +100,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ACT-01 | Phase 1 | Pending |
+| ACT-01 | Phase 1 | Complete |
 | ACT-02 | Phase 2 | Pending |
 | ACT-03 | Phase 4 | Pending |
 | ACT-04 | Phase 5 | Pending |
@@ -108,23 +108,23 @@
 | STT-02 | Phase 3 | Pending |
 | STT-03 | Phase 4 | Pending |
 | STT-04 | Phase 2 | Pending |
-| MCRO-01 | Phase 1 | Pending |
-| MCRO-02 | Phase 1 | Pending |
+| MCRO-01 | Phase 1 | Complete |
+| MCRO-02 | Phase 1 | Complete |
 | MCRO-03 | Phase 3 | Pending |
 | MCRO-04 | Phase 3 | Pending |
-| MCRO-05 | Phase 1 | Pending |
+| MCRO-05 | Phase 1 | Complete |
 | PACK-01 | Phase 4 | Pending |
 | PACK-02 | Phase 4 | Pending |
 | PACK-03 | Phase 4 | Pending |
 | PACK-04 | Phase 4 | Pending |
 | PACK-05 | Phase 4 | Pending |
-| UI-01 | Phase 1 | Pending |
+| UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 5 | Pending |
 | UI-03 | Phase 5 | Pending |
 | UI-04 | Phase 5 | Pending |
 | DIST-01 | Phase 5 | Pending |
 | DIST-02 | Phase 5 | Pending |
-| DIST-03 | Phase 1 | Pending |
+| DIST-03 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 25 total
