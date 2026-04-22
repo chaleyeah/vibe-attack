@@ -10,6 +10,8 @@ pub struct Config {
     pub ptt: PttConfig,
     pub timing: TimingConfig,
     #[serde(default)]
+    pub audio: AudioConfig,
+    #[serde(default)]
     pub pipeline: PipelineConfig,
     #[serde(default)]
     pub vad: VadConfig,
@@ -60,6 +62,17 @@ fn ensure_file_exists(path: &PathBuf, field: &str) -> Result<()> {
         )
     })?;
     Ok(())
+}
+
+/// Audio capture device selection.
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AudioConfig {
+    /// CPAL device name to use for audio capture.
+    /// Leave unset to use the system default input device.
+    /// Run with --list-devices to see available names.
+    /// Example (Linux/ALSA): "plughw:CARD=Gamin,DEV=0"
+    pub device: Option<String>,
 }
 
 /// Push-to-talk configuration (ACT-01).

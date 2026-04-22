@@ -17,6 +17,10 @@ struct Cli {
     /// Path to config file (default: $XDG_CONFIG_HOME/hd-linux-voice/config.yaml)
     #[arg(short, long, value_name = "FILE")]
     config: Option<std::path::PathBuf>,
+
+    /// List available audio input devices and exit (use the name in audio.device in config.yaml)
+    #[arg(long)]
+    list_devices: bool,
 }
 
 fn init_logging(verbose: u8) {
@@ -49,6 +53,34 @@ async fn main() -> anyhow::Result<()> {
 
     let args = Cli::parse();
     init_logging(args.verbose);
+
+    // --list-devices: enumerate CPAL input devices and exit.
+    if args.list_devices {
+        use cpal::traits::{DeviceTrait, HostTrait};
+        let host = cpal::default_host();
+        println!("Available audio input devices (use name in audio.device in config.yaml):");
+        println!();
+        match host.input_devices() {
+            Ok(devices) => {
+                let mut found = false;
+                for device in devices {
+                    found = true;
+                    let name = device.description()
+                        .map(|d| d.name().to_string())
+                        .unwrap_or_else(|_| "<unknown>".to_string());
+                    let cfg = device.default_input_config()
+                        .map(|c| format!("{} ch @ {} Hz", c.channels(), c.sample_rate()))
+                        .unwrap_or_else(|_| "no supported config".to_string());
+                    println!("  {name}  ({cfg})");
+                }
+                if !found {
+                    println!("  (no input devices found)");
+                }
+            }
+            Err(e) => eprintln!("Failed to enumerate devices: {e}"),
+        }
+        return Ok(());
+    }
 
     tracing::info!("hd-linux-voice starting");
 
@@ -105,7 +137,10 @@ async fn main() -> anyhow::Result<()> {
     let inject_handle = hd_linux_voice::input::inject::spawn_injection_thread(virtual_kbd, macro_rx);
 
     // === 8. Start CPAL audio stream (warm, D-04) ===
-    let audio_handle = hd_linux_voice::audio::start_audio_stream(Arc::clone(&ptt_active))
+    let audio_handle = hd_linux_voice::audio::start_audio_stream(
+        config.audio.device.as_deref(),
+        Arc::clone(&ptt_active),
+    )
         .map_err(|e| {
             let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
             eprintln!("Audio error: {e:#}");

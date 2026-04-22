@@ -10,11 +10,9 @@ ptt:
   key: KEY_LEFTCTRL  # evdev key name; run `evtest` to find your device's key names
 
 audio:
-  # CPAL device name for audio capture.
-  # Leave unset to use the system default input device.
-  # Run with --list-devices to enumerate available device names.
-  # Example (Linux with Corsair HS80): "CORSAIR HS80 RGB Wireless Gamin, USB Audio"
-  # device: ~
+  # CPAL device name for audio capture.  Run --list-devices to see all options.
+  # Leave unset to use the system default (often wrong on multi-device Linux setups).
+  device: "CORSAIR HS80 RGB Wireless Gamin, USB Audio"
 
 timing:
   dwell_ms: 50       # milliseconds each key is held down
@@ -34,26 +32,17 @@ vad:
   max_utterance_secs: 10    # cap utterance length; longer speech is force-flushed with a warning
 
 stt:
-  enabled: false
-  # Whisper model file (local-only; NOT downloaded automatically).
-  #
-  # Recommended default location:
-  #   ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
-  #
-  # One-time download example:
-  #   mkdir -p ~/.local/share/hd-linux-voice/models/whisper
-  #   curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
-  #     https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
-  model_path: ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+  enabled: true
+  model_path: /home/chadmin/Documents/GitHub/hd-linux-voice/models/whisper/ggml-tiny.en.bin  # local-only; not downloaded automatically
 
 wake:
   enabled: false
   # sherpa-onnx keyword spotter artifacts (local-only; not downloaded automatically)
-  encoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/encoder.onnx
-  decoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/decoder.onnx
-  joiner: ~/.local/share/hd-linux-voice/models/sherpa/kws/joiner.onnx
-  tokens: ~/.local/share/hd-linux-voice/models/sherpa/kws/tokens.txt
-  keywords: ~/.local/share/hd-linux-voice/models/sherpa/kws/keywords.txt
+  encoder: /home/chadmin/Documents/GitHub/hd-linux-voice/models/sherpa/kws/encoder.onnx
+  decoder: /home/chadmin/Documents/GitHub/hd-linux-voice/models/sherpa/kws/decoder.onnx
+  joiner: /home/chadmin/Documents/GitHub/hd-linux-voice/models/sherpa/kws/joiner.onnx
+  tokens: /home/chadmin/Documents/GitHub/hd-linux-voice/models/sherpa/kws/tokens.txt
+  keywords: /home/chadmin/Documents/GitHub/hd-linux-voice/models/sherpa/kws/keywords.txt
 
 macros:
   - name: test_sequence
