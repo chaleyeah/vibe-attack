@@ -180,7 +180,7 @@ Each task was committed atomically:
 1. **Task 1: Implement STT worker thread with whisper-rs preload + bounded drop-oldest queue** - `1851192` (feat)
 2. **Task 2: Implement wake-word + pipeline wiring in main with stdout/stderr split and instrumentation** - `ae0c0fd` (feat)
 
-**Plan metadata:** _pending_ (docs: complete plan)
+**Plan metadata:** (this commit) (docs: complete plan)
 
 ## Files Created/Modified
 

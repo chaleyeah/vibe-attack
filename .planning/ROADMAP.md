@@ -55,7 +55,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Wave 0 scaffolding: deps + config schema + env-gated heavy test harnesses (Wave 1) ✓ 2026-04-22
 - [x] 02-02-PLAN.md — Pipeline contracts + VAD segmentation: JSONL schema + timing + bounded utterance jobs (Wave 2) ✓ 2026-04-22
-- [ ] 02-03-PLAN.md — End-to-end wiring: wake word + STT OS threads + ringbuf drain + instrumentation (Wave 3)
+- [x] 02-03-PLAN.md — End-to-end wiring: wake word + STT OS threads + ringbuf drain + instrumentation (Wave 3) ✓ 2026-04-22
 - [ ] 02-04-PLAN.md — Proof artifacts: latency baseline procedure + concurrency stress test + validation bookkeeping (Wave 4)
 
 ### Phase 3: Phrase Matching + Dispatch
