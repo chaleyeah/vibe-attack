@@ -41,7 +41,23 @@ sudo pacman -S onnxruntime
 Pick (or create) a config file with:
 
 - working audio capture + PTT (or wake word)
-- `stt.model_path` pointing at a local **`tiny.en`** whisper.cpp model file
+- `stt.model_path` pointing at a local **Whisper model file** (we use `tiny.en` as the baseline)
+
+### Whisper model download (required for STT)
+
+This project does **not** bundle Whisper models and does **not** auto-download them.
+
+Recommended default location (XDG data):
+
+- `~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin`
+
+One-time download example:
+
+```bash
+mkdir -p ~/.local/share/hd-linux-voice/models/whisper
+curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
+  https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
+```
 
 ## Run procedure (collect artifacts)
 

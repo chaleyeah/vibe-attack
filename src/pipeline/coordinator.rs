@@ -16,7 +16,7 @@ use std::sync::{
 use std::time::{Duration, Instant};
 use tokio_util::sync::CancellationToken;
 
-use crate::audio::AudioHandle;
+use ringbuf::HeapCons;
 use crate::config::{Config, PipelineVerbosity};
 use crate::pipeline::jsonl::{JsonlVerbosity, JsonlWriter};
 use crate::stt::{SttResult, SttService};
@@ -29,8 +29,13 @@ pub struct PipelineHandles {
     pub stt: Option<SttService>,
 }
 
+/// Spawn the pipeline worker threads.
+///
+/// CRITICAL: do NOT pass the full `AudioHandle` here — callers must keep the
+/// `StreamGuard` on the main thread (see `src/audio/mod.rs` for rationale).
+/// Only the ringbuf `consumer` end should be forwarded into the worker.
 pub fn spawn_pipeline(
-    audio: AudioHandle,
+    audio_consumer: HeapCons<f32>,
     config: Config,
     ptt_active: Arc<AtomicBool>,
     shutdown: CancellationToken,
@@ -62,6 +67,14 @@ pub fn spawn_pipeline(
     let output = std::thread::spawn(move || {
         let stdout = std::io::stdout();
         let mut w = JsonlWriter::new(stdout.lock(), jsonl_verbosity);
+
+        // Emit a startup event to force a flush and verify stdout is working (D-19).
+        if let Err(e) = w.write_event(&crate::pipeline::jsonl::JsonlEvent::Status {
+            message: "pipeline_started",
+            mono_ms: 0,
+        }) {
+            tracing::error!("Failed to write startup JSONL: {e}");
+        }
 
         while !output_shutdown.is_cancelled() {
             match out_rx.recv_timeout(Duration::from_millis(50)) {
@@ -129,6 +142,7 @@ pub fn spawn_pipeline(
     // IMPORTANT: `ort` (ONNX Runtime) can panic at runtime if `libonnxruntime.so`
     // is not discoverable. Convert that into a normal, actionable startup error
     // instead of crashing the process.
+    let start_vad = std::time::Instant::now();
     let mut silero = std::panic::catch_unwind(|| {
         silero_vad_rust::silero_vad::model::load_silero_vad_with_options(
             silero_vad_rust::silero_vad::model::LoadOptions {
@@ -145,16 +159,17 @@ pub fn spawn_pipeline(
         )
     })?
     .context("load silero VAD model")?;
+    tracing::info!("Silero VAD loaded in {}ms", start_vad.elapsed().as_millis());
 
-    // Move the AudioHandle into the pipeline thread to keep the CPAL stream alive.
-    let audio = audio;
+    // NOTE: the CPAL stream guard is intentionally NOT in this function — the
+    // caller (main) keeps it alive. We only own the ringbuf consumer end.
     let pipeline_shutdown = shutdown.clone();
 
     let pipeline = std::thread::spawn(move || {
         tracing::info!("Pipeline thread started");
 
         let mut seg = VadSegmenter::new(seg_cfg.clone());
-        let mut consumer = audio.consumer;
+        let mut consumer = audio_consumer;
 
         let mut pending = Vec::<f32>::with_capacity(FRAME_SAMPLES * 8);
         let mut pending_idx: usize = 0;

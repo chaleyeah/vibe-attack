@@ -156,8 +156,20 @@ async fn main() -> anyhow::Result<()> {
     );
 
     // === 10. Spawn Phase 2 pipeline (OS threads; stdout JSONL only) ===
+    //
+    // Split the audio handle: the CPAL stream guard MUST remain on this
+    // (main) thread.  Moving `cpal::Stream` into a worker thread that is
+    // spawned from inside a nested helper and then dropped has been shown
+    // to silently stop the ALSA/PipeWire callback on Linux.  Pass only the
+    // ringbuf consumer into the pipeline.
+    let hd_linux_voice::audio::AudioHandle {
+        stream: _audio_stream_guard,
+        consumer: audio_consumer,
+        actual_config: _actual_cfg,
+    } = audio_handle;
+
     let pipeline_handles = hd_linux_voice::pipeline::coordinator::spawn_pipeline(
-        audio_handle,
+        audio_consumer,
         config.clone(),
         Arc::clone(&ptt_active),
         shutdown.clone(),
@@ -215,7 +227,8 @@ async fn main() -> anyhow::Result<()> {
     std::thread::sleep(std::time::Duration::from_millis(500));
     drop(ptt_join);
 
-    // audio_handle.consumer was moved into the pipeline thread; dropping the handle stops CPAL stream.
+    // Dropping _audio_stream_guard here stops the CPAL stream (RAII).
+    drop(_audio_stream_guard);
 
     tracing::info!("hd-linux-voice stopped");
     Ok(())

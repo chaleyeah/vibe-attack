@@ -124,6 +124,7 @@ impl SttService {
                 use std::time::Instant;
 
                 // Load model once at startup (D-15).
+                let start_load = Instant::now();
                 let ctx = match WhisperContext::new_with_params(
                     model_path.to_string_lossy().to_string(),
                     WhisperContextParameters::default(),
@@ -134,6 +135,7 @@ impl SttService {
                         return;
                     }
                 };
+                tracing::info!("Whisper model loaded in {}ms", start_load.elapsed().as_millis());
 
                 let base_params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
 

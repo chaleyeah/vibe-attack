@@ -58,6 +58,11 @@ pub enum JsonlEvent<'a> {
         stage: StageName,
         status: StageStatus,
     },
+    /// Status event for startup/shutdown/heartbeat (D-19).
+    Status {
+        message: &'a str,
+        mono_ms: u64,
+    },
 }
 
 /// JSONL writer that guarantees "one JSON object per line" on the provided writer.

@@ -20,6 +20,25 @@ For each run, capture and commit:
   2> timing.log
 ```
 
+## Prerequisites (STT model file)
+
+If you are running with `stt.enabled: true`, you must provide a local Whisper model file on disk via `stt.model_path`.
+
+- This repo does **not** bundle Whisper models
+- The daemon does **not** auto-download models
+
+Recommended default path:
+
+- `~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin`
+
+Download example:
+
+```bash
+mkdir -p ~/.local/share/hd-linux-voice/models/whisper
+curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
+  https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
+```
+
 ## Run naming convention
 
 Create a new folder per target-hardware run, using:

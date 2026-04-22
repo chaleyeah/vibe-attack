@@ -7,6 +7,7 @@
 use anyhow::{Context, Result};
 use cpal::traits::{DeviceTrait, StreamTrait};
 use cpal::{BufferSize, StreamConfig};
+use std::io::Write;
 use ringbuf::{
     traits::{Producer, Split},
     HeapCons, HeapRb,
@@ -20,11 +21,22 @@ use std::sync::{
 /// 5 seconds at 16 kHz = 80,000 samples. Phase 2 drains this actively.
 const RING_BUFFER_SAMPLES: usize = 16_000 * 5;
 
-/// Handle returned by `start_audio_stream`. Keeps the stream alive.
-/// Drop to stop the stream. Consumer end is available for Phase 2 pipeline.
-pub struct AudioHandle {
-    /// Keep the CPAL stream alive (dropped when AudioHandle is dropped).
+/// Opaque RAII guard that keeps the CPAL input stream running.
+///
+/// CRITICAL: this guard MUST be held by the thread that created the stream
+/// (typically main).  Moving `cpal::Stream` into a worker closure that lives
+/// past the creating function's return has been observed to silently stop
+/// the ALSA/PipeWire callback on Linux.  Callers should therefore split the
+/// handle: keep `StreamGuard` on main, and forward only `consumer` to the
+/// pipeline worker.
+pub struct StreamGuard {
     _stream: cpal::Stream,
+}
+
+/// Bundle returned by `start_audio_stream`.
+pub struct AudioHandle {
+    /// Hold on main thread to keep the CPAL stream alive.
+    pub stream: StreamGuard,
     /// Consumer end of the ring buffer for Phase 2 audio pipeline.
     pub consumer: HeapCons<f32>,
     /// Negotiated stream configuration (logged at startup for diagnosis — Pitfall 1 mitigation).
@@ -57,19 +69,26 @@ pub fn build_audio_config(device: &cpal::Device) -> Result<StreamConfig> {
         return Ok(StreamConfig {
             channels,
             sample_rate: 16_000,
-            buffer_size: BufferSize::Default,
+            buffer_size: BufferSize::Fixed(1024),
         });
     }
 
     // Device native rate != 16 kHz (common: 44100 or 48000 Hz).
     // Capture at the native rate and resample to 16 kHz in the callback.
+    //
+    // IMPORTANT: force a fixed buffer size.  PipeWire's ALSA bridge requires
+    // this for stable capture; `BufferSize::Default` leaves it unset which
+    // can cause the stream to silently stop delivering callbacks after the
+    // first buffer on some systems.
     tracing::warn!(
         native_rate = native_rate,
         native_channels = native_channels,
         "Device native rate is {} Hz (not 16 kHz); will resample in capture callback.",
         native_rate
     );
-    Ok(default_cfg.into())
+    let mut cfg: StreamConfig = default_cfg.into();
+    cfg.buffer_size = BufferSize::Fixed(1024);
+    Ok(cfg)
 }
 
 /// Start a warm CPAL audio capture stream (D-04: stream is always running).
@@ -136,29 +155,40 @@ pub fn start_audio_stream(device_name: Option<&str>, ptt_active: Arc<AtomicBool>
     let mut resample_pos: f64 = 0.0;
     let resample_step: f64 = native_rate as f64 / target_rate as f64;
 
+    // Observability: emit a one-time log the first time the CPAL callback fires.
+    // If this never appears, the host is not delivering samples
+    // (device/driver/PipeWire routing issue) and we should blame the audio
+    // backend, not the pipeline.
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    let callback_count = Arc::new(AtomicUsize::new(0));
+    let callback_count_cb = Arc::clone(&callback_count);
+
     let stream = device
         .build_input_stream(
             &config,
             move |data: &[f32], _info: &cpal::InputCallbackInfo| {
-                // INVARIANT: this closure must never allocate or block.
-                // Step 1: downmix to mono.
+                let n = callback_count_cb.fetch_add(1, Ordering::Relaxed);
+                if n == 0 {
+                    // tracing may take a mutex; avoid it from the RT callback.
+                    let _ = writeln!(
+                        std::io::stderr(),
+                        ">> CPAL first-callback: audio stream is live, samples={}",
+                        data.len()
+                    );
+                }
                 let mono: &[f32];
                 let mono_owned: Vec<f32>;
                 if channels == 1 {
                     mono = data;
                 } else {
-                    mono_owned = data.chunks_exact(channels as usize).map(|c| c[0]).collect();
+                    mono_owned =
+                        data.chunks_exact(channels as usize).map(|c| c[0]).collect();
                     mono = &mono_owned;
                 }
-
                 if !needs_resample {
                     let _ = producer.push_slice(mono);
                     return;
                 }
-
-                // Step 2: linear resample to 16 kHz.
-                // This runs in the RT callback — no heap allocation beyond the
-                // one-time Vec above which is already allocated.
                 let len = mono.len();
                 if len == 0 {
                     return;
@@ -177,15 +207,16 @@ pub fn start_audio_stream(device_name: Option<&str>, ptt_active: Arc<AtomicBool>
                 resample_pos -= len as f64;
             },
             |err| tracing::error!("CPAL stream error: {err}"),
-            None, // no timeout
+            None,
         )
         .context("Failed to build CPAL input stream")?;
+    let _ = target_rate;
 
     stream.play().context("Failed to start CPAL stream")?;
     tracing::info!("Audio capture stream started (warm)");
 
     Ok(AudioHandle {
-        _stream: stream,
+        stream: StreamGuard { _stream: stream },
         consumer,
         actual_config,
     })
