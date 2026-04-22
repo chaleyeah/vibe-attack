@@ -153,7 +153,7 @@ pub fn spawn_pipeline(
     let pipeline = std::thread::spawn(move || {
         tracing::info!("Pipeline thread started");
 
-        let mut seg = VadSegmenter::new(seg_cfg);
+        let mut seg = VadSegmenter::new(seg_cfg.clone());
         let mut consumer = audio.consumer;
 
         let mut pending = Vec::<f32>::with_capacity(FRAME_SAMPLES * 8);
@@ -164,7 +164,28 @@ pub fn spawn_pipeline(
         let mut listening_until: Option<Instant> = None;
         let mut prev_ptt = false;
 
+        // PTT-mode direct capture: all audio while PTT is held lands here.
+        // On release the entire buffer is sent to STT unconditionally, bypassing
+        // the VAD speech-gate. VAD is still used for the wake-word listen window.
+        let mut ptt_audio: Vec<f32> = Vec::with_capacity(FRAME_SAMPLES * 200); // ~4 sec
+        let mut ptt_utterance_id: u64 = 0;
+        let mut ptt_next_id: u64 = 1; // monotonic ID counter for PTT utterances
+        let mut ptt_timings = crate::pipeline::timing::UtteranceTimings::new();
+        let mut ptt_start_frame: u64 = 0;
+        let mut ptt_frame_count: u64 = 0;
+
         while !pipeline_shutdown.is_cancelled() {
+            // Always drain completed STT results first so they are never lost regardless
+            // of PTT state.  Previously this was inside the VAD branch and was skipped by
+            // `continue` while PTT was idle, causing results to accumulate forever.
+            if let Some(stt_results) = &stt_results {
+                while let Ok(r) = stt_results.try_recv() {
+                    if crate::vad::try_send_drop_oldest(&out_tx, &out_rx_for_drop, r).is_err() {
+                        break;
+                    }
+                }
+            }
+
             // Drain some samples from ringbuf.
             let n = consumer.pop_slice(&mut tmp);
             if n == 0 {
@@ -187,20 +208,54 @@ pub fn spawn_pipeline(
                 let ptt = ptt_active.load(Ordering::Relaxed);
                 let listening = listening_until.map(|t| now < t).unwrap_or(false);
 
-                // If PTT was just released, force-flush any in-progress utterance.
-                // Otherwise we may never see enough trailing silence to end the utterance,
-                // because the audio callback stops feeding samples immediately on release.
-                if prev_ptt && !ptt {
-                    if let Some(mut job) = seg.force_flush() {
-                        job.timings.mark_vad_done();
+                // PTT pressed: start or continue recording directly into ptt_audio.
+                if ptt {
+                    if !prev_ptt {
+                        // Rising edge: begin new PTT utterance.
+                        ptt_audio.clear();
+                        ptt_utterance_id = ptt_next_id;
+                        ptt_next_id += 1;
+                        ptt_timings = crate::pipeline::timing::UtteranceTimings::new();
+                        ptt_start_frame = ptt_frame_count;
+                        tracing::debug!(utterance_id = ptt_utterance_id, "PTT utterance started");
+                    }
+                    ptt_audio.extend_from_slice(&frame);
+                    ptt_frame_count += 1;
+                    prev_ptt = true;
+                    continue;
+                }
+
+                // PTT just released: send entire PTT buffer to STT.
+                if prev_ptt {
+                    let audio_len = ptt_audio.len();
+                    let min_samples = (crate::vad::SAMPLE_RATE_HZ as usize) / 10; // 100 ms minimum
+                    tracing::debug!(
+                        utterance_id = ptt_utterance_id,
+                        samples = audio_len,
+                        "PTT released – submitting to STT"
+                    );
+                    if audio_len >= min_samples {
+                        let job = crate::vad::UtteranceJob {
+                            utterance_id: ptt_utterance_id,
+                            audio: std::mem::take(&mut ptt_audio),
+                            timings: ptt_timings,
+                            start_frame_idx: ptt_start_frame,
+                            end_frame_idx: ptt_frame_count,
+                        };
                         if let Some(stt_submit) = &stt_submit {
                             if let Err(e) = stt_submit.try_submit(job) {
-                                tracing::warn!("STT submit failed (flush): {e}");
+                                tracing::warn!(utterance_id = ptt_utterance_id, "STT submit failed: {e}");
                             }
                         }
+                    } else {
+                        tracing::debug!(utterance_id = ptt_utterance_id, samples = audio_len, "PTT too short, skipping STT");
+                        ptt_audio.clear();
                     }
+                    // Reset the VAD segmenter so stale state doesn't bleed into
+                    // the next wake-word listen window.
+                    seg = VadSegmenter::new(seg_cfg.clone());
                 }
-                prev_ptt = ptt;
+                prev_ptt = false;
 
                 // Wake-word detection while idle (no PTT) to enter LISTENING (D-17/D-18).
                 if !ptt && !listening {
@@ -216,7 +271,7 @@ pub fn spawn_pipeline(
                     continue;
                 }
 
-                // Active capture: run VAD segmentation.
+                // Wake-word listen window: run VAD segmentation.
                 match seg.push_frame_silero(&mut silero, &frame) {
                     Ok(Some(mut job)) => {
                         job.timings.mark_vad_done();
@@ -229,15 +284,6 @@ pub fn spawn_pipeline(
                     }
                     Ok(None) => {}
                     Err(e) => tracing::warn!("VAD error: {e}"),
-                }
-
-                // Drain any completed STT results and forward to output thread.
-                if let Some(stt_results) = &stt_results {
-                    while let Ok(r) = stt_results.try_recv() {
-                        if crate::vad::try_send_drop_oldest(&out_tx, &out_rx_for_drop, r).is_err() {
-                            break;
-                        }
-                    }
                 }
             }
         }
