@@ -73,7 +73,7 @@ Each task was committed atomically:
 1. **Task 1: Add `pipeline` module with timing + JSONL event schema** - `37ffa0d` (feat)
 2. **Task 2: Implement Silero-based VAD segmentation producing bounded utterance jobs** - `a7e6536` (feat)
 
-**Plan metadata:** _pending_ (docs: complete plan)
+**Plan metadata:** `8455e76` (docs: complete plan)
 
 ## Files Created/Modified
 - `src/pipeline/jsonl.rs` - JSONL event types + `JsonlWriter` that writes one JSON object per line to a provided `Write`
