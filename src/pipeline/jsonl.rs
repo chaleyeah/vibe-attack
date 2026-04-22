@@ -39,6 +39,11 @@ pub enum JsonlEvent<'a> {
         text: &'a str,
         audio_ms: u64,
         stt_ms: u64,
+        /// End-to-end duration (ms) for Phase 2 verification:
+        /// `e2e_ms = output_done_ms - vad_done_ms` (monotonic).
+        e2e_ms: u64,
+        /// Measured VAD compute cost (ms) for the utterance.
+        vad_ms: u64,
         vad_done_ms: Option<u64>,
         stt_done_ms: Option<u64>,
         output_done_ms: Option<u64>,
@@ -87,6 +92,9 @@ impl<W: Write> JsonlWriter<W> {
         start_frame_idx: u64,
         end_frame_idx: u64,
     ) -> IoResult<()> {
+        let output_done_ms = timings.output_done_ms.unwrap_or(0);
+        let vad_done_ms = timings.vad_done_ms.unwrap_or(0);
+        let e2e_ms = output_done_ms.saturating_sub(vad_done_ms);
         let evt = JsonlEvent::Utterance {
             utterance_id,
             created_wall_time_ms: timings.created_wall_time_ms,
@@ -95,6 +103,8 @@ impl<W: Write> JsonlWriter<W> {
             text,
             audio_ms,
             stt_ms,
+            e2e_ms,
+            vad_ms: timings.vad_ms,
             vad_done_ms: timings.vad_done_ms,
             stt_done_ms: timings.stt_done_ms,
             output_done_ms: timings.output_done_ms,

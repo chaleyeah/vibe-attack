@@ -15,6 +15,7 @@
 use crate::pipeline::timing::UtteranceTimings;
 use crossbeam_channel::{Receiver, Sender, TrySendError};
 use std::collections::VecDeque;
+use std::time::Instant;
 
 pub const SAMPLE_RATE_HZ: u32 = 16_000;
 pub const FRAME_SAMPLES: usize = 320; // 20ms @ 16kHz
@@ -98,6 +99,7 @@ pub struct VadSegmenter {
     cur_audio: Vec<f32>,
     cur_start_frame_idx: u64,
     cur_timings: UtteranceTimings,
+    cur_vad_compute_ms: u64,
 
     // sliding window for Silero scoring (512 samples)
     silero_window: [f32; SILERO_WINDOW_SAMPLES],
@@ -120,6 +122,7 @@ impl VadSegmenter {
             cur_audio: Vec::new(),
             cur_start_frame_idx: 0,
             cur_timings: UtteranceTimings::new(),
+            cur_vad_compute_ms: 0,
             silero_window: [0.0; SILERO_WINDOW_SAMPLES],
             silero_window_initialized: false,
         }
@@ -186,6 +189,7 @@ impl VadSegmenter {
                     .frame_idx
                     .saturating_sub(self.cfg.preroll_frames as u64);
                 self.cur_timings = UtteranceTimings::new();
+                self.cur_vad_compute_ms = 0;
             }
 
             return None;
@@ -244,6 +248,7 @@ impl VadSegmenter {
         let id = self.next_utterance_id;
         self.next_utterance_id += 1;
 
+        self.cur_timings.vad_ms = self.cur_vad_compute_ms;
         let job = UtteranceJob {
             utterance_id: id,
             audio: std::mem::take(&mut self.cur_audio),
@@ -258,6 +263,7 @@ impl VadSegmenter {
         self.silence_run_frames = 0;
         self.pending_silence.clear();
         self.preroll.clear();
+        self.cur_vad_compute_ms = 0;
 
         job
     }
@@ -279,8 +285,19 @@ impl VadSegmenter {
         model: &mut silero_vad_rust::silero_vad::model::OnnxModel,
         frame: &[f32; FRAME_SAMPLES],
     ) -> anyhow::Result<Option<UtteranceJob>> {
+        let was_in_speech = self.in_speech;
+        let t0 = Instant::now();
         let score = self.score_with_silero(model, frame)?;
-        Ok(self.push_scored_frame(frame, score))
+        let res = self.push_scored_frame(frame, score);
+        let dt_ms = t0.elapsed().as_millis() as u64;
+
+        // Accumulate compute time only for frames that are part of an utterance.
+        // If this frame starts an utterance, it should count.
+        if was_in_speech || self.in_speech {
+            self.cur_vad_compute_ms = self.cur_vad_compute_ms.saturating_add(dt_ms);
+        }
+
+        Ok(res)
     }
 }
 

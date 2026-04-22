@@ -41,6 +41,8 @@ pub struct UtteranceTimings {
     pub created_wall_time_ms: u64,
     created_instant: Instant,
     pub vad_done_ms: Option<u64>,
+    /// Measured VAD compute time (ms) accumulated for frames in this utterance.
+    pub vad_ms: u64,
     pub stt_done_ms: Option<u64>,
     pub output_done_ms: Option<u64>,
 }
@@ -51,6 +53,7 @@ impl UtteranceTimings {
             created_wall_time_ms: wall_time_ms(),
             created_instant: Instant::now(),
             vad_done_ms: None,
+            vad_ms: 0,
             stt_done_ms: None,
             output_done_ms: None,
         }
