@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md — CPAL audio capture + evdev PTT scanner
-last_updated: "2026-04-22T02:41:05.850Z"
+stopped_at: Completed 01-04-PLAN.md — uinput injection subsystem
+last_updated: "2026-04-22T02:47:20.334Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 4 of 5 (Plan 01 complete)
+Plan: 5 of 5 (Plan 01 complete)
 Status: Ready to execute
 Last activity: 2026-04-22
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [██████░░░░] 60%
 *Updated after each plan completion*
 | Phase 01-foundation P02 | 153s | 2 tasks | 5 files |
 | Phase 01-foundation P03 | 12m | 2 tasks | 2 files |
+| Phase 01-foundation P04 | 8m | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - Manual /dev/input/event{0..63} loop avoids glob crate dependency
 - ringbuf 0.4 traits (Producer/Split/Consumer) must be explicitly imported
 - CPAL 0.17 SampleRate is u32 type alias; device.description().name() replaces deprecated name()
+- VirtualDevice::builder() used (VirtualDeviceBuilder::new() deprecated in evdev 0.13)
+- 'input' group in DaemonError::UinputPermissionDenied message (not 'uinput') — systemd v258+ Pitfall 3
+- No SYN_REPORT in emit_key_action — VirtualDevice::emit() auto-appends it (Pitfall 6)
 
 ### Pending Todos
 
@@ -97,8 +101,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-22T02:41:05.848Z
-Stopped at: Completed 01-03-PLAN.md — CPAL audio capture + evdev PTT scanner
+Last session: 2026-04-22T02:47:20.332Z
+Stopped at: Completed 01-04-PLAN.md — uinput injection subsystem
 Resume file: None
 
 **Planned Phase:** 01 (foundation) — 5 plans — 2026-04-22T02:16:45.272Z

@@ -30,7 +30,8 @@
 **: Macros support **key/button holds** (press and hold for a specified duration) — required for HD2 directional inputs
 - [ ] **MCRO-03**: Macro engine supports **conditional logic** (if/else, variables) for VoiceAttack-class scripting
 - [ ] **MCRO-04**: Macros play an optional **sound feedback** on activation (configurable per macro or globally)
-- [ ] **MCRO-05**: All key/mouse events are emitted via **uinput/evdev** and function correctly in Wayland sessions (including fullscreen games)
+- [x] **MCRO-05
+**: All key/mouse events are emitted via **uinput/evdev** and function correctly in Wayland sessions (including fullscreen games)
 
 ### Strategem Pack System
 
