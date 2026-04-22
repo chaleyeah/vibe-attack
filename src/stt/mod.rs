@@ -42,7 +42,38 @@ pub struct SttService {
     handle: Option<std::thread::JoinHandle<()>>,
 }
 
+/// Cloneable submit-only handle for the STT bounded queue.
+#[derive(Debug, Clone)]
+pub struct SttSubmitter {
+    job_tx: Sender<SttMsg>,
+    job_rx: Receiver<SttMsg>,
+}
+
+impl SttSubmitter {
+    /// Non-blocking submit. If queue is full, drops the oldest pending job (D-03).
+    pub fn try_submit(&self, job: UtteranceJob) -> Result<()> {
+        try_send_drop_oldest(&self.job_tx, &self.job_rx, SttMsg::Job(job))
+            .map_err(|_| anyhow!("STT job queue is disconnected"))
+    }
+}
+
 impl SttService {
+    pub fn submitter(&self) -> SttSubmitter {
+        SttSubmitter {
+            job_tx: self.job_tx.clone(),
+            job_rx: self.job_rx.clone(),
+        }
+    }
+
+    /// Convenience for single-owner use: submit directly via the service.
+    pub fn try_submit(&self, job: UtteranceJob) -> Result<()> {
+        self.submitter().try_submit(job)
+    }
+
+    pub fn result_receiver(&self) -> Receiver<SttResult> {
+        self.result_rx.clone()
+    }
+
     /// Create the STT service and preload the model from `model_path`.
     ///
     /// This function spawns a long-lived `std::thread` and returns immediately.
@@ -187,17 +218,11 @@ impl SttService {
         Ok(self)
     }
 
-    /// Non-blocking submit. If queue is full, drops the oldest pending job (D-03).
-    pub fn try_submit(&self, job: UtteranceJob) -> Result<()> {
-        try_send_drop_oldest(&self.job_tx, &self.job_rx, SttMsg::Job(job))
-            .map_err(|_| anyhow!("STT job queue is disconnected"))
-    }
-
     pub fn request_shutdown(&self) {
         let _ = self.job_tx.try_send(SttMsg::Shutdown);
     }
 
-    pub fn join_best_effort(mut self, timeout: Duration) {
+    pub fn join_best_effort(&mut self, timeout: Duration) {
         if let Some(handle) = self.handle.take() {
             let joiner = std::thread::spawn(move || handle.join());
             std::thread::sleep(timeout);

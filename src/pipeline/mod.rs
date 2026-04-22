@@ -8,4 +8,5 @@
 
 pub mod jsonl;
 pub mod timing;
+pub mod coordinator;
 

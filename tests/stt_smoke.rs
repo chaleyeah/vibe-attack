@@ -38,7 +38,7 @@ fn whisper_loads_model_and_runs_one_pass() {
         let shutdown = CancellationToken::new();
         let stt = hd_linux_voice::stt::SttService::new(&model_path, shutdown.clone())
             .expect("create STT service");
-        let stt = stt.spawn().expect("spawn STT thread");
+        let mut stt = stt.spawn().expect("spawn STT thread");
 
         // 1 second of silence @ 16kHz. We just want to validate the end-to-end call path.
         let job = hd_linux_voice::vad::UtteranceJob {

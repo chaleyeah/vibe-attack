@@ -32,10 +32,18 @@ pub enum JsonlEvent<'a> {
     /// Always emitted once per utterance (D-22).
     Utterance {
         utterance_id: u64,
+        /// Wall clock when the utterance was created (ms since unix epoch).
+        created_wall_time_ms: u64,
         wall_time_ms: u64,
         mono_ms: u64,
         text: &'a str,
         audio_ms: u64,
+        stt_ms: u64,
+        vad_done_ms: Option<u64>,
+        stt_done_ms: Option<u64>,
+        output_done_ms: Option<u64>,
+        start_frame_idx: u64,
+        end_frame_idx: u64,
     },
     /// Optional stage-level event (gated by verbosity, D-22).
     Stage {
@@ -69,13 +77,29 @@ impl<W: Write> JsonlWriter<W> {
         self.verbosity
     }
 
-    pub fn write_utterance(&mut self, utterance_id: u64, text: &str, audio_ms: u64) -> IoResult<()> {
+    pub fn write_utterance(
+        &mut self,
+        utterance_id: u64,
+        text: &str,
+        audio_ms: u64,
+        stt_ms: u64,
+        timings: crate::pipeline::timing::UtteranceTimings,
+        start_frame_idx: u64,
+        end_frame_idx: u64,
+    ) -> IoResult<()> {
         let evt = JsonlEvent::Utterance {
             utterance_id,
+            created_wall_time_ms: timings.created_wall_time_ms,
             wall_time_ms: wall_time_ms(),
             mono_ms: self.clock.elapsed_ms(),
             text,
             audio_ms,
+            stt_ms,
+            vad_done_ms: timings.vad_done_ms,
+            stt_done_ms: timings.stt_done_ms,
+            output_done_ms: timings.output_done_ms,
+            start_frame_idx,
+            end_frame_idx,
         };
         self.write_event(&evt)
     }

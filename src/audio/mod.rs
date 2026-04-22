@@ -1,8 +1,7 @@
-//! CPAL audio capture with PTT gate (D-01, D-03, D-04).
+//! CPAL audio capture into a pre-allocated ring buffer (D-01, D-03, D-04).
 //!
 //! Architecture (from RESEARCH.md Architectural Responsibility Map):
 //! - Audio RT thread: CPAL-managed; callback must NEVER allocate or block
-//! - PTT gate: AtomicBool shared with PTT thread; Relaxed ordering sufficient
 //! - Sample queue: HeapRb pre-allocated; producer lives in callback (no alloc)
 
 use anyhow::{Context, Result};
@@ -13,7 +12,7 @@ use ringbuf::{
     HeapCons, HeapRb,
 };
 use std::sync::{
-    atomic::{AtomicBool, Ordering},
+    atomic::AtomicBool,
     Arc,
 };
 
@@ -67,8 +66,9 @@ pub fn build_audio_config(device: &cpal::Device) -> Result<StreamConfig> {
 
 /// Start a warm CPAL audio capture stream (D-04: stream is always running).
 ///
-/// The callback gates samples to the ring buffer via `ptt_active` AtomicBool.
-/// When PTT is not held, samples are discarded in the callback — no teardown/reinit.
+/// The callback always pushes samples into the ring buffer.
+///
+/// PTT/wake gating happens on the pipeline OS thread after draining `AudioHandle.consumer`.
 ///
 /// # Arguments
 /// * `ptt_active` — Shared flag; true when PTT is held (written by PTT thread)
@@ -102,23 +102,22 @@ pub fn start_audio_stream(ptt_active: Arc<AtomicBool>) -> Result<AudioHandle> {
     let channels = config.channels;
     let actual_config = config.clone();
 
+    let _ = ptt_active; // gating happens in pipeline thread
+
     let stream = device
         .build_input_stream(
             &config,
             move |data: &[f32], _info: &cpal::InputCallbackInfo| {
                 // INVARIANT: this closure must never allocate or block.
-                if ptt_active.load(Ordering::Relaxed) {
-                    if channels == 1 {
-                        // push_slice is a single memcpy-like call; drops silently if full
-                        let _ = producer.push_slice(data);
-                    } else {
-                        // Stereo → mono: take left channel only (no allocation, no stack buffer)
-                        for sample in data.chunks_exact(channels as usize).map(|c| c[0]) {
-                            let _ = producer.try_push(sample);
-                        }
+                if channels == 1 {
+                    // push_slice is a single memcpy-like call; drops silently if full
+                    let _ = producer.push_slice(data);
+                } else {
+                    // Stereo → mono: take left channel only (no allocation, no stack buffer)
+                    for sample in data.chunks_exact(channels as usize).map(|c| c[0]) {
+                        let _ = producer.try_push(sample);
                     }
                 }
-                // PTT not held: silently discard samples (D-04)
             },
             |err| tracing::error!("CPAL stream error: {err}"),
             None, // no timeout
@@ -126,7 +125,7 @@ pub fn start_audio_stream(ptt_active: Arc<AtomicBool>) -> Result<AudioHandle> {
         .context("Failed to build CPAL input stream")?;
 
     stream.play().context("Failed to start CPAL stream")?;
-    tracing::info!("Audio capture stream started (warm, PTT-gated)");
+    tracing::info!("Audio capture stream started (warm)");
 
     Ok(AudioHandle {
         _stream: stream,
@@ -138,47 +137,7 @@ pub fn start_audio_stream(ptt_active: Arc<AtomicBool>) -> Result<AudioHandle> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ringbuf::{traits::Consumer, HeapRb};
-    use std::sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    };
-
-    #[test]
-    fn ptt_gate_off_discards_samples() {
-        // When ptt_active is false, callback must not push anything to the ring buffer.
-        let ptt = Arc::new(AtomicBool::new(false));
-        let rb = HeapRb::<f32>::new(64);
-        let (mut producer, mut consumer) = rb.split();
-
-        let data = [0.1_f32; 16];
-        if ptt.load(Ordering::Relaxed) {
-            let _ = producer.push_slice(&data);
-        }
-
-        assert_eq!(
-            consumer.pop_slice(&mut [0f32; 16]),
-            0,
-            "PTT off: no samples should reach the ring buffer"
-        );
-    }
-
-    #[test]
-    fn ptt_gate_on_pushes_samples() {
-        let ptt = Arc::new(AtomicBool::new(true));
-        let rb = HeapRb::<f32>::new(64);
-        let (mut producer, mut consumer) = rb.split();
-
-        let data = [0.5_f32; 8];
-        if ptt.load(Ordering::Relaxed) {
-            let _ = producer.push_slice(&data);
-        }
-
-        let mut out = [0f32; 8];
-        let n = consumer.pop_slice(&mut out);
-        assert_eq!(n, 8, "PTT on: all samples must reach ring buffer");
-        assert!((out[0] - 0.5).abs() < f32::EPSILON);
-    }
+    use ringbuf::HeapRb;
 
     #[test]
     fn ring_buffer_overflow_does_not_panic() {

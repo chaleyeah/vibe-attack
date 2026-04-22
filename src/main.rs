@@ -60,6 +60,12 @@ async fn main() -> anyhow::Result<()> {
         "Config loaded"
     );
 
+    // === 1b. Preflight: validate all local model paths BEFORE threads (Phase 2) ===
+    config.validate_model_paths().map_err(|e| {
+        eprintln!("{e:#}");
+        e
+    })?;
+
     // === 2. Parse PTT key code ===
     let ptt_key = hd_linux_voice::input::ptt::parse_key_code(&config.ptt.key)
         .map_err(|e| { eprintln!("{e:#}"); e })?;
@@ -92,8 +98,8 @@ async fn main() -> anyhow::Result<()> {
     let (macro_tx, macro_rx) = mpsc::channel::<hd_linux_voice::input::inject::MacroCmd>();
     let inject_handle = hd_linux_voice::input::inject::spawn_injection_thread(virtual_kbd, macro_rx);
 
-    // === 8. Start CPAL audio stream (warm, PTT-gated, D-04) ===
-    let _audio_handle = hd_linux_voice::audio::start_audio_stream(Arc::clone(&ptt_active))
+    // === 8. Start CPAL audio stream (warm, D-04) ===
+    let audio_handle = hd_linux_voice::audio::start_audio_stream(Arc::clone(&ptt_active))
         .map_err(|e| {
             let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
             eprintln!("Audio error: {e:#}");
@@ -108,24 +114,21 @@ async fn main() -> anyhow::Result<()> {
         shutdown.clone(),
     );
 
-    tracing::info!("Daemon running. Press PTT key to gate audio. Ctrl+C or SIGTERM to exit.");
+    // === 10. Spawn Phase 2 pipeline (OS threads; stdout JSONL only) ===
+    let pipeline_handles = hd_linux_voice::pipeline::coordinator::spawn_pipeline(
+        audio_handle,
+        config.clone(),
+        Arc::clone(&ptt_active),
+        shutdown.clone(),
+    )
+    .map_err(|e| {
+        // If pipeline preflight fails, stop injection thread before exiting.
+        let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
+        eprintln!("{e:#}");
+        e
+    })?;
 
-    // === 10. Send first configured macro on startup for Phase 1 smoke-testing ===
-    // Phase 3 will replace this with voice-triggered dispatch.
-    if let Some(mac) = config.macros.first() {
-        let steps: Vec<_> = mac.keys.iter()
-            .map(hd_linux_voice::input::inject::KeyStep::from_config)
-            .collect();
-        if let Err(e) = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Execute {
-            keys: steps,
-            default_dwell_ms: config.timing.dwell_ms,
-            default_gap_ms: config.timing.gap_ms,
-        }) {
-            tracing::warn!("Could not send test macro: {e}");
-        } else {
-            tracing::info!("Sent test macro: '{}'", mac.name);
-        }
-    }
+    tracing::info!("Daemon running. Hold PTT and speak to emit JSONL transcripts. Ctrl+C or SIGTERM to exit.");
 
     // === 11. Wait for SIGTERM or SIGINT ===
     let mut sigterm = tokio::signal::unix::signal(
@@ -146,6 +149,20 @@ async fn main() -> anyhow::Result<()> {
     // Cancel PTT thread (checks is_cancelled() between event batches)
     shutdown.cancel();
 
+    // Best-effort request STT shutdown + join pipeline threads (T-02-09).
+    let mut pipeline_handles = pipeline_handles;
+
+    if let Some(mut stt) = pipeline_handles.stt.take() {
+        stt.request_shutdown();
+        stt.join_best_effort(std::time::Duration::from_millis(500));
+    }
+
+    let pipeline_join = std::thread::spawn(move || pipeline_handles.pipeline.join());
+    let output_join = std::thread::spawn(move || pipeline_handles.output.join());
+    std::thread::sleep(std::time::Duration::from_millis(500));
+    drop(pipeline_join);
+    drop(output_join);
+
     // Signal injection thread and wait for it to drain
     let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
     if let Err(e) = inject_handle.join() {
@@ -157,7 +174,7 @@ async fn main() -> anyhow::Result<()> {
     std::thread::sleep(std::time::Duration::from_millis(500));
     drop(ptt_join);
 
-    // _audio_handle drop stops the CPAL stream
+    // audio_handle.consumer was moved into the pipeline thread; dropping the handle stops CPAL stream.
 
     tracing::info!("hd-linux-voice stopped");
     Ok(())
