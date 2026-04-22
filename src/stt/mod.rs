@@ -169,16 +169,20 @@ impl SttService {
                                 continue;
                             }
 
-                            let n = state
-                                .full_n_segments()
-                                .unwrap_or(0);
+                            let n = state.full_n_segments();
 
                             let mut text = String::new();
                             for i in 0..n {
-                                if let Ok(seg) = state.full_get_segment_text(i) {
-                                    text.push_str(seg.trim());
-                                    if !text.ends_with(' ') {
-                                        text.push(' ');
+                                if let Some(seg) = state.get_segment(i) {
+                                    let seg = seg
+                                        .to_str_lossy()
+                                        .unwrap_or_default();
+                                    let seg = seg.trim();
+                                    if !seg.is_empty() {
+                                        text.push_str(seg);
+                                        if !text.ends_with(' ') {
+                                            text.push(' ');
+                                        }
                                     }
                                 }
                             }
