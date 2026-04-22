@@ -110,7 +110,7 @@
 | STT-01 | Phase 2 | Pending |
 | STT-02 | Phase 3 | Pending |
 | STT-03 | Phase 4 | Pending |
-| STT-04 | Phase 2 | Pending |
+| STT-04 | Phase 2 | Complete |
 | MCRO-01 | Phase 1 | Complete |
 | MCRO-02 | Phase 1 | Complete |
 | MCRO-03 | Phase 3 | Pending |
