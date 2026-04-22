@@ -28,6 +28,16 @@ Build a release binary:
 cargo build --release
 ```
 
+Install ONNX Runtime for Silero VAD (required at runtime):
+
+- If `libonnxruntime.so` is in your system library path, nothing else is needed.
+- Otherwise set `ORT_DYLIB_PATH` to the full path of `libonnxruntime.so`.
+- Arch/CachyOS example:
+
+```bash
+sudo pacman -S onnxruntime
+```
+
 Pick (or create) a config file with:
 
 - working audio capture + PTT (or wake word)

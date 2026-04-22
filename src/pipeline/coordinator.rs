@@ -125,13 +125,26 @@ pub fn spawn_pipeline(
     };
 
     // VAD model is required for utterance segmentation (CPU-only baseline, D-16).
-    let mut silero = silero_vad_rust::silero_vad::model::load_silero_vad_with_options(
-        silero_vad_rust::silero_vad::model::LoadOptions {
-            force_onnx_cpu: true,
-            ..Default::default()
-        },
-    )
-    .context("load silero VAD model (requires ONNX Runtime runtime library)")?;
+    //
+    // IMPORTANT: `ort` (ONNX Runtime) can panic at runtime if `libonnxruntime.so`
+    // is not discoverable. Convert that into a normal, actionable startup error
+    // instead of crashing the process.
+    let mut silero = std::panic::catch_unwind(|| {
+        silero_vad_rust::silero_vad::model::load_silero_vad_with_options(
+            silero_vad_rust::silero_vad::model::LoadOptions {
+                force_onnx_cpu: true,
+                ..Default::default()
+            },
+        )
+    })
+    .map_err(|_| {
+        anyhow::anyhow!(
+            "Failed to load Silero VAD: ONNX Runtime could not be loaded.\n\
+             Fix: install ONNX Runtime so `libonnxruntime.so` is in your library path, or set ORT_DYLIB_PATH to the full path of `libonnxruntime.so`.\n\
+             Example (Arch/CachyOS): `sudo pacman -S onnxruntime`"
+        )
+    })?
+    .context("load silero VAD model")?;
 
     // Move the AudioHandle into the pipeline thread to keep the CPAL stream alive.
     let audio = audio;
