@@ -36,7 +36,7 @@ stt:
   model_path: /home/chadmin/Documents/GitHub/hd-linux-voice/models/whisper/ggml-tiny.en.bin  # local-only; not downloaded automatically
 
 wake:
-  enabled: false
+  enabled: true
   # sherpa-onnx keyword spotter artifacts (local-only; not downloaded automatically)
   encoder: /home/chadmin/Documents/GitHub/hd-linux-voice/models/sherpa/kws/encoder.onnx
   decoder: /home/chadmin/Documents/GitHub/hd-linux-voice/models/sherpa/kws/decoder.onnx
