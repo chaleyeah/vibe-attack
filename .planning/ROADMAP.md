@@ -49,7 +49,13 @@ Plans:
   3. Speaking the configured wake word (without PTT) causes the daemon to enter LISTENING state and print the trigger event to the console — wake word model runs fully on-device
   4. The whisper.cpp `tiny.en` model is loaded into RAM at daemon startup; recognition produces transcripts with no network access at any point during the session
   5. The STT inference runs on a dedicated OS blocking thread (never on the Tokio executor); the audio RT callback never allocates or blocks; concurrent recognition and audio capture are verified via stress test
-**Plans**: TBD
+**Plans**: 4 plans across 4 sequential waves
+
+Plans:
+- [ ] 02-01-PLAN.md — Wave 0 scaffolding: deps + config schema + env-gated heavy test harnesses (Wave 1)
+- [ ] 02-02-PLAN.md — Pipeline contracts + VAD segmentation: JSONL schema + timing + bounded utterance jobs (Wave 2)
+- [ ] 02-03-PLAN.md — End-to-end wiring: wake word + STT OS threads + ringbuf drain + instrumentation (Wave 3)
+- [ ] 02-04-PLAN.md — Proof artifacts: latency baseline procedure + concurrency stress test + validation bookkeeping (Wave 4)
 
 ### Phase 3: Phrase Matching + Dispatch
 **Goal**: Speaking a recognized stratagem name fires the correct Helldivers 2 key sequence in a live game session — the core value proposition is proven end-to-end
