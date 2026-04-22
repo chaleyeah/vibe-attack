@@ -30,7 +30,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The daemon starts headless with no mapped window and does not minimize a running fullscreen game when launched or when PTT fires
   4. Startup emits an actionable error and exits immediately if `/dev/uinput` cannot be opened, displaying the exact fix command and a documentation link — no silent failure
   5. All bundled Rust dependencies carry AGPL-3.0–compatible licenses (MIT/Apache-2.0/LGPL); a `LICENSES.md` inventory exists in the repo
-**Plans**: TBD
+**Plans**: 5 plans across 5 sequential waves
+
+Plans:
+- [ ] 01-01-PLAN.md — Toolchain + Cargo.toml (13 deps) + module skeleton + test stubs (Wave 1)
+- [ ] 01-02-PLAN.md — Config structs + XDG YAML load + clap CLI + tracing init (Wave 2)
+- [ ] 01-03-PLAN.md — CPAL audio capture (warm PTT-gated stream) + evdev PTT scanner (Wave 3)
+- [ ] 01-04-PLAN.md — uinput VirtualDevice + injection thread + dwell/gap timing (Wave 4)
+- [ ] 01-05-PLAN.md — Daemon main loop + SIGTERM handling + LICENSES.md + docs (Wave 5)
 
 ### Phase 2: Pipeline Core
 **Goal**: Speaking any phrase into the microphone produces a timestamped transcript on stdout, with per-stage latency instrumented and the full pipeline proven to meet the < 500 ms end-to-end budget on target hardware
