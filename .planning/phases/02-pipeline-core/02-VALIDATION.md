@@ -3,7 +3,7 @@ phase: 2
 slug: pipeline-core
 status: draft
 nyquist_compliant: false
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-04-22
 ---
 
