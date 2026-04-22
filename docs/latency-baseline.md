@@ -70,7 +70,7 @@ This checklist is aligned to Phase 2 success criteria in `.planning/ROADMAP.md`:
 - **JSONL cleanliness**: `transcript.jsonl` contains **one JSON object per line** (no log contamination).
 - **Per-utterance summary present**: each utterance emits a summary JSON that includes:
   - **per-stage monotonic durations** (non-negative)
-  - a **total end-to-end duration** field for the Phase 2 metric (**end-of-speech → transcript JSONL emit**)
+  - an **explicit end-to-end duration** field **`e2e_ms`** for the Phase 2 metric (**end-of-speech → transcript JSONL emit**)
 - **Latency acceptance (target hardware)**:
   - Compute **p95** of the end-to-end duration across the N phrases
   - **PASS if p95 < 500ms**, **FAIL otherwise**
@@ -79,9 +79,15 @@ This checklist is aligned to Phase 2 success criteria in `.planning/ROADMAP.md`:
 
 The per-stage duration fields should map to Phase 2 budget targets from the roadmap:
 
-- **VAD**: target **≤ 50ms**
-- **STT**: target **≤ 200ms** (reference `tiny.en`, CPU-only)
+- **VAD compute cost**: `vad_ms` target **≤ 50ms**
+- **STT compute cost**: `stt_ms` target **≤ 200ms** (reference `tiny.en`, CPU-only)
 - **Total (end-of-speech → transcript emit)**: target **p95 < 500ms**
+
+Field definitions (from the stable stdout JSONL utterance schema):
+
+- `e2e_ms = output_done_ms - vad_done_ms` (monotonic ms)
+  - `vad_done_ms`: monotonic marker at end-of-speech detection / utterance cut
+  - `output_done_ms`: monotonic marker immediately before emitting the utterance JSONL line
 
 If total latency fails but individual stage targets look fine, investigate:
 

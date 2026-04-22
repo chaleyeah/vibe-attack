@@ -32,6 +32,8 @@ fn jsonl_event_has_required_fields_and_stable_keys() {
     assert!(v.get("audio_ms").is_some(), "audio_ms missing");
     assert!(v.get("created_wall_time_ms").is_some(), "created_wall_time_ms missing");
     assert!(v.get("stt_ms").is_some(), "stt_ms missing");
+    assert!(v.get("e2e_ms").is_some(), "e2e_ms missing");
+    assert!(v.get("vad_ms").is_some(), "vad_ms missing");
     assert!(v.get("start_frame_idx").is_some(), "start_frame_idx missing");
     assert!(v.get("end_frame_idx").is_some(), "end_frame_idx missing");
     assert!(
@@ -41,6 +43,8 @@ fn jsonl_event_has_required_fields_and_stable_keys() {
     assert!(v["mono_ms"].as_u64().is_some(), "mono_ms must be u64");
     assert!(v["audio_ms"].as_u64().is_some(), "audio_ms must be u64");
     assert!(v["stt_ms"].as_u64().is_some(), "stt_ms must be u64");
+    assert!(v["e2e_ms"].as_u64().is_some(), "e2e_ms must be u64");
+    assert!(v["vad_ms"].as_u64().is_some(), "vad_ms must be u64");
 }
 
 #[test]
