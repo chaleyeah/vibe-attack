@@ -3,6 +3,19 @@
 
 #[test]
 #[ignore = "requires /dev/uinput — set RUN_PRIVILEGED_TESTS=1"]
-fn virtual_keyboard_opens_stub() {
-    // TODO: implemented when VirtualDeviceBuilder logic exists (Plan 04)
+fn virtual_keyboard_opens_with_hd_linux_voice_name() {
+    let _device = hd_linux_voice::input::inject::open_uinput_device()
+        .expect("VirtualDevice must open when user is in 'input' group");
+    // If we get here without panic/error, the VirtualDevice was created successfully.
+    // Full key injection tested in tests/macro_inject.rs.
+}
+
+#[test]
+fn uinput_error_message_is_actionable() {
+    // This test validates D-15 error format WITHOUT needing /dev/uinput.
+    let err_msg = format!("{}", hd_linux_voice::error::DaemonError::UinputPermissionDenied);
+    assert!(
+        err_msg.contains("usermod -aG input"),
+        "Error must reference 'input' group (not 'uinput'), got: {err_msg}"
+    );
 }
