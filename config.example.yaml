@@ -1,0 +1,19 @@
+# hd-linux-voice — example configuration
+# Copy to: $XDG_CONFIG_HOME/hd-linux-voice/config.yaml
+# (usually: ~/.config/hd-linux-voice/config.yaml)
+
+ptt:
+  key: KEY_F13       # evdev key name; run `evtest` to find your device's key names
+
+timing:
+  dwell_ms: 50       # milliseconds each key is held down
+  gap_ms: 30         # milliseconds between consecutive key events
+
+macros:
+  - name: test_sequence
+    keys:
+      - key: KEY_UP
+      - key: KEY_DOWN
+      - key: KEY_LEFT
+      - key: KEY_RIGHT
+        dwell_ms: 100  # per-key override: hold RIGHT for 100ms instead of default 50ms
