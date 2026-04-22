@@ -41,44 +41,35 @@ pub struct AudioHandle {
 ///
 /// Pitfall 1 mitigation: query supported_input_configs() before constructing manually.
 pub fn build_audio_config(device: &cpal::Device) -> Result<StreamConfig> {
-    let supported: Vec<_> = device
-        .supported_input_configs()
-        .context("Failed to query supported input configs")?
-        .collect();
+    // Use default_input_config() as the ground truth for what the device actually
+    // accepts at hw_params time.  supported_input_configs() can return wide ALSA
+    // plug-layer ranges (e.g. 8–192 kHz) that the real hardware silently rejects.
+    let default_cfg = device
+        .default_input_config()
+        .context("Failed to query default input config")?;
 
-    // Pass 1: prefer any config that natively supports 16 kHz.
-    let best_16k = supported.iter()
-        .filter(|c| c.min_sample_rate() <= 16_000 && c.max_sample_rate() >= 16_000)
-        .min_by_key(|c| c.channels());
+    let native_rate = default_cfg.sample_rate();
+    let native_channels = default_cfg.channels();
 
-    if let Some(c) = best_16k {
-        return Ok(c.with_sample_rate(16_000).into());
+    if native_rate == 16_000 {
+        // Ideal: device already runs at 16 kHz — use mono if possible.
+        let channels = native_channels.min(1).max(1);
+        return Ok(StreamConfig {
+            channels,
+            sample_rate: 16_000,
+            buffer_size: BufferSize::Default,
+        });
     }
 
-    // Pass 2: no native 16 kHz — use the device's lowest available rate.
-    // The CPAL callback will linearly resample to 16 kHz on the fly.
-    let best_native = supported.iter().min_by_key(|c| (c.channels(), c.min_sample_rate()));
-
-    match best_native {
-        Some(c) => {
-            let rate = c.min_sample_rate();
-            tracing::warn!(
-                native_rate = rate,
-                "Device does not support 16 kHz natively; capturing at {} Hz. \
-                 Resampling to 16 kHz before STT.",
-                rate
-            );
-            Ok(c.with_sample_rate(rate).into())
-        }
-        None => {
-            tracing::warn!("Could not determine supported configs; attempting 16 kHz mono directly");
-            Ok(StreamConfig {
-                channels: 1,
-                sample_rate: 16_000,
-                buffer_size: BufferSize::Default,
-            })
-        }
-    }
+    // Device native rate != 16 kHz (common: 44100 or 48000 Hz).
+    // Capture at the native rate and resample to 16 kHz in the callback.
+    tracing::warn!(
+        native_rate = native_rate,
+        native_channels = native_channels,
+        "Device native rate is {} Hz (not 16 kHz); will resample in capture callback.",
+        native_rate
+    );
+    Ok(default_cfg.into())
 }
 
 /// Start a warm CPAL audio capture stream (D-04: stream is always running).
