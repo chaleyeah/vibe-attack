@@ -63,6 +63,18 @@ Artifacts produced:
 - `transcript.jsonl` — machine-readable transcript stream (stdout)
 - `timing.log` — instrumentation / timing logs (stderr)
 
+## Archiving evidence in-repo (Phase 2 target hardware proof)
+
+After collecting artifacts on **target hardware**, archive the evidence under:
+
+- `docs/latency-proofs/phase-02-target-hardware/`
+
+Recommended structure is one folder per run (see the proof archive `README.md`), containing:
+
+- `transcript.jsonl`
+- `timing.log`
+- `RESULTS.md` (filled from `docs/latency-proofs/phase-02-target-hardware/RESULTS.template.md`, including computed p50/p95/p99 for `e2e_ms`)
+
 ## Pass/Fail checklist (Phase 2 success criteria alignment)
 
 This checklist is aligned to Phase 2 success criteria in `.planning/ROADMAP.md`:
