@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-04-PLAN.md — uinput injection subsystem
-last_updated: "2026-04-22T02:47:20.334Z"
+status: verifying
+stopped_at: Completed 01-05-PLAN.md — daemon main loop, LICENSES.md, headless tests
+last_updated: "2026-04-22T02:55:17.979Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 Phase: 01 (foundation) — EXECUTING
 Plan: 5 of 5 (Plan 01 complete)
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-22
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [████████░░] 80%
 | Phase 01-foundation P02 | 153s | 2 tasks | 5 files |
 | Phase 01-foundation P03 | 12m | 2 tasks | 2 files |
 | Phase 01-foundation P04 | 8m | 2 tasks | 4 files |
+| Phase 01-foundation P05 | 15m | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,9 @@ Recent decisions affecting current work:
 - VirtualDevice::builder() used (VirtualDeviceBuilder::new() deprecated in evdev 0.13)
 - 'input' group in DaemonError::UinputPermissionDenied message (not 'uinput') — systemd v258+ Pitfall 3
 - No SYN_REPORT in emit_key_action — VirtualDevice::emit() auto-appends it (Pitfall 6)
+- Preflight-before-threads pattern: all fail-hard checks happen before any std::thread::spawn (D-11, D-15)
+- about.toml AGPL-3.0-only in accepted list; about.hbs template guards exclude self from LICENSES.md output (D-16)
+- PTT thread join is best-effort 500ms timeout — fetch_events blocks; AudioHandle drop stops CPAL stream
 
 ### Pending Todos
 
@@ -101,8 +105,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-22T02:47:20.332Z
-Stopped at: Completed 01-04-PLAN.md — uinput injection subsystem
+Last session: 2026-04-22T02:55:17.976Z
+Stopped at: Completed 01-05-PLAN.md — daemon main loop, LICENSES.md, headless tests
 Resume file: None
 
 **Planned Phase:** 01 (foundation) — 5 plans — 2026-04-22T02:16:45.272Z
