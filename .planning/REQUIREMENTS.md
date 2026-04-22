@@ -20,7 +20,8 @@
 - [ ] **STT-01**: Speech recognition runs **fully on-device** using a bundled local model (whisper.cpp or equivalent)
 - [ ] **STT-02**: Phrase matching uses a **confidence threshold** (fuzzy matching) to handle slight mispronunciations
 - [ ] **STT-03**: User can configure the confidence threshold from the config UI
-- [ ] **STT-04**: Recognition pipeline achieves **< 500 ms** end-to-end latency (end of speech → first key event) on target hardware
+- [x] **STT-04
+**: Recognition pipeline achieves **< 500 ms** end-to-end latency (end of speech → first key event) on target hardware
 
 ### Macro Engine
 

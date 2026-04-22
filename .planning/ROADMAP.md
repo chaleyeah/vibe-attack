@@ -53,7 +53,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Wave 0 scaffolding: deps + config schema + env-gated heavy test harnesses (Wave 1) ✓ 2026-04-22
-- [ ] 02-02-PLAN.md — Pipeline contracts + VAD segmentation: JSONL schema + timing + bounded utterance jobs (Wave 2)
+- [x] 02-02-PLAN.md — Pipeline contracts + VAD segmentation: JSONL schema + timing + bounded utterance jobs (Wave 2) ✓ 2026-04-22
 - [ ] 02-03-PLAN.md — End-to-end wiring: wake word + STT OS threads + ringbuf drain + instrumentation (Wave 3)
 - [ ] 02-04-PLAN.md — Proof artifacts: latency baseline procedure + concurrency stress test + validation bookkeeping (Wave 4)
 
@@ -102,7 +102,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete    | 2026-04-22 |
-| 2. Pipeline Core | 1/4 | Executing | - |
+| 2. Pipeline Core | 2/4 | Executing | - |
 | 3. Phrase Matching + Dispatch | 0/? | Not started | - |
 | 4. Pack System + HD2 Bundle | 0/? | Not started | - |
 | 5. UI + Distribution | 0/? | Not started | - |
