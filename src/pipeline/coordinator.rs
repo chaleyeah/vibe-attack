@@ -164,6 +164,10 @@ pub fn spawn_pipeline(
         let mut listening_until: Option<Instant> = None;
         let mut prev_ptt = false;
 
+        // Heartbeat: log samples/frames received every 5s to confirm audio is flowing.
+        let mut heartbeat_samples: usize = 0;
+        let mut heartbeat_last = Instant::now();
+
         // PTT-mode direct capture: all audio while PTT is held lands here.
         // On release the entire buffer is sent to STT unconditionally, bypassing
         // the VAD speech-gate. VAD is still used for the wake-word listen window.
@@ -192,6 +196,14 @@ pub fn spawn_pipeline(
                 std::thread::sleep(Duration::from_millis(5));
             } else {
                 pending.extend_from_slice(&tmp[..n]);
+                heartbeat_samples += n;
+            }
+
+            // Periodic heartbeat so we can confirm audio is flowing (or diagnose silence).
+            if heartbeat_last.elapsed() >= Duration::from_secs(5) {
+                tracing::debug!(samples = heartbeat_samples, "pipeline heartbeat: audio samples received in last 5s");
+                heartbeat_samples = 0;
+                heartbeat_last = Instant::now();
             }
 
             // Compact pending buffer occasionally.
