@@ -12,7 +12,7 @@ ptt:
 audio:
   # CPAL device name for audio capture.  Run --list-devices to see all options.
   # Leave unset to use the system default (often wrong on multi-device Linux setups).
-  device: "CORSAIR HS80 RGB Wireless Gamin, USB Audio"
+  device: "PipeWire Sound Server"
 
 timing:
   dwell_ms: 50       # milliseconds each key is held down
