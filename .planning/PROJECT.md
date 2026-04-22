@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A **proprietary** Linux desktop application in the spirit of [VoiceAttack](https://voiceattack.com/) that binds spoken phrases to keyboard and mouse macros so players can trigger in-game actions by voice. The first concrete target is **Helldivers 2**: ship a maintained set of **strategem** voice commands that map to the correct key sequences, usable during live gameplay. The app is **not** open source; distribution is aimed at a **small release** (other users installing and running it), not a single-developer-only script.
+An **open source** Linux desktop application in the spirit of [VoiceAttack](https://voiceattack.com/) that binds spoken phrases to keyboard and mouse macros so players can trigger in-game actions by voice. The first concrete target is **Helldivers 2**: ship a maintained set of **strategem** voice commands that map to the correct key sequences, usable during live gameplay. The project is licensed under **GNU AGPL v3.0** (see `LICENSE`); distribution is aimed at a **small release** (other users installing and running it), not a single-developer-only script.
 
 ## Core Value
 
@@ -26,7 +26,6 @@ A **proprietary** Linux desktop application in the spirit of [VoiceAttack](https
 
 ### Out of Scope
 
-- **Open source** licensing or public source distribution — explicit product decision.
 - **Windows / macOS** clients in v1 (Linux-only focus; other OS may be future work).
 - **Cloud-hosted** speech recognition as a **required** path for core play (optional pluggable backends may be considered later; v1 core path is local-only per decision).
 
@@ -35,12 +34,13 @@ A **proprietary** Linux desktop application in the spirit of [VoiceAttack](https
 - **Inspiration:** VoiceAttack on Windows — phrase recognition, macro scripting, profiles. This project targets **feature depth over time**, not a one-off script.
 - **Game focus:** Helldivers 2 strategems are the primary driver for v1 content and for proving latency, accuracy, and input correctness under pressure.
 - **Platform:** Primary display server is **Wayland**; keyboard/mouse injection and focus behavior must be validated on target distros. **X11** may follow; design should isolate input backends.
-- **Implementation language:** Not chosen yet; candidates include **Rust** (performance, single-binary deployment, strong systems fit for audio + input) or other systems languages — final choice belongs in phase planning with benchmarks and dependency/licensing review for a **proprietary** product.
+- **Implementation language:** Not chosen yet; candidates include **Rust** (performance, single-binary deployment, strong systems fit for audio + input) or other systems languages — final choice belongs in phase planning with benchmarks and **AGPL-compatible** dependency review.
+- **Licensing:** Project is **AGPL-3.0**; third-party libraries must be compatible with AGPL distribution and (where relevant) the network-use obligations of the Affero clause.
 - **Risks to validate early:** Game **anti-cheat / input policies**, exclusive fullscreen vs windowed behavior, audio device contention, and achievable **end-to-end latency** from end of speech to key events.
 
 ## Constraints
 
-- **License**: Proprietary — third-party speech and UI dependencies must be compatible with closed distribution (per-component license tracking required).
+- **License**: **AGPL-3.0** — third-party speech, UI, and model dependencies must be **AGPL-compatible** (or otherwise usable under terms that do not force the whole work into an incompatible license); track licenses per component.
 - **Privacy / offline**: Core path **local-only** recognition; no dependency on cloud for default gameplay.
 - **Display**: **Wayland-first** implementation and testing.
 - **Distribution**: “Small release” — installer expectations, sane defaults, and supportability matter from early milestones.
@@ -52,7 +52,7 @@ A **proprietary** Linux desktop application in the spirit of [VoiceAttack](https
 | Local-only speech for core path | Privacy, offline play, predictable latency | — Pending |
 | Wayland-first input | Matches stated primary environment | — Pending |
 | Packs + built-in editor for strategems | Bulk updates + user tweaks without blocking each other | — Pending |
-| Proprietary (not OSS) | Stated product goal | — Pending |
+| Open source under **AGPL-3.0** | User correction; aligns with `LICENSE` | — Pending |
 | Long-term VoiceAttack-class depth | User ambition; phased delivery to reduce v1 risk | — Pending |
 
 ## Evolution
@@ -75,4 +75,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-21 after initialization*
+*Last updated: 2026-04-21 after AGPL / open-source correction*
