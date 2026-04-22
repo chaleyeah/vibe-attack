@@ -9,7 +9,8 @@
 
 ### Listening Activation
 
-- [ ] **ACT-01**: User can activate listening via a configurable **push-to-talk** key/button (evdev grab, works on Wayland)
+- [x] **ACT-01
+**: User can activate listening via a configurable **push-to-talk** key/button (evdev grab, works on Wayland)
 - [ ] **ACT-02**: User can activate listening via a configurable **wake word** (on-device model, no cloud)
 - [ ] **ACT-03**: User can switch between PTT and wake-word mode from the config UI at any time
 - [ ] **ACT-04**: A visible status indicator (tray icon) reflects current listening state (idle / listening / muted)
@@ -23,8 +24,10 @@
 
 ### Macro Engine
 
-- [ ] **MCRO-01**: Macros execute **key sequences** with configurable inter-key delays
-- [ ] **MCRO-02**: Macros support **key/button holds** (press and hold for a specified duration) — required for HD2 directional inputs
+- [x] **MCRO-01
+**: Macros execute **key sequences** with configurable inter-key delays
+- [x] **MCRO-02
+**: Macros support **key/button holds** (press and hold for a specified duration) — required for HD2 directional inputs
 - [ ] **MCRO-03**: Macro engine supports **conditional logic** (if/else, variables) for VoiceAttack-class scripting
 - [ ] **MCRO-04**: Macros play an optional **sound feedback** on activation (configurable per macro or globally)
 - [ ] **MCRO-05**: All key/mouse events are emitted via **uinput/evdev** and function correctly in Wayland sessions (including fullscreen games)
