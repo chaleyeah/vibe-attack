@@ -1,4 +1,5 @@
 use clap::Parser;
+use std::io::IsTerminal;
 use tracing_subscriber::EnvFilter;
 
 #[derive(Debug, Parser)]
@@ -29,9 +30,14 @@ fn init_logging(verbose: u8) {
     let filter = EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| EnvFilter::new(level));
 
+    // IMPORTANT: stdout is reserved for machine-readable JSONL.
+    // Always write logs to stderr, and only use ANSI colors when stderr is a TTY.
+    let ansi = std::io::stderr().is_terminal();
     tracing_subscriber::fmt()
         .with_env_filter(filter)
         .with_target(false)
+        .with_ansi(ansi)
+        .with_writer(std::io::stderr)
         .compact()
         .init();
 }
