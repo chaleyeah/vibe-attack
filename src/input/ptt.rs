@@ -92,10 +92,11 @@ pub fn process_event(event: evdev::InputEvent, target_key: KeyCode, ptt_active: 
     // value 1 = key pressed, 0 = key released, 2 = key repeat (autorepeat)
     if let EventSummary::Key(_, k, value) = event.destructure() {
         if k == target_key {
-            let pressed = value == 1;
+            // Treat repeat as "still pressed" so a held PTT doesn't flicker.
+            let pressed = value != 0;
             ptt_active.store(pressed, Ordering::Relaxed);
-            // D-12: only log at TRACE level
-            tracing::trace!(key = ?k, pressed, "PTT state changed");
+            // Make this visible at -v (DEBUG) so users can diagnose "PTT not working".
+            tracing::debug!(key = ?k, value, pressed, "PTT state changed");
         }
     }
 }
