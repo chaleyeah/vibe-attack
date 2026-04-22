@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-02-PLAN.md — Config system + CLI entry point
-last_updated: "2026-04-22T02:28:13.579Z"
+stopped_at: Completed 01-03-PLAN.md — CPAL audio capture + evdev PTT scanner
+last_updated: "2026-04-22T02:41:05.850Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_plans: 3
+  percent: 60
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 3 of 5 (Plan 01 complete)
+Plan: 4 of 5 (Plan 01 complete)
 Status: Ready to execute
 Last activity: 2026-04-22
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [████░░░░░░] 40%
 
 *Updated after each plan completion*
 | Phase 01-foundation P02 | 153s | 2 tasks | 5 files |
+| Phase 01-foundation P03 | 12m | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - Config struct hierarchy with deny_unknown_fields on all 4 structs; serde_yaml_ng enforced
 - src/lib.rs created for integration test access; macros field is serde(default) making it optional
 - xdg::place_config_file used (not get_config_file) — returns Result<PathBuf> unconditionally
+- Manual /dev/input/event{0..63} loop avoids glob crate dependency
+- ringbuf 0.4 traits (Producer/Split/Consumer) must be explicitly imported
+- CPAL 0.17 SampleRate is u32 type alias; device.description().name() replaces deprecated name()
 
 ### Pending Todos
 
@@ -93,8 +97,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-22T02:28:13.577Z
-Stopped at: Completed 01-02-PLAN.md — Config system + CLI entry point
+Last session: 2026-04-22T02:41:05.848Z
+Stopped at: Completed 01-03-PLAN.md — CPAL audio capture + evdev PTT scanner
 Resume file: None
 
 **Planned Phase:** 01 (foundation) — 5 plans — 2026-04-22T02:16:45.272Z
