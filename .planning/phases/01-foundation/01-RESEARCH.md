@@ -669,22 +669,22 @@ async fn main() -> anyhow::Result<()> {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Does the target CachyOS machine have the `input` group and is it a system group?**
    - What we know: Arch Linux / CachyOS default installs include `input` as a system group
    - What's unclear: Whether the development user is already a member
-   - Recommendation: Plan Wave 0 should print a preflight check and fail with instructions if not in `input` group
+   - **RESOLVED:** Plan 03 Task 2 adds a `check_input_readable()` preflight that validates `/dev/input` access at startup and exits with an actionable error + `usermod -aG input $USER` instruction if the user is not in the `input` group.
 
 2. **Does CPAL successfully capture mono 16 kHz on PipeWire without explicit resampling?**
    - What we know: PipeWire virtualizes sample rate; most configurations report support
    - What's unclear: Whether PipeWire returns the requested rate or silently returns a different rate
-   - Recommendation: Log the actual negotiated StreamConfig at startup; compare to requested 16 kHz / mono
+   - **RESOLVED:** Plan 03 Task 1 calls `build_audio_config()` which logs the actual negotiated `StreamConfig` (sample rate + channel count) at INFO level at startup. If the negotiated rate differs from 16 kHz, the discrepancy is visible in the log; a graceful fallback or warning is emitted rather than a silent mismatch.
 
 3. **Which exact key codes should the Phase 1 test macro support?**
    - What we know: VirtualDeviceBuilder requires declaring all supported keys upfront
-   - What's unclear: Whether Phase 1 should declare all possible keys or just a test subset (e.g., W/A/S/D + arrow keys)
-   - Recommendation: Declare a broad set of common game keys; exact set is planner's discretion
+   - What's unclear: Whether Phase 1 should declare all possible keys or just a test subset
+   - **RESOLVED:** Plan 04 Task 1 defines a `VIRTUAL_KEYBOARD_KEYS` const covering arrow keys, WASD, number row 0-9, F1-F12, Ctrl/Alt/Shift/Tab/Escape, and common game keys. This is a broad game-oriented set that covers all HD2 stratagem inputs without declaring every possible key.
 
 ---
 
