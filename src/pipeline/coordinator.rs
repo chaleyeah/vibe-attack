@@ -162,6 +162,7 @@ pub fn spawn_pipeline(
         let mut frame = [0.0f32; FRAME_SAMPLES];
 
         let mut listening_until: Option<Instant> = None;
+        let mut prev_ptt = false;
 
         while !pipeline_shutdown.is_cancelled() {
             // Drain some samples from ringbuf.
@@ -185,6 +186,21 @@ pub fn spawn_pipeline(
                 let now = Instant::now();
                 let ptt = ptt_active.load(Ordering::Relaxed);
                 let listening = listening_until.map(|t| now < t).unwrap_or(false);
+
+                // If PTT was just released, force-flush any in-progress utterance.
+                // Otherwise we may never see enough trailing silence to end the utterance,
+                // because the audio callback stops feeding samples immediately on release.
+                if prev_ptt && !ptt {
+                    if let Some(mut job) = seg.force_flush() {
+                        job.timings.mark_vad_done();
+                        if let Some(stt_submit) = &stt_submit {
+                            if let Err(e) = stt_submit.try_submit(job) {
+                                tracing::warn!("STT submit failed (flush): {e}");
+                            }
+                        }
+                    }
+                }
+                prev_ptt = ptt;
 
                 // Wake-word detection while idle (no PTT) to enter LISTENING (D-17/D-18).
                 if !ptt && !listening {

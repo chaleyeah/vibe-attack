@@ -299,6 +299,23 @@ impl VadSegmenter {
 
         Ok(res)
     }
+
+    /// Force-cut the current utterance (if any) and return it as a job.
+    ///
+    /// This is used when the upstream audio source stops abruptly (e.g. PTT released),
+    /// which would otherwise prevent VAD from ever observing trailing silence and ending
+    /// the utterance naturally.
+    pub fn force_flush(&mut self) -> Option<UtteranceJob> {
+        if !self.in_speech {
+            // Nothing in progress; reset any partial start state.
+            self.start_run_frames = 0;
+            self.silence_run_frames = 0;
+            self.pending_silence.clear();
+            return None;
+        }
+
+        Some(self.finish_current_utterance_with_tail())
+    }
 }
 
 #[cfg(test)]
