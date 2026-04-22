@@ -21,7 +21,7 @@ xdg         = "3.0.0"
 tracing     = "0.1"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 clap        = { version = "4", features = ["derive"] }
-tokio-util  = { version = "0.7", features = ["sync"] }
+tokio-util  = { version = "0.7" }
 anyhow      = "1"
 thiserror   = "1"
 
