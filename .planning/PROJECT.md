@@ -12,7 +12,12 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 ### Validated
 
-(None yet — ship to validate)
+- ACT-01: Push-to-talk via evdev — Validated in Phase 1 (Foundation)
+- MCRO-01: Key sequences with configurable inter-key delays — Validated in Phase 1 (Foundation)
+- MCRO-02: Key/button holds (press-and-hold dwell) — Validated in Phase 1 (Foundation)
+- MCRO-05: uinput/evdev key events on Wayland — Validated in Phase 1 (Foundation)
+- UI-01: Headless daemon mode — Validated in Phase 1 (Foundation)
+- DIST-03: AGPL-3.0 license + LICENSES.md inventory — Validated in Phase 1 (Foundation)
 
 ### Active
 
@@ -75,4 +80,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-21 after AGPL / open-source correction*
+*Last updated: 2026-04-21 — Phase 1 (Foundation) complete: audio capture, uinput injection, PTT, headless daemon, LICENSES.md*
