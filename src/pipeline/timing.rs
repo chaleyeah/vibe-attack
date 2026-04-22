@@ -39,15 +39,37 @@ impl MonoClock {
 #[derive(Debug, Clone, Copy)]
 pub struct UtteranceTimings {
     pub created_wall_time_ms: u64,
-    pub created_mono: MonoClock,
+    created_instant: Instant,
+    pub vad_done_ms: Option<u64>,
+    pub stt_done_ms: Option<u64>,
+    pub output_done_ms: Option<u64>,
 }
 
 impl UtteranceTimings {
     pub fn new() -> Self {
         Self {
             created_wall_time_ms: wall_time_ms(),
-            created_mono: MonoClock::start_now(),
+            created_instant: Instant::now(),
+            vad_done_ms: None,
+            stt_done_ms: None,
+            output_done_ms: None,
         }
+    }
+
+    pub fn elapsed_ms(&self) -> u64 {
+        self.created_instant.elapsed().as_millis() as u64
+    }
+
+    pub fn mark_vad_done(&mut self) {
+        self.vad_done_ms = Some(self.elapsed_ms());
+    }
+
+    pub fn mark_stt_done(&mut self) {
+        self.stt_done_ms = Some(self.elapsed_ms());
+    }
+
+    pub fn mark_output_done(&mut self) {
+        self.output_done_ms = Some(self.elapsed_ms());
     }
 }
 

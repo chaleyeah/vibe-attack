@@ -26,8 +26,6 @@ fn whisper_loads_model_and_runs_one_pass() {
 
     #[cfg(feature = "stt")]
     {
-        use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters};
-
         let model_path = std::env::var("WHISPER_MODEL_PATH")
             .expect("Set WHISPER_MODEL_PATH to a local whisper.cpp model file (e.g. tiny.en.bin)");
         assert!(
@@ -35,18 +33,33 @@ fn whisper_loads_model_and_runs_one_pass() {
             "Model path does not exist: {model_path}"
         );
 
-        let ctx = WhisperContext::new_with_params(
-            model_path,
-            WhisperContextParameters::default(),
-        )
-        .expect("load whisper model");
+        use tokio_util::sync::CancellationToken;
 
-        let mut state = ctx.create_state().expect("create whisper state");
-        let params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
+        let shutdown = CancellationToken::new();
+        let stt = hd_linux_voice::stt::SttService::new(&model_path, shutdown.clone())
+            .expect("create STT service");
+        let stt = stt.spawn().expect("spawn STT thread");
 
-        // 1 second of silence @ 16kHz. We just want to validate the call path.
-        let audio = vec![0.0f32; 16_000];
-        state.full(params, &audio).expect("run whisper full()");
+        // 1 second of silence @ 16kHz. We just want to validate the end-to-end call path.
+        let job = hd_linux_voice::vad::UtteranceJob {
+            utterance_id: 1,
+            audio: vec![0.0f32; 16_000],
+            timings: hd_linux_voice::pipeline::timing::UtteranceTimings::new(),
+            start_frame_idx: 0,
+            end_frame_idx: 0,
+        };
+
+        stt.try_submit(job).expect("submit utterance job");
+
+        let result = stt
+            .result_rx
+            .recv_timeout(std::time::Duration::from_secs(10))
+            .expect("receive STT result");
+        let _ = result.text; // may be empty on silence; that's fine
+
+        shutdown.cancel();
+        stt.request_shutdown();
+        stt.join_best_effort(std::time::Duration::from_millis(500));
     }
 }
 
