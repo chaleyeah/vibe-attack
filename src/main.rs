@@ -1,4 +1,3 @@
-use anyhow::Result;
 use clap::Parser;
 use tracing_subscriber::EnvFilter;
 
@@ -37,23 +36,129 @@ fn init_logging(verbose: u8) {
         .init();
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    use std::sync::{atomic::AtomicBool, mpsc, Arc};
+    use tokio_util::sync::CancellationToken;
+
     let args = Cli::parse();
     init_logging(args.verbose);
 
-    tracing::debug!("hd-linux-voice starting");
+    tracing::info!("hd-linux-voice starting");
 
-    // Load config — fail fast on any error (D-11, D-15 policy applies to all startup failures)
-    let config_path = args.config.as_deref();
-    let _config = hd_linux_voice::config::load(config_path).map_err(|e| {
-        // Print the full error chain for actionable diagnostics
-        eprintln!("Error loading config: {e:#}");
+    // === 1. Load config (fail-hard on any error) ===
+    let config = hd_linux_voice::config::load(args.config.as_deref()).map_err(|e| {
+        eprintln!("{e:#}");
         e
     })?;
 
-    tracing::info!("Config loaded successfully");
+    tracing::info!(
+        ptt_key = %config.ptt.key,
+        dwell_ms = config.timing.dwell_ms,
+        gap_ms = config.timing.gap_ms,
+        macros = config.macros.len(),
+        "Config loaded"
+    );
 
-    // Daemon loop: spawned in Plan 05 (01-05-PLAN.md)
-    tracing::info!("Daemon stub: exiting (full daemon loop added in Plan 05)");
+    // === 2. Parse PTT key code ===
+    let ptt_key = hd_linux_voice::input::ptt::parse_key_code(&config.ptt.key)
+        .map_err(|e| { eprintln!("{e:#}"); e })?;
+
+    // === 3. Preflight: verify /dev/input readable (fail-hard, D-11) ===
+    hd_linux_voice::input::ptt::check_input_readable().map_err(|e| {
+        eprintln!("{e:#}");
+        e
+    })?;
+
+    // === 4. Open uinput virtual keyboard (fail-hard, D-15) ===
+    // Must happen BEFORE spawning any threads — if it fails, we exit cleanly.
+    let virtual_kbd = hd_linux_voice::input::inject::open_uinput_device().map_err(|e| {
+        eprintln!("{e:#}");
+        e
+    })?;
+    tracing::info!("uinput virtual keyboard opened");
+
+    // === 5. Find PTT device ===
+    let ptt_device = hd_linux_voice::input::ptt::find_ptt_device(ptt_key).map_err(|e| {
+        eprintln!("{e:#}");
+        e
+    })?;
+
+    // === 6. Shared state ===
+    let ptt_active = Arc::new(AtomicBool::new(false));
+    let shutdown = CancellationToken::new();
+
+    // === 7. Spawn injection thread (std::thread, D-07) ===
+    let (macro_tx, macro_rx) = mpsc::channel::<hd_linux_voice::input::inject::MacroCmd>();
+    let inject_handle = hd_linux_voice::input::inject::spawn_injection_thread(virtual_kbd, macro_rx);
+
+    // === 8. Start CPAL audio stream (warm, PTT-gated, D-04) ===
+    let _audio_handle = hd_linux_voice::audio::start_audio_stream(Arc::clone(&ptt_active))
+        .map_err(|e| {
+            let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
+            eprintln!("Audio error: {e:#}");
+            e
+        })?;
+
+    // === 9. Spawn PTT thread (std::thread, D-09, D-10) ===
+    let ptt_handle = hd_linux_voice::input::ptt::spawn_ptt_thread(
+        ptt_device,
+        ptt_key,
+        Arc::clone(&ptt_active),
+        shutdown.clone(),
+    );
+
+    tracing::info!("Daemon running. Press PTT key to gate audio. Ctrl+C or SIGTERM to exit.");
+
+    // === 10. Send first configured macro on startup for Phase 1 smoke-testing ===
+    // Phase 3 will replace this with voice-triggered dispatch.
+    if let Some(mac) = config.macros.first() {
+        let steps: Vec<_> = mac.keys.iter()
+            .map(hd_linux_voice::input::inject::KeyStep::from_config)
+            .collect();
+        if let Err(e) = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Execute {
+            keys: steps,
+            default_dwell_ms: config.timing.dwell_ms,
+            default_gap_ms: config.timing.gap_ms,
+        }) {
+            tracing::warn!("Could not send test macro: {e}");
+        } else {
+            tracing::info!("Sent test macro: '{}'", mac.name);
+        }
+    }
+
+    // === 11. Wait for SIGTERM or SIGINT ===
+    let mut sigterm = tokio::signal::unix::signal(
+        tokio::signal::unix::SignalKind::terminate()
+    )?;
+    let mut sigint = tokio::signal::unix::signal(
+        tokio::signal::unix::SignalKind::interrupt()
+    )?;
+
+    tokio::select! {
+        _ = sigterm.recv() => tracing::info!("SIGTERM received"),
+        _ = sigint.recv()  => tracing::info!("SIGINT received (Ctrl+C)"),
+    }
+
+    // === 12. Graceful shutdown ===
+    tracing::info!("Shutting down...");
+
+    // Cancel PTT thread (checks is_cancelled() between event batches)
+    shutdown.cancel();
+
+    // Signal injection thread and wait for it to drain
+    let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
+    if let Err(e) = inject_handle.join() {
+        tracing::warn!("Injection thread panicked: {e:?}");
+    }
+
+    // PTT thread: best-effort join — fetch_events() may block until next event
+    let ptt_join = std::thread::spawn(move || ptt_handle.join());
+    std::thread::sleep(std::time::Duration::from_millis(500));
+    drop(ptt_join);
+
+    // _audio_handle drop stops the CPAL stream
+
+    tracing::info!("hd-linux-voice stopped");
     Ok(())
 }
