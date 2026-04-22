@@ -10,7 +10,56 @@ pub struct Config {
     pub ptt: PttConfig,
     pub timing: TimingConfig,
     #[serde(default)]
+    pub pipeline: PipelineConfig,
+    #[serde(default)]
+    pub vad: VadConfig,
+    #[serde(default)]
+    pub stt: SttConfig,
+    #[serde(default)]
+    pub wake: WakeConfig,
+    #[serde(default)]
     pub macros: Vec<MacroConfig>,
+}
+
+impl Config {
+    pub fn validate_model_paths(&self) -> Result<()> {
+        if self.stt.enabled {
+            let model_path = self
+                .stt
+                .model_path
+                .as_ref()
+                .context("stt.enabled is true but stt.model_path is not set")?;
+            ensure_file_exists(model_path, "stt.model_path")?;
+        }
+
+        if self.wake.enabled {
+            let required = [
+                (self.wake.encoder.as_ref(), "wake.encoder"),
+                (self.wake.decoder.as_ref(), "wake.decoder"),
+                (self.wake.joiner.as_ref(), "wake.joiner"),
+                (self.wake.tokens.as_ref(), "wake.tokens"),
+                (self.wake.keywords.as_ref(), "wake.keywords"),
+            ];
+
+            for (path, field) in required {
+                let path = path.with_context(|| format!("{field} is required when wake.enabled is true"))?;
+                ensure_file_exists(path, field)?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+fn ensure_file_exists(path: &PathBuf, field: &str) -> Result<()> {
+    std::fs::metadata(path).with_context(|| {
+        format!(
+            "{field} points to a missing file: {}\n\
+             Provide a valid local path (no downloads are performed automatically).",
+            path.display()
+        )
+    })?;
+    Ok(())
 }
 
 /// Push-to-talk configuration (ACT-01).
@@ -36,6 +85,138 @@ pub struct TimingConfig {
 impl Default for TimingConfig {
     fn default() -> Self {
         TimingConfig { dwell_ms: 50, gap_ms: 30 }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PipelineVerbosity {
+    Summary,
+    Stages,
+}
+
+impl Default for PipelineVerbosity {
+    fn default() -> Self {
+        PipelineVerbosity::Summary
+    }
+}
+
+/// Pipeline-wide behavior and tuning knobs (Phase 2).
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct PipelineConfig {
+    /// Controls whether per-stage timing/events are emitted (stderr) in addition to the summary.
+    #[serde(default)]
+    pub verbosity: PipelineVerbosity,
+    /// Wake word LISTENING window duration after trigger (seconds).
+    #[serde(default = "default_listen_window_secs")]
+    pub listen_window_secs: u64,
+}
+
+fn default_listen_window_secs() -> u64 {
+    5
+}
+
+impl Default for PipelineConfig {
+    fn default() -> Self {
+        PipelineConfig { verbosity: PipelineVerbosity::Summary, listen_window_secs: default_listen_window_secs() }
+    }
+}
+
+/// Voice activity detection parameters (Silero VAD) (Phase 2).
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct VadConfig {
+    #[serde(default = "default_vad_start_threshold")]
+    pub start_threshold: f32,
+    #[serde(default = "default_vad_stop_threshold")]
+    pub stop_threshold: f32,
+    #[serde(default = "default_min_speech_ms")]
+    pub min_speech_ms: u64,
+    #[serde(default = "default_end_silence_ms")]
+    pub end_silence_ms: u64,
+    #[serde(default = "default_preroll_ms")]
+    pub preroll_ms: u64,
+    #[serde(default = "default_tail_ms")]
+    pub tail_ms: u64,
+    #[serde(default = "default_max_utterance_secs")]
+    pub max_utterance_secs: u64,
+}
+
+fn default_vad_start_threshold() -> f32 {
+    0.60
+}
+fn default_vad_stop_threshold() -> f32 {
+    0.45
+}
+fn default_min_speech_ms() -> u64 {
+    100
+}
+fn default_end_silence_ms() -> u64 {
+    400
+}
+fn default_preroll_ms() -> u64 {
+    150
+}
+fn default_tail_ms() -> u64 {
+    150
+}
+fn default_max_utterance_secs() -> u64 {
+    10
+}
+
+impl Default for VadConfig {
+    fn default() -> Self {
+        VadConfig {
+            start_threshold: default_vad_start_threshold(),
+            stop_threshold: default_vad_stop_threshold(),
+            min_speech_ms: default_min_speech_ms(),
+            end_silence_ms: default_end_silence_ms(),
+            preroll_ms: default_preroll_ms(),
+            tail_ms: default_tail_ms(),
+            max_utterance_secs: default_max_utterance_secs(),
+        }
+    }
+}
+
+/// Speech-to-text configuration (whisper.cpp via `whisper-rs`) (Phase 2).
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SttConfig {
+    #[serde(default)]
+    pub enabled: bool,
+    pub model_path: Option<PathBuf>,
+}
+
+impl Default for SttConfig {
+    fn default() -> Self {
+        SttConfig { enabled: false, model_path: None }
+    }
+}
+
+/// Wake word keyword spotter configuration (`sherpa-onnx`) (Phase 2).
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct WakeConfig {
+    #[serde(default)]
+    pub enabled: bool,
+    pub encoder: Option<PathBuf>,
+    pub decoder: Option<PathBuf>,
+    pub joiner: Option<PathBuf>,
+    pub tokens: Option<PathBuf>,
+    pub keywords: Option<PathBuf>,
+}
+
+impl Default for WakeConfig {
+    fn default() -> Self {
+        WakeConfig {
+            enabled: false,
+            encoder: None,
+            decoder: None,
+            joiner: None,
+            tokens: None,
+            keywords: None,
+        }
     }
 }
 
