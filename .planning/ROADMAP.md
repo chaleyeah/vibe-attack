@@ -13,7 +13,7 @@ Build a Rust-based, AGPL-3.0 voice-macro daemon for Linux that lets Helldivers 2
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** — Audio capture, uinput/evdev injection backend, config store, headless daemon, PTT via evdev grab (completed 2026-04-22)
-- [ ] **Phase 2: Pipeline Core** — VAD (Silero), STT engine (whisper.cpp), end-to-end latency instrumentation and baseline proof
+- [x] **Phase 2: Pipeline Core** — VAD (Silero), STT engine (whisper.cpp), end-to-end latency instrumentation and baseline proof (completed 2026-04-23)
 - [ ] **Phase 3: Phrase Matching + Dispatch** — Fuzzy phrase engine, macro dispatcher, conditional logic, sound feedback; first playable HD2 stratagem demo
 - [ ] **Phase 4: Pack System + HD2 Bundle** — .hdpack format, all 80+ HD2 stratagems, ProfileManager, import/export, built-in editor
 - [ ] **Phase 5: UI + Distribution** — egui config window, system tray, first-run wizard, AppImage, AUR/PKGBUILD
@@ -58,7 +58,7 @@ Plans:
 - [x] 02-03-PLAN.md — End-to-end wiring: wake word + STT OS threads + ringbuf drain + instrumentation (Wave 3) ✓ 2026-04-22
 - [x] 02-04-PLAN.md — Proof artifacts: latency baseline procedure + concurrency stress test + validation bookkeeping (Wave 4) ✓ 2026-04-22
 - [x] 02-05-PLAN.md — Gap closure: add `e2e_ms` + `vad_ms` to utterance JSONL schema; update tests + docs (Wave 5) ✓ 2026-04-22
-- [ ] 02-06-PLAN.md — Gap closure: add in-repo target-hardware proof artifact templates + wire baseline doc (Wave 6)
+- [x] 02-06-PLAN.md — Gap closure: add in-repo target-hardware proof artifact templates + wire baseline doc (Wave 6) ✓ 2026-04-22
 
 ### Phase 3: Phrase Matching + Dispatch
 **Goal**: Speaking a recognized stratagem name fires the correct Helldivers 2 key sequence in a live game session — the core value proposition is proven end-to-end
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete    | 2026-04-22 |
-| 2. Pipeline Core | 5/6 | Executing | - |
+| 2. Pipeline Core | 6/6 | Complete | 2026-04-23 |
 | 3. Phrase Matching + Dispatch | 0/? | Not started | - |
 | 4. Pack System + HD2 Bundle | 0/? | Not started | - |
 | 5. UI + Distribution | 0/? | Not started | - |

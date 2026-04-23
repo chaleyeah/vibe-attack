@@ -6,6 +6,7 @@
 //! - Emits wake status via `tracing` (stderr). Never writes wake-related data to stdout.
 
 use anyhow::{anyhow, Context, Result};
+use std::path::Path;
 
 use crate::config::WakeConfig;
 
@@ -48,6 +49,18 @@ impl WakeWord {
         config.model_config.transducer.joiner = Some(joiner.to_string_lossy().to_string());
         config.model_config.tokens = Some(tokens.to_string_lossy().to_string());
         config.keywords_file = Some(keywords.to_string_lossy().to_string());
+
+        // Gigaspeech (and other BPE) KWS bundles ship `bpe.model` next to the ONNX
+        // files. Sherpa requires `modeling_unit` + `bpe_vocab` for those; if the file
+        // exists beside `encoder.onnx`, enable BPE automatically (no extra config key).
+        let enc_path = Path::new(encoder);
+        if let Some(dir) = enc_path.parent() {
+            let bpe = dir.join("bpe.model");
+            if bpe.is_file() {
+                config.model_config.modeling_unit = Some("bpe".to_string());
+                config.model_config.bpe_vocab = Some(bpe.to_string_lossy().to_string());
+            }
+        }
 
         let kws = sherpa_onnx::KeywordSpotter::create(&config)
             .ok_or_else(|| anyhow!("Failed to create sherpa-onnx KeywordSpotter"))?;

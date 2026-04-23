@@ -49,6 +49,7 @@ stt:
 wake:
   enabled: false
   # sherpa-onnx keyword spotter artifacts (local-only; not downloaded automatically)
+  # BPE KWS bundles: place `bpe.model` in the same directory as `encoder.onnx` (auto-detected).
   encoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/encoder.onnx
   decoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/decoder.onnx
   joiner: ~/.local/share/hd-linux-voice/models/sherpa/kws/joiner.onnx

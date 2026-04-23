@@ -97,9 +97,10 @@ impl<W: Write> JsonlWriter<W> {
         start_frame_idx: u64,
         end_frame_idx: u64,
     ) -> IoResult<()> {
-        let output_done_ms = timings.output_done_ms.unwrap_or(0);
-        let vad_done_ms = timings.vad_done_ms.unwrap_or(0);
-        let e2e_ms = output_done_ms.saturating_sub(vad_done_ms);
+        // `UtteranceTimings` monotonic markers are relative to utterance creation.
+        // Emit an always-defined end-to-end duration as "creation → output done".
+        // (Some capture modes may not set `vad_done_ms`.)
+        let e2e_ms = timings.output_done_ms.unwrap_or(0);
         let evt = JsonlEvent::Utterance {
             utterance_id,
             created_wall_time_ms: timings.created_wall_time_ms,

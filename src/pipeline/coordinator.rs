@@ -41,6 +41,14 @@ pub fn spawn_pipeline(
     shutdown: CancellationToken,
 ) -> Result<PipelineHandles> {
     let listen_window = Duration::from_secs(config.pipeline.listen_window_secs);
+    // Wake pre-roll: keep a short rolling buffer of audio while idle so the first
+    // post-wake command doesn't lose its leading syllables.
+    //
+    // NOTE: this is separate from VAD's own preroll (which only applies once
+    // LISTENING is active). This buffer is used to "seed" the VAD segmenter at
+    // the moment wake triggers.
+    const WAKE_PREROLL_MS: u64 = 600;
+    let wake_preroll_frames: usize = ((WAKE_PREROLL_MS + 19) / 20) as usize; // 20ms frames
 
     // Build VAD config from config file.
     let ms_to_frames = |ms: u64| ((ms + 19) / 20).max(1) as usize;
@@ -52,6 +60,32 @@ pub fn spawn_pipeline(
         preroll_frames: ((config.vad.preroll_ms + 19) / 20) as usize,
         tail_frames: ((config.vad.tail_ms + 19) / 20) as usize,
         max_utterance_frames: (config.vad.max_utterance_secs as usize) * 50, // 50 frames/sec
+    };
+
+    // Wake mode wants “snappy” commands, not conservative segmentation.
+    // Override a few knobs inside the wake LISTENING window to reduce end-of-speech
+    // latency. Keep thresholds same as base VAD config.
+    //
+    // Targets:
+    // - end_silence_ms smaller to cut earlier after last word
+    // - min_speech_ms smaller to accept short commands
+    // - tail/preroll smaller (wake pre-roll already handled separately)
+    // - cap utterance length smaller for wake commands
+    const WAKE_END_SILENCE_MS: u64 = 180;
+    const WAKE_MIN_SPEECH_MS: u64 = 60;
+    const WAKE_VAD_PREROLL_MS: u64 = 80;
+    const WAKE_VAD_TAIL_MS: u64 = 80;
+    const WAKE_MAX_UTTERANCE_SECS: usize = 4;
+    const WAKE_FORCE_FLUSH_MS: u64 = 1200;
+    let seg_cfg_wake = SegCfg {
+        start_threshold: seg_cfg.start_threshold,
+        // End speech sooner in noisy environments (wake commands are short).
+        stop_threshold: (seg_cfg.start_threshold - 0.05).max(seg_cfg.stop_threshold),
+        min_speech_frames: ms_to_frames(WAKE_MIN_SPEECH_MS),
+        end_silence_frames: ms_to_frames(WAKE_END_SILENCE_MS),
+        preroll_frames: ms_to_frames(WAKE_VAD_PREROLL_MS),
+        tail_frames: ms_to_frames(WAKE_VAD_TAIL_MS),
+        max_utterance_frames: WAKE_MAX_UTTERANCE_SECS * 50,
     };
 
     // Output thread owns stdout writer and ensures stdout remains JSONL-only.
@@ -177,7 +211,14 @@ pub fn spawn_pipeline(
         let mut frame = [0.0f32; FRAME_SAMPLES];
 
         let mut listening_until: Option<Instant> = None;
+        let mut listening_started_at: Option<Instant> = None;
         let mut prev_ptt = false;
+
+        // Rolling wake pre-roll ring: N frames of 20ms each.
+        let mut wake_preroll: Vec<[f32; FRAME_SAMPLES]> =
+            vec![[0.0; FRAME_SAMPLES]; wake_preroll_frames.max(1)];
+        let mut wake_preroll_pos: usize = 0; // next write index
+        let mut wake_preroll_len: usize = 0; // valid frames in ring (<= capacity)
 
         // Heartbeat: log samples/frames received every 5s to confirm audio is flowing.
         let mut heartbeat_samples: usize = 0;
@@ -262,6 +303,9 @@ pub fn spawn_pipeline(
                         "PTT released – submitting to STT"
                     );
                     if audio_len >= min_samples {
+                        // For PTT captures we bypass VAD, but we still want a stable
+                        // monotonic milestone so latency fields are meaningful.
+                        ptt_timings.mark_vad_done();
                         let job = crate::vad::UtteranceJob {
                             utterance_id: ptt_utterance_id,
                             audio: std::mem::take(&mut ptt_audio),
@@ -287,15 +331,38 @@ pub fn spawn_pipeline(
                 // Wake-word detection while idle (no PTT) to enter LISTENING (D-17/D-18).
                 if !ptt && !listening {
                     if let Some(w) = &wake {
+                        // Maintain rolling pre-roll while idle so we can seed VAD
+                        // immediately when wake triggers.
+                        wake_preroll[wake_preroll_pos] = frame;
+                        wake_preroll_pos = (wake_preroll_pos + 1) % wake_preroll.len();
+                        wake_preroll_len = wake_preroll_len.saturating_add(1).min(wake_preroll.len());
+
                         w.accept_audio(16_000, &frame);
                         w.decode_until_not_ready();
-                        if w.take_keyword().is_some() {
-                            tracing::info!("Wake word triggered; entering LISTENING window");
+                        if let Some(keyword) = w.take_keyword() {
+                            tracing::info!(keyword = %keyword, "Wake word triggered; entering LISTENING window");
                             listening_until = Some(now + listen_window);
+                            listening_started_at = Some(now);
                             w.reset();
+                            // Seed VAD with pre-roll frames captured while idle.
+                            // This helps include the first command word if it started
+                            // right before the wake trigger fired.
+                            seg = VadSegmenter::new(seg_cfg_wake.clone());
+                            if wake_preroll_len > 0 {
+                                let cap = wake_preroll.len();
+                                let start = (wake_preroll_pos + cap - wake_preroll_len) % cap;
+                                for i in 0..wake_preroll_len {
+                                    let idx = (start + i) % cap;
+                                    let _ = seg.push_frame_silero(&mut silero, &wake_preroll[idx]);
+                                }
+                            }
+                            // Also feed current frame into VAD below (do not `continue`).
+                        } else {
+                            continue;
                         }
+                    } else {
+                        continue;
                     }
-                    continue;
                 }
 
                 // Wake-word listen window: run VAD segmentation.
@@ -311,6 +378,39 @@ pub fn spawn_pipeline(
                     }
                     Ok(None) => {}
                     Err(e) => tracing::warn!("VAD error: {e}"),
+                }
+
+                // Wake mode fallback: if VAD never observes "enough silence" due to
+                // noise/AGC, force-flush after a short budget once LISTENING started.
+                if listening {
+                    if let Some(t0) = listening_started_at {
+                        if t0.elapsed() >= Duration::from_millis(WAKE_FORCE_FLUSH_MS) {
+                            if let Some(mut job) = seg.force_flush() {
+                                tracing::debug!(
+                                    utterance_id = job.utterance_id,
+                                    "Wake force-flush after {}ms",
+                                    WAKE_FORCE_FLUSH_MS
+                                );
+                                job.timings.mark_vad_done();
+                                if let Some(stt_submit) = &stt_submit {
+                                    if let Err(e) = stt_submit.try_submit(job) {
+                                        tracing::warn!("STT submit failed: {e}");
+                                    }
+                                }
+                            }
+                            // Reset timer so we don't spam force_flush.
+                            listening_started_at = Some(now);
+                        }
+                    }
+                }
+
+                // If LISTENING window expired, reset wake pre-roll so next command
+                // doesn't get polluted by prior-window audio.
+                if listening_until.map(|t| now >= t).unwrap_or(false) {
+                    listening_until = None;
+                    listening_started_at = None;
+                    wake_preroll_len = 0;
+                    seg = VadSegmenter::new(seg_cfg.clone());
                 }
             }
         }
