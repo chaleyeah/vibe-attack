@@ -1,0 +1,135 @@
+# Helldivers 2 Playable Demo Configuration
+#
+# This configuration provides a ready-to-use set of Helldivers 2 stratagem macros
+# and demonstrates advanced features like conditional logic and sound feedback.
+#
+# USAGE:
+# 1. Ensure the Whisper model is present at:
+#    ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+# 2. Run the daemon:
+#    ./target/debug/hd-linux-voice --config demo_hd2.yaml
+# 3. Use LEFT CTRL as your Push-To-Talk key.
+#
+# NOTE: If you are running on a clean system, you may need to rebuild the 
+# binary first with `cargo build --features stt`.
+
+ptt:
+  key: KEY_LEFTCTRL
+
+timing:
+  dwell_ms: 25   # Fast execution for Helldivers 2
+  gap_ms: 25
+
+pipeline:
+  verbosity: summary
+  listen_window_secs: 5
+
+stt:
+  enabled: true
+  model_path: ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+
+macros:
+  # --- Standard Stratagems ---
+
+  - name: reinforce
+    phrase: "reinforce"
+    sound: models/sherpa/test_wavs/en_0.wav
+    keys:
+      - { key: KEY_UP }
+      - { key: KEY_DOWN }
+      - { key: KEY_RIGHT }
+      - { key: KEY_LEFT }
+      - { key: KEY_UP }
+
+  - name: resupply
+    phrase: "resupply"
+    sound: models/sherpa/test_wavs/en_0.wav
+    keys:
+      - { key: KEY_DOWN }
+      - { key: KEY_DOWN }
+      - { key: KEY_UP }
+      - { key: KEY_RIGHT }
+
+  - name: eagle_airstrike
+    phrase: "eagle airstrike"
+    keys:
+      - { key: KEY_UP }
+      - { key: KEY_RIGHT }
+      - { key: KEY_DOWN }
+      - { key: KEY_RIGHT }
+
+  - name: precision_strike
+    phrase: "precision strike"
+    keys:
+      - { key: KEY_RIGHT }
+      - { key: KEY_RIGHT }
+      - { key: KEY_UP }
+
+  - name: railcannon_strike
+    phrase: "railcannon"
+    keys:
+      - { key: KEY_RIGHT }
+      - { key: KEY_UP }
+      - { key: KEY_DOWN }
+      - { key: KEY_DOWN }
+      - { key: KEY_RIGHT }
+
+  - name: orbital_gas_strike
+    phrase: "gas strike"
+    keys:
+      - { key: KEY_RIGHT }
+      - { key: KEY_RIGHT }
+      - { key: KEY_DOWN }
+      - { key: KEY_RIGHT }
+
+  - name: autocannon
+    phrase: "autocannon"
+    keys:
+      - { key: KEY_DOWN }
+      - { key: KEY_LEFT }
+      - { key: KEY_DOWN }
+      - { key: KEY_UP }
+      - { key: KEY_UP }
+      - { key: KEY_RIGHT }
+
+  # --- Advanced Features Demo ---
+
+  # 1. State Tracking: Shield Pack
+  # Tracks whether your shield is active based on your voice commands.
+  # "shield active" -> sets flag
+  # "shield depleted" -> clears flag
+  # "status report" -> plays different sound based on flag
+  
+  - name: shield_on
+    phrase: "shield active"
+    set_flag: "shield_active"
+    sound: models/sherpa/test_wavs/en_0.wav
+    keys: []
+
+  - name: shield_off
+    phrase: "shield depleted"
+    set_flag: "!shield_active"
+    sound: models/sherpa/test_wavs/en_1.wav
+    keys: []
+
+  - name: status_report_active
+    phrase: "status report"
+    if_flag: "shield_active"
+    sound: models/sherpa/test_wavs/en_0.wav # Affirmative sound
+    keys: []
+
+  - name: status_report_inactive
+    phrase: "status report"
+    if_flag: "!shield_active"
+    sound: models/sherpa/test_wavs/en_1.wav # Negative sound
+    keys: []
+
+  # 2. Per-Key Timing Overrides
+  # Some strategems might need a slightly longer dwell for reliability in certain network conditions.
+  - name: sos_beacon
+    phrase: "sos beacon"
+    keys:
+      - { key: KEY_UP, dwell_ms: 50 }
+      - { key: KEY_DOWN, dwell_ms: 50 }
+      - { key: KEY_RIGHT, dwell_ms: 50 }
+      - { key: KEY_UP, dwell_ms: 50 }
