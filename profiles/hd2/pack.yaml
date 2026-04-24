@@ -1,0 +1,36 @@
+name: Helldivers 2
+author: Super Earth Command
+categories:
+  - name: Patriotic Administration Center
+    macros:
+      - name: Machine Gun
+        phrase: machine gun
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}]
+      - name: Anti-Material Rifle
+        phrase: anti material rifle
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_DOWN}]
+      - name: Stalwart
+        phrase: stalwart
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_LEFT}]
+  - name: Orbital Cannons
+    macros:
+      - name: Orbital Gatling Barrage
+        phrase: orbital gatling barrage
+        keys: [{key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_UP}]
+      - name: Orbital Airburst Strike
+        phrase: orbital airburst strike
+        keys: [{key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_RIGHT}]
+      - name: Orbital 120mm HE Barrage
+        phrase: orbital 120mm barrage
+        keys: [{key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_DOWN}]
+  - name: Hangar
+    macros:
+      - name: Eagle Strafing Run
+        phrase: eagle strafing run
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_RIGHT}]
+      - name: Eagle Airstrike
+        phrase: eagle airstrike
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Eagle Cluster Bomb
+        phrase: eagle cluster bomb
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_RIGHT}]

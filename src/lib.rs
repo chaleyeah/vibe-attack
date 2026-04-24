@@ -6,3 +6,6 @@ pub mod pipeline;
 pub mod stt;
 pub mod vad;
 pub mod wake;
+pub mod control;
+pub mod pack;
+pub mod tui;

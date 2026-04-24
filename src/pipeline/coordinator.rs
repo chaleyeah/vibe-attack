@@ -27,6 +27,7 @@ pub struct PipelineHandles {
     pub pipeline: std::thread::JoinHandle<()>,
     pub output: std::thread::JoinHandle<()>,
     pub stt: Option<SttService>,
+    pub dispatcher: Arc<crate::pipeline::dispatcher::Dispatcher>,
 }
 
 /// Spawn the pipeline worker threads.
@@ -96,13 +97,14 @@ pub fn spawn_pipeline(
     let (dispatch_tx, dispatch_rx) = crossbeam_channel::bounded::<SttResult>(8);
     let dispatch_rx_for_drop = dispatch_rx.clone();
 
-    let dispatcher = crate::pipeline::dispatcher::Dispatcher::new(
+    let dispatcher = Arc::new(crate::pipeline::dispatcher::Dispatcher::new(
         config.stt.confidence_threshold,
         config.macros.clone(),
         macro_tx,
         config.timing.dwell_ms,
         config.timing.gap_ms,
-    );
+    ));
+    let dispatcher_for_thread = Arc::clone(&dispatcher);
     let dispatcher_shutdown = shutdown.clone();
     let dispatch_out_tx = out_tx.clone();
     std::thread::spawn(move || {
@@ -110,7 +112,7 @@ pub fn spawn_pipeline(
         while !dispatcher_shutdown.is_cancelled() {
             match dispatch_rx.recv_timeout(Duration::from_millis(50)) {
                 Ok(r) => {
-                    dispatcher.process(&r.text);
+                    dispatcher_for_thread.process(&r.text);
                     let _ = dispatch_out_tx.send(r);
                 }
                 Err(crossbeam_channel::RecvTimeoutError::Timeout) => continue,
@@ -446,6 +448,6 @@ pub fn spawn_pipeline(
         tracing::info!("Pipeline thread stopped");
     });
 
-    Ok(PipelineHandles { pipeline, output, stt })
+    Ok(PipelineHandles { pipeline, output, stt, dispatcher })
 }
 

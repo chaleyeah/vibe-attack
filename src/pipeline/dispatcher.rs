@@ -29,7 +29,7 @@ impl DispatcherState {
 pub struct Dispatcher {
     state: DispatcherState,
     matcher: PhraseMatcher,
-    macros: Vec<MacroConfig>,
+    macros: Arc<RwLock<Vec<MacroConfig>>>,
     sound_player: Option<SoundPlayer>,
     macro_tx: Sender<MacroCmd>,
     default_dwell_ms: u64,
@@ -55,7 +55,7 @@ impl Dispatcher {
         Self {
             state: DispatcherState::new(),
             matcher: PhraseMatcher::new(threshold),
-            macros,
+            macros: Arc::new(RwLock::new(macros)),
             sound_player,
             macro_tx,
             default_dwell_ms,
@@ -63,14 +63,21 @@ impl Dispatcher {
         }
     }
 
+    pub fn update_macros(&self, new_macros: Vec<MacroConfig>) {
+        let mut macros = self.macros.write().unwrap();
+        *macros = new_macros;
+        tracing::info!("Registry updated with {} macros", macros.len());
+    }
+
     pub fn process(&self, transcript: &str) {
-        let candidates = self.macros.iter().filter_map(|m| {
+        let macros = self.macros.read().unwrap();
+        let candidates = macros.iter().filter_map(|m| {
             m.phrase.as_ref().map(|p| (m.name.as_str(), p.as_str()))
         });
 
         if let Some((best_match_name, score)) = self.matcher.find_best_match(transcript, candidates) {
             tracing::info!(macro_name = best_match_name, score, "Firing macro");
-            if let Some(mac) = self.macros.iter().find(|m| m.name == best_match_name) {
+            if let Some(mac) = macros.iter().find(|m| m.name == best_match_name) {
                 if let Some(if_flag) = &mac.if_flag {
                     let required_val = !if_flag.starts_with('!');
                     let flag_name = if if_flag.starts_with('!') {

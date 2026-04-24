@@ -21,6 +21,25 @@ struct Cli {
     /// List available audio input devices and exit (use the name in audio.device in config.yaml)
     #[arg(long)]
     list_devices: bool,
+
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Debug, Parser)]
+enum Commands {
+    /// Check if the daemon is alive
+    Ping,
+    /// Switch the active macro pack/profile
+    Switch { name: String },
+    /// Execute a specific macro by name immediately (for testing)
+    Test { name: String },
+    /// Import a .hdpack file
+    Import { file: std::path::PathBuf },
+    /// Export the current profile to a .hdpack file
+    Export { name: String, output: Option<std::path::PathBuf> },
+    /// Open the interactive TUI editor
+    Edit,
 }
 
 fn init_logging(verbose: u8) {
@@ -78,6 +97,57 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
             Err(e) => eprintln!("Failed to enumerate devices: {e}"),
+        }
+        return Ok(());
+    }
+
+    if let Some(cmd) = args.command {
+        use hd_linux_voice::control::protocol::ControlRequest;
+        use hd_linux_voice::control::client::send_command;
+
+        match cmd {
+            Commands::Ping => {
+                match send_command(ControlRequest::Ping) {
+                    Ok(resp) => println!("{resp:?}"),
+                    Err(e) => eprintln!("Error: {e}"),
+                }
+            }
+            Commands::Switch { name } => {
+                match send_command(ControlRequest::SwitchProfile { name }) {
+                    Ok(resp) => println!("{resp:?}"),
+                    Err(e) => eprintln!("Error: {e}"),
+                }
+            }
+            Commands::Test { name } => {
+                match send_command(ControlRequest::TestMacro { name }) {
+                    Ok(resp) => println!("{resp:?}"),
+                    Err(e) => eprintln!("Error: {e}"),
+                }
+            }
+            Commands::Import { file } => {
+                use hd_linux_voice::pack::Pack;
+                match Pack::import(&file) {
+                    Ok(pack) => println!("Successfully imported pack: {}", pack.name),
+                    Err(e) => eprintln!("Import error: {e:#}"),
+                }
+            }
+            Commands::Export { name, output } => {
+                use hd_linux_voice::pack::{Pack, get_profiles_dir};
+                let dir = get_profiles_dir().unwrap().join(&name);
+                match Pack::load_from_dir(&dir) {
+                    Ok(pack) => {
+                        let out = output.unwrap_or_else(|| std::path::PathBuf::from(format!("{name}.hdpack")));
+                        match pack.export(&out) {
+                            Ok(_) => println!("Successfully exported pack to: {}", out.display()),
+                            Err(e) => eprintln!("Export error: {e:#}"),
+                        }
+                    }
+                    Err(e) => eprintln!("Error loading profile '{name}': {e:#}"),
+                }
+            }
+            Commands::Edit => {
+                hd_linux_voice::tui::run_editor().unwrap();
+            }
         }
         return Ok(());
     }
@@ -179,6 +249,12 @@ async fn main() -> anyhow::Result<()> {
         // If pipeline preflight fails, stop injection thread before exiting.
         let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
         eprintln!("{e:#}");
+        e
+    })?;
+
+    // === 10b. Spawn UDS control listener (Phase 4) ===
+    hd_linux_voice::control::spawn_control_listener(pipeline_handles.dispatcher.clone()).await.map_err(|e| {
+        tracing::error!("Failed to start control listener: {e:#}");
         e
     })?;
 
