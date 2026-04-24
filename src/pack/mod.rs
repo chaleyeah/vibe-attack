@@ -1,3 +1,5 @@
+pub mod manager;
+
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};

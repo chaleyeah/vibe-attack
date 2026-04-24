@@ -155,10 +155,20 @@ async fn main() -> anyhow::Result<()> {
     tracing::info!("hd-linux-voice starting");
 
     // === 1. Load config (fail-hard on any error) ===
-    let config = hd_linux_voice::config::load(args.config.as_deref()).map_err(|e| {
+    let mut config = hd_linux_voice::config::load(args.config.as_deref()).map_err(|e| {
         eprintln!("{e:#}");
         e
     })?;
+
+    // === 1a. Integrate ProfileManager (if no explicit config passed) ===
+    if args.config.is_none() {
+        use hd_linux_voice::pack::manager::ProfileManager;
+        let manager = ProfileManager::load()?;
+        if let Some(pack) = manager.get_active_pack()? {
+            tracing::info!(profile = %pack.name, macros = pack.flatten().len(), "Applying active profile macros");
+            config.macros = pack.flatten();
+        }
+    }
 
     tracing::info!(
         ptt_key = %config.ptt.key,

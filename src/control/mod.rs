@@ -85,9 +85,17 @@ pub async fn spawn_control_listener(dispatcher: Arc<Dispatcher>) -> Result<()> {
 
 fn handle_switch_profile(name: &str, dispatcher: &Dispatcher) -> Result<()> {
     use crate::pack::Pack;
+    use crate::pack::manager::ProfileManager;
+
     let dir = crate::pack::get_profiles_dir()?.join(name);
     let pack = Pack::load_from_dir(&dir)?;
     dispatcher.update_macros(pack.flatten());
+
+    // Update persistence so it survives restart
+    let mut manager = ProfileManager::load().unwrap_or(ProfileManager { active_profile: None });
+    manager.active_profile = Some(name.to_string());
+    manager.save()?;
+
     Ok(())
 }
 
