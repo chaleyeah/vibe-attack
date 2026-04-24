@@ -124,3 +124,13 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Pack System + HD2 Bundle | 0/? | Not started | - |
 | 5. UI + Distribution | 0/? | Not started | - |
 | 6. Documentation | 0/0 | Not started | - |
+
+### Phase 7: Rebrand from hd-linux-voice to vibe-attack
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 7 to break down)

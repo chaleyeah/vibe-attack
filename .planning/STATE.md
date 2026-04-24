@@ -97,6 +97,10 @@ Recent decisions affecting current work:
 - Dedicated output thread is the only stdout writer (stdout JSONL stays clean; compute threads avoid IO stalls)
 - Phase 2 latency proof uses end-of-speech → transcript JSONL emit as the STT-04 proxy; end-of-speech → first key event is validated in Phase 3 dispatch.
 
+### Roadmap Evolution
+
+- Phase 7 added: Rebrand from hd-linux-voice to vibe-attack
+
 ### Pending Todos
 
 None yet.

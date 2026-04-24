@@ -84,11 +84,9 @@ async fn main() -> anyhow::Result<()> {
                 let mut found = false;
                 for device in devices {
                     found = true;
-                    let name = device.description()
-                        .map(|d| d.name().to_string())
-                        .unwrap_or_else(|_| "<unknown>".to_string());
+                    let name = format!("{:?}", device);
                     let cfg = device.default_input_config()
-                        .map(|c| format!("{} ch @ {} Hz", c.channels(), c.sample_rate()))
+                        .map(|c| format!("{} ch @ {} Hz", c.channels(), c.sample_rate().0))
                         .unwrap_or_else(|_| "no supported config".to_string());
                     println!("  {name}  ({cfg})");
                 }

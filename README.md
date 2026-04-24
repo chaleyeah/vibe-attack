@@ -15,42 +15,38 @@ vibe-attack is an open-source, community-driven voice command system designed sp
 ### Prerequisites
 - **Linux Distribution**: Debian/Ubuntu or Arch Linux based systems.
 - **Audio Devices**: A working microphone (input) and ALSA loopback device (output).
+- **Rust**: Version 1.70+ (latest stable recommended)
 
-### Dependencies
-
-#### System Packages
+### System Dependencies
 
 **Debian / Ubuntu:**
 ```bash
 sudo apt-get update
-sudo apt-get install -y nodejs git
+sudo apt-get install -y \
+  build-essential \
+  libasound2-dev \
+  libportaudio2 \
+  libportaudiocpp0 \
+  pkg-config
 ```
 
 **Arch / Manjaro:**
 ```bash
-sudo pacman -Syu nodejs git
+sudo pacman -Syu
+sudo pacman -S base-devel portaudio
 ```
 
-#### Rust
-Install Rust and Cargo:
+### Install Rust
+
+If you haven't installed Rust yet:
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
 ```
 
-#### PortAudio
-Install the PortAudio development libraries:
+## Building
 
-**Debian / Ubuntu:**
-```bash
-sudo apt-get install -y libportaudio2 libportaudiocpp0
-```
-
-**Arch / Manjaro:**
-```bash
-sudo pacman -S portaudio
-```
-
-### Build and Run
+### Quick Start
 
 1. **Clone the repository**:
    ```bash
@@ -63,41 +59,83 @@ sudo pacman -S portaudio
    cargo build --release
    ```
 
-3. **Run the application**:
-   ```bash
-   ./target/release/vibe-attack
-   ```
+The compiled binary will be available at `./target/release/hd-linux-voice`.
 
-## Usage
+### Build Options
+
+**Debug build** (faster compilation, slower runtime):
+```bash
+cargo build
+./target/debug/hd-linux-voice
+```
+
+**Release build** (slower compilation, optimized runtime):
+```bash
+cargo build --release
+./target/release/hd-linux-voice
+```
+
+### Running Tests
+
+Run the full test suite:
+```bash
+cargo test
+```
+
+Run tests with output:
+```bash
+cargo test -- --nocapture
+```
+
+Run specific test:
+```bash
+cargo test test_name
+```
+
+### Troubleshooting Build Issues
+
+**ALSA dependency conflict**: If you see an error about `alsa-sys` version conflict, this is due to incompatible versions of `cpal` in the dependency tree. This requires updating the `Cargo.toml` to use compatible versions:
+
+- Update `rodio` to a version compatible with `cpal v0.17.3`, or
+- Downgrade `cpal` to match `rodio`'s requirements
+
+This is a pre-existing issue in the project that needs to be resolved before tests can run.
+
+## Running the Application
 
 ### Quick Start
 
-Run the daemon with the default configuration:
 ```bash
-./target/release/vibe-attack run
+./target/release/hd-linux-voice run
 ```
 
-### Core Commands
+### Available Commands
 
 - **Run**: Starts the voice recognition service in the foreground.
   ```bash
-  ./target/release/vibe-attack run
+  ./target/release/hd-linux-voice run
   ```
 
 - **Import**: Imports a `.hdpack` file into the profiles directory.
   ```bash
-  ./target/release/vibe-attack import path/to/pack.hdpack
+  ./target/release/hd-linux-voice import path/to/pack.hdpack
   ```
 
 - **Export**: Exports a profile to a `.hdpack` file.
   ```bash
-  ./target/release/vibe-attack export profile-name path/to/output.hdpack
+  ./target/release/hd-linux-voice export profile-name path/to/output.hdpack
   ```
 
 - **Edit**: Opens the interactive TUI to edit macros.
   ```bash
-  ./target/release/vibe-attack edit
+  ./target/release/hd-linux-voice edit
   ```
+
+## Usage
+
+### First Run
+
+When you run the application for the first time, it will initialize the configuration directory at `~/.config/hd-linux-voice/` with default settings.
 
 ## Profile & Pack Management
 
