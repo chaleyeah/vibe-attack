@@ -38,6 +38,7 @@ pub fn spawn_pipeline(
     audio_consumer: HeapCons<f32>,
     config: Config,
     ptt_active: Arc<AtomicBool>,
+    macro_tx: std::sync::mpsc::Sender<crate::input::inject::MacroCmd>,
     shutdown: CancellationToken,
 ) -> Result<PipelineHandles> {
     let listen_window = Duration::from_secs(config.pipeline.listen_window_secs);
@@ -90,7 +91,34 @@ pub fn spawn_pipeline(
 
     // Output thread owns stdout writer and ensures stdout remains JSONL-only.
     let (out_tx, out_rx) = crossbeam_channel::bounded::<SttResult>(8);
-    let out_rx_for_drop = out_rx.clone();
+    
+    // Dispatcher thread receives STT results, runs macros, then forwards to JSONL output
+    let (dispatch_tx, dispatch_rx) = crossbeam_channel::bounded::<SttResult>(8);
+    let dispatch_rx_for_drop = dispatch_rx.clone();
+
+    let dispatcher = crate::pipeline::dispatcher::Dispatcher::new(
+        config.stt.confidence_threshold,
+        config.macros.clone(),
+        macro_tx,
+        config.timing.dwell_ms,
+        config.timing.gap_ms,
+    );
+    let dispatcher_shutdown = shutdown.clone();
+    let dispatch_out_tx = out_tx.clone();
+    std::thread::spawn(move || {
+        tracing::info!("Dispatcher thread started");
+        while !dispatcher_shutdown.is_cancelled() {
+            match dispatch_rx.recv_timeout(Duration::from_millis(50)) {
+                Ok(r) => {
+                    dispatcher.process(&r.text);
+                    let _ = dispatch_out_tx.send(r);
+                }
+                Err(crossbeam_channel::RecvTimeoutError::Timeout) => continue,
+                Err(crossbeam_channel::RecvTimeoutError::Disconnected) => break,
+            }
+        }
+        tracing::info!("Dispatcher thread stopped");
+    });
 
     let jsonl_verbosity = match config.pipeline.verbosity {
         PipelineVerbosity::Summary => JsonlVerbosity::SummaryOnly,
@@ -240,7 +268,7 @@ pub fn spawn_pipeline(
             // `continue` while PTT was idle, causing results to accumulate forever.
             if let Some(stt_results) = &stt_results {
                 while let Ok(r) = stt_results.try_recv() {
-                    if crate::vad::try_send_drop_oldest(&out_tx, &out_rx_for_drop, r).is_err() {
+                    if crate::vad::try_send_drop_oldest(&dispatch_tx, &dispatch_rx_for_drop, r).is_err() {
                         break;
                     }
                 }

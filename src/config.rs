@@ -199,11 +199,17 @@ pub struct SttConfig {
     #[serde(default)]
     pub enabled: bool,
     pub model_path: Option<PathBuf>,
+    #[serde(default = "default_stt_confidence_threshold")]
+    pub confidence_threshold: f32,
+}
+
+fn default_stt_confidence_threshold() -> f32 {
+    0.8
 }
 
 impl Default for SttConfig {
     fn default() -> Self {
-        SttConfig { enabled: false, model_path: None }
+        SttConfig { enabled: false, model_path: None, confidence_threshold: default_stt_confidence_threshold() }
     }
 }
 
@@ -238,6 +244,10 @@ impl Default for WakeConfig {
 #[serde(deny_unknown_fields)]
 pub struct MacroConfig {
     pub name: String,
+    pub phrase: Option<String>,
+    pub if_flag: Option<String>,
+    pub set_flag: Option<String>,
+    pub sound: Option<PathBuf>,
     pub keys: Vec<KeyAction>,
 }
 

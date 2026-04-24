@@ -9,4 +9,7 @@
 pub mod jsonl;
 pub mod timing;
 pub mod coordinator;
+pub mod matcher;
+pub mod sound;
+pub mod dispatcher;
 

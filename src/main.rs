@@ -172,6 +172,7 @@ async fn main() -> anyhow::Result<()> {
         audio_consumer,
         config.clone(),
         Arc::clone(&ptt_active),
+        macro_tx.clone(),
         shutdown.clone(),
     )
     .map_err(|e| {
