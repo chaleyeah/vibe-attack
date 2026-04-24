@@ -69,28 +69,31 @@ impl Dispatcher {
         tracing::info!("Registry updated with {} macros", macros.len());
     }
 
+    fn check_condition(&self, if_flag: &Option<String>) -> bool {
+        match if_flag {
+            None => true,
+            Some(if_flag) => {
+                let required_val = !if_flag.starts_with('!');
+                let flag_name = if if_flag.starts_with('!') {
+                    &if_flag[1..]
+                } else {
+                    if_flag.as_str()
+                };
+                self.state.get(flag_name) == required_val
+            }
+        }
+    }
+
     pub fn process(&self, transcript: &str) {
         let macros = self.macros.read().unwrap();
-        let candidates = macros.iter().filter_map(|m| {
-            m.phrase.as_ref().map(|p| (m.name.as_str(), p.as_str()))
-        });
+        let candidates = macros
+            .iter()
+            .filter(|m| self.check_condition(&m.if_flag))
+            .filter_map(|m| m.phrase.as_ref().map(|p| (m.name.as_str(), p.as_str())));
 
         if let Some((best_match_name, score)) = self.matcher.find_best_match(transcript, candidates) {
             tracing::info!(macro_name = best_match_name, score, "Firing macro");
             if let Some(mac) = macros.iter().find(|m| m.name == best_match_name) {
-                if let Some(if_flag) = &mac.if_flag {
-                    let required_val = !if_flag.starts_with('!');
-                    let flag_name = if if_flag.starts_with('!') {
-                        &if_flag[1..]
-                    } else {
-                        if_flag.as_str()
-                    };
-                    if self.state.get(flag_name) != required_val {
-                        tracing::debug!("Skipping macro {}, condition not met", best_match_name);
-                        return;
-                    }
-                }
-
                 if let Some(sound_path) = &mac.sound {
                     if let Some(player) = &self.sound_player {
                         if let Err(e) = player.play(sound_path) {
