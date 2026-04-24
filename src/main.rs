@@ -137,7 +137,7 @@ async fn main() -> anyhow::Result<()> {
                 match Pack::load_from_dir(&dir) {
                     Ok(pack) => {
                         let out = output.unwrap_or_else(|| std::path::PathBuf::from(format!("{name}.hdpack")));
-                        match pack.export(&out) {
+                        match pack.export(&dir, &out) {
                             Ok(_) => println!("Successfully exported pack to: {}", out.display()),
                             Err(e) => eprintln!("Export error: {e:#}"),
                         }
