@@ -37,10 +37,7 @@ stt:
   initial_prompt: "reinforce, resupply, eagle airstrike, precision strike, railcannon, gas strike, sos beacon, autocannon, shield"
 
 wake:
-  # Disabled: deferred to a later phase. sherpa-onnx ships its own statically-linked
-  # ONNX Runtime, which conflicts with the dynamically-loaded ORT used by the `ort`
-  # crate (Silero VAD), causing heap corruption and bad_alloc on wake activation.
-  enabled: false
+  enabled: true
   # sherpa-onnx keyword spotter artifacts (local-only; not downloaded automatically)
   # BPE KWS bundles: place `bpe.model` in the same directory as `encoder.onnx` (auto-detected).
   encoder: /home/chadmin/Github/hd-linux-voice/models/sherpa/kws/encoder.onnx
