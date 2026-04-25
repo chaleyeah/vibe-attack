@@ -150,7 +150,7 @@ impl Pack {
 }
 
 pub fn get_profiles_dir() -> Result<PathBuf> {
-    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
+    let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
     let config_home = xdg.get_config_home()
         .context("Failed to determine config directory")?;
     let dir = config_home.join("profiles");

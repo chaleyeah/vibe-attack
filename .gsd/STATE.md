@@ -1,12 +1,13 @@
 # GSD State
 
-**Active Milestone:** None
-**Active Slice:** None
-**Phase:** complete
+**Active Milestone:** M002: Rebrand to vibe-attack
+**Active Slice:** S01: Source rename — Cargo package, binaries, XDG prefix, log strings
+**Phase:** planning
 **Requirements Status:** 16 active · 0 validated · 0 deferred · 0 out of scope
 
 ## Milestone Registry
 - ✅ **M001:** Migration
+- 🔄 **M002:** Rebrand to vibe-attack
 
 ## Recent Decisions
 - None recorded
@@ -15,4 +16,4 @@
 - None
 
 ## Next Action
-All milestones complete. 16 active requirements in REQUIREMENTS.md have not been mapped to a milestone.
+Plan slice S01 (Source rename — Cargo package, binaries, XDG prefix, log strings).

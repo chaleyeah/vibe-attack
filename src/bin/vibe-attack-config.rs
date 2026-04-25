@@ -1,13 +1,13 @@
 use eframe::egui;
-use hd_linux_voice::ui::config_app::ConfigApp;
-use hd_linux_voice::ui::first_run::FirstRunState;
+use vibe_attack::ui::config_app::ConfigApp;
+use vibe_attack::ui::first_run::FirstRunState;
 
-struct HdConfigApp {
+struct VibeAttackConfigApp {
     first_run: FirstRunState,
     config: ConfigApp,
 }
 
-impl HdConfigApp {
+impl VibeAttackConfigApp {
     fn new() -> Self {
         Self {
             first_run: FirstRunState::from_checks(false, false, false, false),
@@ -16,10 +16,10 @@ impl HdConfigApp {
     }
 }
 
-impl eframe::App for HdConfigApp {
+impl eframe::App for VibeAttackConfigApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("HD Linux Voice");
+            ui.heading("Vibe Attack");
             ui.separator();
 
             if !self.first_run.is_setup_complete() {
@@ -47,13 +47,13 @@ impl eframe::App for HdConfigApp {
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("HD Linux Voice Config")
+            .with_title("Vibe Attack Config")
             .with_inner_size([600.0, 400.0]),
         ..Default::default()
     };
     eframe::run_native(
-        "HD Linux Voice Config",
+        "Vibe Attack Config",
         options,
-        Box::new(|_cc| Ok(Box::new(HdConfigApp::new()))),
+        Box::new(|_cc| Ok(Box::new(VibeAttackConfigApp::new()))),
     )
 }

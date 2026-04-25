@@ -62,7 +62,7 @@ fn main() -> anyhow::Result<()> {
             };
             let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
             if keep_ptt { outer_ptt = Some(ptt.clone()); } else { outer_ptt = None; }
-            let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt)?;
+            let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt)?;
             eprintln!(">> (nested) stream started; spawning pipeline thread");
             let join = std::thread::spawn(move || {
                 eprintln!(">> (pipeline-bg) thread entered; polling");
@@ -108,7 +108,7 @@ fn main() -> anyhow::Result<()> {
         };
         let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
         let handle = {
-            let h = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt.clone())?;
+            let h = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt.clone())?;
             eprintln!(">> audio started inside block");
             h
         };
@@ -152,7 +152,7 @@ fn main() -> anyhow::Result<()> {
         };
         let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
         {
-            let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt.clone())?;
+            let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt.clone())?;
             eprintln!(">> (minimal-block) stream started");
             let join = std::thread::spawn(move || {
                 let mut cons = handle.consumer;
@@ -194,7 +194,7 @@ fn main() -> anyhow::Result<()> {
                 out
             };
             let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-            let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt)?;
+            let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt)?;
             eprintln!(">> (inline-leak-block) stream started");
             let join = std::thread::spawn(move || {
                 let mut cons = handle.consumer;
@@ -235,7 +235,7 @@ fn main() -> anyhow::Result<()> {
             out
         };
         let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-        let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt)?;
+        let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt)?;
         eprintln!(">> (inline-leak) stream started");
         let join = std::thread::spawn(move || {
             let mut cons = handle.consumer;
@@ -279,7 +279,7 @@ fn main() -> anyhow::Result<()> {
             out
         };
         let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-        let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt)?;
+        let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt)?;
         eprintln!(">> (inline) stream started; spawning pipeline thread");
         let _join = std::thread::spawn(move || {
             eprintln!(">> (pipeline-bg) thread entered; polling");
@@ -312,7 +312,7 @@ fn main() -> anyhow::Result<()> {
             .skip_while(|a| a != "--device")
             .nth(1);
         let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-        let _handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt)?;
+        let _handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt)?;
         eprintln!(">> stream started, no consumer, sleeping 4s");
         std::thread::sleep(Duration::from_secs(4));
         return Ok(());
@@ -327,7 +327,7 @@ fn main() -> anyhow::Result<()> {
             .skip_while(|a| a != "--device")
             .nth(1);
         let ptt = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-        let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt)?;
+        let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt)?;
         let mut cons = handle.consumer;
         let mut buf = [0f32; 1024];
         let mut total = 0usize;
@@ -406,13 +406,13 @@ fn main() -> anyhow::Result<()> {
 
         if do_uinput {
             eprintln!(">> opening uinput device...");
-            let _kbd = hd_linux_voice::input::inject::open_uinput_device()?;
+            let _kbd = vibe_attack::input::inject::open_uinput_device()?;
             eprintln!(">> uinput opened (held alive for the rest of this run)");
             if do_inject {
                 use std::sync::mpsc;
                 eprintln!(">> spawning injection thread...");
-                let (_tx, rx) = mpsc::channel::<hd_linux_voice::input::inject::MacroCmd>();
-                let _h = hd_linux_voice::input::inject::spawn_injection_thread(_kbd, rx);
+                let (_tx, rx) = mpsc::channel::<vibe_attack::input::inject::MacroCmd>();
+                let _h = vibe_attack::input::inject::spawn_injection_thread(_kbd, rx);
                 eprintln!(">> injection thread spawned");
             } else {
                 std::mem::forget(_kbd); // keep alive
@@ -420,16 +420,16 @@ fn main() -> anyhow::Result<()> {
         }
         if do_evdev {
             eprintln!(">> scanning evdev for PTT device...");
-            let key = hd_linux_voice::input::ptt::parse_key_code("KEY_LEFTCTRL")?;
-            hd_linux_voice::input::ptt::check_input_readable()?;
-            let _dev = hd_linux_voice::input::ptt::find_ptt_device(key)?;
+            let key = vibe_attack::input::ptt::parse_key_code("KEY_LEFTCTRL")?;
+            vibe_attack::input::ptt::check_input_readable()?;
+            let _dev = vibe_attack::input::ptt::find_ptt_device(key)?;
             eprintln!(">> evdev PTT device found");
             std::mem::forget(_dev);
         }
 
         let do_pipeline = std::env::args().any(|a| a == "--do-pipeline-thread");
         let ptt_active = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-        let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt_active)?;
+        let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt_active)?;
         eprintln!(">> lib-path stream started");
 
         if do_pipeline {
@@ -516,7 +516,7 @@ fn via_lib_flow_no_block() -> anyhow::Result<()> {
         out
     };
     let ptt_active = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-    let handle = hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt_active)?;
+    let handle = vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt_active)?;
     eprintln!(">> (no-block) stream started; spawning pipeline thread");
     let load_vad_in_thread = std::env::args().any(|a| a == "--bg-load-vad");
     let join = std::thread::spawn(move || {
@@ -587,13 +587,13 @@ fn via_lib_flow() -> anyhow::Result<()> {
 
     if do_uinput {
         eprintln!(">> opening uinput device...");
-        let _kbd = hd_linux_voice::input::inject::open_uinput_device()?;
+        let _kbd = vibe_attack::input::inject::open_uinput_device()?;
         eprintln!(">> uinput opened");
         if do_inject {
             use std::sync::mpsc;
             eprintln!(">> spawning injection thread...");
-            let (_tx, rx) = mpsc::channel::<hd_linux_voice::input::inject::MacroCmd>();
-            let _h = hd_linux_voice::input::inject::spawn_injection_thread(_kbd, rx);
+            let (_tx, rx) = mpsc::channel::<vibe_attack::input::inject::MacroCmd>();
+            let _h = vibe_attack::input::inject::spawn_injection_thread(_kbd, rx);
             eprintln!(">> injection thread spawned");
         } else {
             std::mem::forget(_kbd);
@@ -601,9 +601,9 @@ fn via_lib_flow() -> anyhow::Result<()> {
     }
     if do_evdev {
         eprintln!(">> scanning evdev for PTT device...");
-        let key = hd_linux_voice::input::ptt::parse_key_code("KEY_LEFTCTRL")?;
-        hd_linux_voice::input::ptt::check_input_readable()?;
-        let _dev = hd_linux_voice::input::ptt::find_ptt_device(key)?;
+        let key = vibe_attack::input::ptt::parse_key_code("KEY_LEFTCTRL")?;
+        vibe_attack::input::ptt::check_input_readable()?;
+        let _dev = vibe_attack::input::ptt::find_ptt_device(key)?;
         eprintln!(">> evdev PTT device found");
         std::mem::forget(_dev);
     }
@@ -611,7 +611,7 @@ fn via_lib_flow() -> anyhow::Result<()> {
     let do_pipeline = std::env::args().any(|a| a == "--do-pipeline-thread");
     let ptt_active = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
     let handle =
-        hd_linux_voice::audio::start_audio_stream(device_name.as_deref(), ptt_active)?;
+        vibe_attack::audio::start_audio_stream(device_name.as_deref(), ptt_active)?;
     eprintln!(">> lib-path stream started");
 
     if do_pipeline {

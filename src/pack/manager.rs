@@ -10,7 +10,7 @@ pub struct ProfileManager {
 }
 
 impl ProfileManager {
-    /// Load the manager state from $XDG_CONFIG_HOME/hd-linux-voice/manager.yaml.
+    /// Load the manager state from $XDG_CONFIG_HOME/vibe-attack/manager.yaml.
     pub fn load() -> Result<Self> {
         let path = Self::get_path()?;
         if !path.exists() {
@@ -39,7 +39,7 @@ impl ProfileManager {
 
     /// Get the path to manager.yaml.
     pub fn get_path() -> Result<PathBuf> {
-        let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
+        let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
         let config_home = xdg.get_config_home()
             .context("Failed to determine config directory")?;
         Ok(config_home.join("manager.yaml"))

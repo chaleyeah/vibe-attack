@@ -4,7 +4,7 @@ use tracing_subscriber::EnvFilter;
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "hd-linux-voice",
+    name = "vibe-attack",
     about = "Voice-macro daemon for Helldivers 2 on Linux",
     long_about = None,
     version,
@@ -14,7 +14,7 @@ struct Cli {
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
 
-    /// Path to config file (default: $XDG_CONFIG_HOME/hd-linux-voice/config.yaml)
+    /// Path to config file (default: $XDG_CONFIG_HOME/vibe-attack/config.yaml)
     #[arg(short, long, value_name = "FILE")]
     config: Option<std::path::PathBuf>,
 
@@ -99,8 +99,8 @@ async fn main() -> anyhow::Result<()> {
     }
 
     if let Some(cmd) = args.command {
-        use hd_linux_voice::control::protocol::ControlRequest;
-        use hd_linux_voice::control::client::send_command;
+        use vibe_attack::control::protocol::ControlRequest;
+        use vibe_attack::control::client::send_command;
 
         match cmd {
             Commands::Ping => {
@@ -122,14 +122,14 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
             Commands::Import { file } => {
-                use hd_linux_voice::pack::Pack;
+                use vibe_attack::pack::Pack;
                 match Pack::import(&file) {
                     Ok(pack) => println!("Successfully imported pack: {}", pack.name),
                     Err(e) => eprintln!("Import error: {e:#}"),
                 }
             }
             Commands::Export { name, output } => {
-                use hd_linux_voice::pack::{Pack, get_profiles_dir};
+                use vibe_attack::pack::{Pack, get_profiles_dir};
                 let dir = get_profiles_dir().unwrap().join(&name);
                 match Pack::load_from_dir(&dir) {
                     Ok(pack) => {
@@ -143,23 +143,23 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
             Commands::Edit => {
-                hd_linux_voice::tui::run_editor().unwrap();
+                vibe_attack::tui::run_editor().unwrap();
             }
         }
         return Ok(());
     }
 
-    tracing::info!("hd-linux-voice starting");
+    tracing::info!("vibe-attack starting");
 
     // === 1. Load config (fail-hard on any error) ===
-    let mut config = hd_linux_voice::config::load(args.config.as_deref()).map_err(|e| {
+    let mut config = vibe_attack::config::load(args.config.as_deref()).map_err(|e| {
         eprintln!("{e:#}");
         e
     })?;
 
     // === 1a. Integrate ProfileManager (if no explicit config passed) ===
     if args.config.is_none() {
-        use hd_linux_voice::pack::manager::ProfileManager;
+        use vibe_attack::pack::manager::ProfileManager;
         let manager = ProfileManager::load()?;
         if let Some(pack) = manager.get_active_pack()? {
             tracing::info!(profile = %pack.name, macros = pack.flatten().len(), "Applying active profile macros");
@@ -182,25 +182,25 @@ async fn main() -> anyhow::Result<()> {
     })?;
 
     // === 2. Parse PTT key code ===
-    let ptt_key = hd_linux_voice::input::ptt::parse_key_code(&config.ptt.key)
+    let ptt_key = vibe_attack::input::ptt::parse_key_code(&config.ptt.key)
         .map_err(|e| { eprintln!("{e:#}"); e })?;
 
     // === 3. Preflight: verify /dev/input readable (fail-hard, D-11) ===
-    hd_linux_voice::input::ptt::check_input_readable().map_err(|e| {
+    vibe_attack::input::ptt::check_input_readable().map_err(|e| {
         eprintln!("{e:#}");
         e
     })?;
 
     // === 4. Open uinput virtual keyboard (fail-hard, D-15) ===
     // Must happen BEFORE spawning any threads — if it fails, we exit cleanly.
-    let virtual_kbd = hd_linux_voice::input::inject::open_uinput_device().map_err(|e| {
+    let virtual_kbd = vibe_attack::input::inject::open_uinput_device().map_err(|e| {
         eprintln!("{e:#}");
         e
     })?;
     tracing::info!("uinput virtual keyboard opened");
 
     // === 5. Find PTT device ===
-    let ptt_device = hd_linux_voice::input::ptt::find_ptt_device(ptt_key).map_err(|e| {
+    let ptt_device = vibe_attack::input::ptt::find_ptt_device(ptt_key).map_err(|e| {
         eprintln!("{e:#}");
         e
     })?;
@@ -210,22 +210,22 @@ async fn main() -> anyhow::Result<()> {
     let shutdown = CancellationToken::new();
 
     // === 7. Spawn injection thread (std::thread, D-07) ===
-    let (macro_tx, macro_rx) = mpsc::channel::<hd_linux_voice::input::inject::MacroCmd>();
-    let inject_handle = hd_linux_voice::input::inject::spawn_injection_thread(virtual_kbd, macro_rx);
+    let (macro_tx, macro_rx) = mpsc::channel::<vibe_attack::input::inject::MacroCmd>();
+    let inject_handle = vibe_attack::input::inject::spawn_injection_thread(virtual_kbd, macro_rx);
 
     // === 8. Start CPAL audio stream (warm, D-04) ===
-    let audio_handle = hd_linux_voice::audio::start_audio_stream(
+    let audio_handle = vibe_attack::audio::start_audio_stream(
         config.audio.device.as_deref(),
         Arc::clone(&ptt_active),
     )
         .map_err(|e| {
-            let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
+            let _ = macro_tx.send(vibe_attack::input::inject::MacroCmd::Shutdown);
             eprintln!("Audio error: {e:#}");
             e
         })?;
 
     // === 9. Spawn PTT thread (std::thread, D-09, D-10) ===
-    let ptt_handle = hd_linux_voice::input::ptt::spawn_ptt_thread(
+    let ptt_handle = vibe_attack::input::ptt::spawn_ptt_thread(
         ptt_device,
         ptt_key,
         Arc::clone(&ptt_active),
@@ -239,13 +239,13 @@ async fn main() -> anyhow::Result<()> {
     // spawned from inside a nested helper and then dropped has been shown
     // to silently stop the ALSA/PipeWire callback on Linux.  Pass only the
     // ringbuf consumer into the pipeline.
-    let hd_linux_voice::audio::AudioHandle {
+    let vibe_attack::audio::AudioHandle {
         stream: _audio_stream_guard,
         consumer: audio_consumer,
         actual_config: _actual_cfg,
     } = audio_handle;
 
-    let pipeline_handles = hd_linux_voice::pipeline::coordinator::spawn_pipeline(
+    let pipeline_handles = vibe_attack::pipeline::coordinator::spawn_pipeline(
         audio_consumer,
         config.clone(),
         Arc::clone(&ptt_active),
@@ -254,13 +254,13 @@ async fn main() -> anyhow::Result<()> {
     )
     .map_err(|e| {
         // If pipeline preflight fails, stop injection thread before exiting.
-        let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
+        let _ = macro_tx.send(vibe_attack::input::inject::MacroCmd::Shutdown);
         eprintln!("{e:#}");
         e
     })?;
 
     // === 10b. Spawn UDS control listener (Phase 4) ===
-    hd_linux_voice::control::spawn_control_listener(pipeline_handles.dispatcher.clone()).await.map_err(|e| {
+    vibe_attack::control::spawn_control_listener(pipeline_handles.dispatcher.clone()).await.map_err(|e| {
         tracing::error!("Failed to start control listener: {e:#}");
         e
     })?;
@@ -301,7 +301,7 @@ async fn main() -> anyhow::Result<()> {
     drop(output_join);
 
     // Signal injection thread and wait for it to drain
-    let _ = macro_tx.send(hd_linux_voice::input::inject::MacroCmd::Shutdown);
+    let _ = macro_tx.send(vibe_attack::input::inject::MacroCmd::Shutdown);
     if let Err(e) = inject_handle.join() {
         tracing::warn!("Injection thread panicked: {e:?}");
     }
@@ -314,6 +314,6 @@ async fn main() -> anyhow::Result<()> {
     // Dropping _audio_stream_guard here stops the CPAL stream (RAII).
     drop(_audio_stream_guard);
 
-    tracing::info!("hd-linux-voice stopped");
+    tracing::info!("vibe-attack stopped");
     Ok(())
 }

@@ -1,4 +1,10 @@
-# GSD context snapshot (2026-04-25T18:59:26.373Z)
+# GSD context snapshot (2026-04-25T21:29:41.081Z)
 
-## Active context
-Active: M001 / S03 / T01 — Plan 01
+## Top project memories
+- [MEM001] (gotcha) xdg::BaseDirectories::with_prefix("hd-linux-voice") appends the prefix to XDG_CONFIG_HOME, so get_profiles_dir() returns $XDG_CONFIG_HOME/hd-linux-voice/profiles — not $XDG_CONFIG_HOME/profiles. Integration tests that redirect XDG_CONFIG_HOME for hermetic isolation must create fixtures at dir.path()/hd-linux-voice/profiles/, not dir.path()/profiles/.
+- [MEM002] (pattern) Hermetic isolation pattern for XDG-path-dependent tests: call std::env::set_var("XDG_CONFIG_HOME", temp_dir.path()) before any code path that calls xdg::BaseDirectories::with_prefix(), then std::env::remove_var("XDG_CONFIG_HOME") immediately after. This works because xdg 3.0.0 reads XDG_CONFIG_HOME via env::var_os fresh at each with_prefix() call, not cached at startup.
+- [MEM005] (architecture) UI state structs (FirstRunState, ConfigApp) are pure Rust with no egui/eframe imports, making them testable without a display server. The egui/eframe dependency is gated behind an optional `gui` feature; the daemon binary uses `required-features = ["gui"]` on the [[bin]] section to prevent GUI libraries from entering the default build.
+- [MEM013] (convention) As of S07/T03, the ORT dual-instance conflict warning has been removed from both docs/troubleshooting.md (Models section) and docs/configuration.md (wake section). Both files now document shared .so deployment and ORT_DYLIB_PATH guidance for custom installs. MEM012 is superseded by this update.
+- [MEM014] (architecture) sherpa-onnx switched from static to shared ORT linking (`default-features = false, features = ["shared"]`) so both sherpa-onnx and the `ort` crate share a single `libonnxruntime.so`. This eliminates ~218 duplicated ORT symbols that caused `std::bad_alloc` heap corruption when wake-word and VAD ran simultaneously.
+- [MEM015] (pattern) ORT_DYLIB_PATH is auto-set in `coordinator.rs` to `<exe_dir>/libonnxruntime.so` before Silero VAD init, using `unsafe { std::env::set_var }`. T
+…[truncated]

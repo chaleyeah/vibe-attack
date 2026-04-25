@@ -101,7 +101,7 @@ impl KeyStep {
     }
 }
 
-/// Open a keyboard-only uinput VirtualDevice named "hd-linux-voice" (D-05, MCRO-05).
+/// Open a keyboard-only uinput VirtualDevice named "vibe-attack" (D-05, MCRO-05).
 ///
 /// Returns DaemonError::UinputPermissionDenied on EACCES — the Display message
 /// is the exact actionable error the user sees (D-15).
@@ -122,7 +122,7 @@ pub fn open_uinput_device() -> Result<evdev::uinput::VirtualDevice> {
                 anyhow::anyhow!("Failed to open /dev/uinput: {e}")
             }
         })?
-        .name("hd-linux-voice")
+        .name("vibe-attack")
         .with_keys(&keys)
         .map_err(|e| anyhow::anyhow!("Failed to configure virtual keys: {e}"))?
         .build()

@@ -1,4 +1,4 @@
-//! Typed error variants for hd-linux-voice daemon.
+//! Typed error variants for vibe-attack daemon.
 
 /// All catastrophic daemon errors. These result in process exit with an actionable message.
 #[derive(Debug, thiserror::Error)]
@@ -10,7 +10,7 @@ pub enum DaemonError {
          Fix: sudo modprobe uinput && sudo usermod -aG input $USER\n\
          Then log out and back in, or run: newgrp input\n\
          Note: On systemd v258+, use the 'input' group (not 'uinput').\n\
-         Docs: https://github.com/yourusername/hd-linux-voice/blob/main/docs/uinput-setup.md"
+         Docs: https://github.com/yourusername/vibe-attack/blob/main/docs/uinput-setup.md"
     )]
     UinputPermissionDenied,
 

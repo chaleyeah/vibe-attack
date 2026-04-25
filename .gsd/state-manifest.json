@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-25T20:19:49.986Z",
+  "exported_at": "2026-04-25T21:15:52.232Z",
   "milestones": [
     {
       "id": "M001",
@@ -20,6 +20,78 @@
       "definition_of_done": [],
       "requirement_coverage": "",
       "boundary_map_markdown": ""
+    },
+    {
+      "id": "M002",
+      "title": "Rebrand to vibe-attack",
+      "status": "planned",
+      "depends_on": [],
+      "created_at": "2026-04-25T21:12:21.950Z",
+      "completed_at": null,
+      "vision": "Rename the project from hd-linux-voice to vibe-attack across every surface — source, tests, XDG config prefix, packaging, docs — with a clean break (no migration shim) so the codebase consistently reflects its true identity before any external distribution channels accumulate.",
+      "success_criteria": [
+        "Zero `hd[_-]linux[_-]voice` matches (case-insensitive) under src/, tests/, docs/ (excluding latency-proofs/), packaging/, Cargo.toml, README.md, CONTRIBUTING.md, config*.yaml, demo_hd2.yaml, about.toml, about.hbs, examples/.",
+        "`cargo build --all-features` succeeds and produces `target/debug/vibe-attack` and `target/debug/vibe-attack-config`.",
+        "Daemon launched against an empty home creates `~/.config/vibe-attack/` and reads configuration from that path.",
+        "`packaging/appimage/build.sh` produces a `vibe-attack-x86_64.AppImage` artifact and `--help` runs through it.",
+        "`tests/documentation.rs::readme_has_correct_project_name` is inverted (requires `vibe-attack`, forbids `hd-linux-voice`) and passes.",
+        "The empty `.planning/phases/07-rebrand-from-hd-linux-voice-to-vibe-attack/` marker directory is deleted."
+      ],
+      "key_risks": [
+        {
+          "risk": "Missed source reference breaks the build or silently changes behavior",
+          "whyItMatters": "The XDG prefix and binary paths are referenced in many places (src/, tests/, packaging/, build scripts). A single missed string in a Cargo `[[bin]]` definition or a shell script breaks the build or produces a binary that reads the wrong config dir. Caught only by full-feature build + grep sweep."
+        },
+        {
+          "risk": "Test fixture paths under XDG_CONFIG_HOME don't move with the source rename",
+          "whyItMatters": "Per project memory: integration tests redirect XDG_CONFIG_HOME and create fixtures at <dir>/hd-linux-voice/profiles/. If those fixture paths aren't updated when the prefix changes, tests pass against stale paths while the daemon reads a different one — a silent false-pass that would only surface as a real-environment integration failure."
+        },
+        {
+          "risk": "AppImage build embeds the old name in non-grep-visible ways",
+          "whyItMatters": "Shell variable expansion, generated AppRun scripts, and icon/desktop file pathing in `packaging/appimage/build.sh` may produce a `vibe-attack-x86_64.AppImage` that builds but fails at launch because an internal path still resolves to the old name. Only end-to-end execution catches this."
+        },
+        {
+          "risk": "Documentation regression guard test inversion lands separately from README content change",
+          "whyItMatters": "`tests/documentation.rs::readme_has_correct_project_name` currently requires `hd-linux-voice` and forbids `vibe-attack`. If the test inversion and the README rewrite land in different commits/tasks, the suite is broken between them. Must be coupled in a single task."
+        }
+      ],
+      "proof_strategy": [
+        {
+          "riskOrUnknown": "Missed source reference breaks the build or silently changes behavior",
+          "retireIn": "S01",
+          "whatWillBeProven": "`cargo build --all-features` succeeds and `rg -i 'hd[_-]linux[_-]voice' -- src/ Cargo.toml examples/` returns zero matches."
+        },
+        {
+          "riskOrUnknown": "Test fixture paths under XDG_CONFIG_HOME don't move with the source rename",
+          "retireIn": "S02",
+          "whatWillBeProven": "Every test in `tests/` builds and (when run by the user, since auto-mode blocks `cargo test`) passes; `rg -i 'hd[_-]linux[_-]voice' -- tests/` returns zero. The inverted documentation guard is one of those tests."
+        },
+        {
+          "riskOrUnknown": "AppImage build embeds the old name in non-grep-visible ways",
+          "retireIn": "S04",
+          "whatWillBeProven": "`packaging/appimage/build.sh` runs to completion and produces a runnable `vibe-attack-x86_64.AppImage` whose `--help` exits zero."
+        },
+        {
+          "riskOrUnknown": "Documentation regression guard test inversion lands separately from README content change",
+          "retireIn": "S02",
+          "whatWillBeProven": "The README rewrite and the test polarity inversion ship in the same task; the suite is never simultaneously broken."
+        }
+      ],
+      "verification_contract": "`cargo build --all-features` succeeds. `rg -i 'hd[_-]linux[_-]voice'` returns zero across the in-scope file set. The inverted `readme_has_correct_project_name` test exists and is structurally correct (build succeeds; test runs when user invokes `cargo test`). All existing tests still build.",
+      "verification_integration": "Renamed daemon launches against an empty `$HOME` and creates `~/.config/vibe-attack/`; renamed GUI binary launches its config app reading the same on-disk config the daemon consumes; XDG-redirected integration tests (e.g. `tests/pack_hd2_bundle.rs`) build against fixtures at the new prefix path.",
+      "verification_operational": "`packaging/appimage/build.sh` runs to completion and produces a `vibe-attack-x86_64.AppImage` artifact. Invoking the AppImage with `--help` exits zero. PKGBUILD is structurally valid for `pkgname=vibe-attack` (best-effort static check; no `makepkg` run unless the user has the Arch toolchain).",
+      "verification_uat": "User runs `cargo test` (blocked in auto-mode) and confirms all tests pass; user confirms the new XDG path resolves correctly on their actual machine; user decides on the GitHub repo slug change separately and updates `Cargo.toml`'s `repository` URL.",
+      "definition_of_done": [
+        "Every slice S01–S06 is complete with its summary recorded.",
+        "`cargo build --all-features` succeeds on a clean tree.",
+        "`rg -i 'hd[_-]linux[_-]voice' -- src/ tests/ docs/ packaging/ Cargo.toml README.md CONTRIBUTING.md config.example.yaml config.yaml demo_hd2.yaml about.toml about.hbs examples/` returns zero (excluding `docs/latency-proofs/` historical artifacts).",
+        "Both renamed binaries (`vibe-attack`, `vibe-attack-config`) build and respond to `--help`.",
+        "The AppImage build script produces a runnable `vibe-attack-x86_64.AppImage`.",
+        "The legacy empty `.planning/phases/07-rebrand-from-hd-linux-voice-to-vibe-attack/` directory is deleted.",
+        "Milestone summary documents the manual GitHub-slug-rename step and the one-line `mv ~/.config/hd-linux-voice ~/.config/vibe-attack` migration command for the developer's existing environment."
+      ],
+      "requirement_coverage": "No R### requirements turn on the project name; this milestone touches identity, not behavior. No requirement coverage claimed; no orphan risks.",
+      "boundary_map_markdown": "### S01 → S02\n\nProduces:\n- Cargo package and `[[bin]]` targets renamed to `vibe-attack` and `vibe-attack-config`.\n- `src/bin/hd-linux-voice-config.rs` renamed on disk to `src/bin/vibe-attack-config.rs`.\n- `xdg::BaseDirectories::with_prefix(\"vibe-attack\")` in every source-side call site.\n- All source-level log/error strings, doc comments, and constants reference `vibe-attack`.\n- `examples/audio_probe.rs` updated.\n- `cargo build --all-features` succeeds.\n\nConsumes:\n- nothing (first slice).\n\n### S01 → S03\n\nProduces:\n- A buildable codebase under the new name. S03 (docs) consumes \"the binary names users will type\" from S01.\n\n### S02 → S03\n\nProduces:\n- All `tests/` files updated, including XDG fixture paths under the new prefix and the inverted `readme_has_correct_project_name` regression guard.\n- README.md fully rewritten in the same task as the test inversion (S02-T01).\n\nConsumes:\n- S01's renamed source.\n\n### S02 → S04\n\nProduces:\n- A test suite that compiles. S04 (packaging) consumes the binary names from S01 but doesn't depend on test changes; declared dependency is for sequencing, not data.\n\n### S03 → S05\n\nProduces:\n- All `docs/*.md` (excluding `docs/latency-proofs/`), `CONTRIBUTING.md`, `config.example.yaml`, `config.yaml`, `demo_hd2.yaml`, `about.toml`, `about.hbs` updated to reference `vibe-attack`.\n\nConsumes:\n- S02's already-rewritten README (avoid double-touching).\n\n### S04 → S06\n\nProduces:\n- `packaging/PKGBUILD` updated to `pkgname=vibe-attack`.\n- `packaging/appimage/build.sh` updated.\n- `packaging/appimage/hd-linux-voice.desktop` renamed to `packaging/appimage/vibe-attack.desktop` with internal `Exec=`/`Icon=` updated.\n- A successful AppImage build run producing `vibe-attack-x86_64.AppImage`.\n\nConsumes:\n- S01's renamed binaries.\n\n### S05 → S06\n\nProduces:\n- The empty `.planning/phases/07-rebrand-from-hd-linux-voice-to-vibe-attack/` directory deleted.\n- Any final stragglers from the milestone-wide grep sweep cleaned up.\n\nConsumes:\n- All prior slices' renamed surfaces.\n\n### S06 (terminal)\n\nProduces:\n- A milestone summary documenting:\n  - The manual `mv ~/.config/hd-linux-voice ~/.config/vibe-attack` command for the developer's existing config.\n  - The pending GitHub-repo-slug decision and how to update `Cargo.toml`'s `repository` URL once chosen.\n  - Verification evidence: build output, grep sweep zero-match proof, AppImage `--help` output.\n\nConsumes:\n- All prior slices."
     }
   ],
   "slices": [
@@ -175,6 +247,149 @@
       "integration_closure": "- Upstream surfaces consumed: `sherpa-onnx` crate (shared feature), `silero-vad-rust` crate (ort load-dynamic), `src/pipeline/coordinator.rs` (VAD init path)\n- New wiring introduced: ORT_DYLIB_PATH auto-discovery block in coordinator.rs before Silero VAD load\n- What remains: AppImage packaging must bundle both .so files (documented for future S08/packaging work, MEM007 already tracks this)",
       "observability_impact": "- Runtime signals: tracing::info log when ORT_DYLIB_PATH is auto-set; existing Silero VAD load timing log\n- Inspection surfaces: `ldd` on binary shows shared ORT linkage; `ls target/debug/*.so` shows .so presence\n- Failure visibility: catch_unwind around Silero init already produces actionable error with ORT_DYLIB_PATH guidance\n- Redaction constraints: none",
       "sequence": 7,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M002",
+      "id": "S01",
+      "title": "Source rename — Cargo package, binaries, XDG prefix, log strings",
+      "status": "pending",
+      "risk": "high",
+      "depends": [],
+      "demo": "After this: `cargo build --all-features` succeeds; `target/debug/vibe-attack --help` and `target/debug/vibe-attack-config --help` both run; `rg -i 'hd[_-]linux[_-]voice' -- src/ Cargo.toml examples/` returns zero matches.",
+      "created_at": "2026-04-25T21:15:52.223Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Rename the Cargo package, both `[[bin]]` targets, the binary source file, every `xdg::BaseDirectories::with_prefix` call, and every source-level log/error/comment reference. The build must succeed at the end of this slice — that is the proof the source-level rename retires the missed-reference risk.",
+      "success_criteria": "Cargo.toml `package.name`, both `[[bin]] name` fields, and `description` updated. `src/bin/hd-linux-voice-config.rs` renamed to `src/bin/vibe-attack-config.rs` with corresponding `[[bin]] path` update. Every `with_prefix(\"hd-linux-voice\")` becomes `with_prefix(\"vibe-attack\")`. `examples/audio_probe.rs` updated. `cargo build --all-features` succeeds. `rg -i 'hd[_-]linux[_-]voice' -- src/ Cargo.toml examples/` returns zero.",
+      "proof_level": "Real — the build is exercised end-to-end against the modified source; binaries are produced and respond to `--help`.",
+      "integration_closure": "The Cargo build system and the XDG file-resolution code path are the integration surfaces; both are exercised by the build + `--help` invocation. No external services involved at this layer.",
+      "observability_impact": "Log strings that include the project name are updated as part of this slice (e.g. `tracing` initialization, error messages). No new log fields, no telemetry change. The project memory note about `with_prefix` test fixture paths is updated in the slice summary.",
+      "sequence": 1,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M002",
+      "id": "S02",
+      "title": "Test suite update — XDG fixture paths and documentation regression-guard inversion",
+      "status": "pending",
+      "risk": "high",
+      "depends": [
+        "S01"
+      ],
+      "demo": "After this: every file under `tests/` is updated; the README is rewritten in the same task as the test polarity inversion; the test suite builds; `rg -i 'hd[_-]linux[_-]voice' -- tests/ README.md` returns zero.",
+      "created_at": "2026-04-25T21:15:52.223Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Update every test that references the old name, especially XDG fixture paths created at `<dir>/hd-linux-voice/profiles/` (per the project memory note). Invert `tests/documentation.rs::readme_has_correct_project_name` polarity and rewrite README.md in the same task to keep the suite consistent across the change. Tests must still build at the end of the slice; runtime test confirmation is deferred to a manual user run since auto-mode blocks `cargo test`.",
+      "success_criteria": "All test files updated. `tests/documentation.rs::readme_has_correct_project_name` requires `vibe-attack` and forbids `hd-linux-voice`. README.md is rewritten in the same task. `cargo build --tests --all-features` succeeds. `rg -i 'hd[_-]linux[_-]voice' -- tests/ README.md` returns zero.",
+      "proof_level": "Contract for the test suite (build succeeds; user confirms `cargo test` passes during UAT). Real for README content (the new README is the actual document the project will ship with).",
+      "integration_closure": "Tests that exercise XDG path redirection (`pack_hd2_bundle`, `daemon_headless`, etc.) are the integration touchpoint; their fixture paths must align with S01's renamed prefix.",
+      "observability_impact": "None directly. The test suite continues to surface failures via cargo's standard output. The inverted documentation guard is itself an observability mechanism — it prevents future identity drift from going unnoticed.",
+      "sequence": 2,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M002",
+      "id": "S03",
+      "title": "Documentation and config-template rewrite",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S02"
+      ],
+      "demo": "After this: `docs/*.md` (excluding `docs/latency-proofs/`), `CONTRIBUTING.md`, `config.example.yaml`, `config.yaml`, `demo_hd2.yaml`, `about.toml`, `about.hbs` all reference `vibe-attack`; `rg -i 'hd[_-]linux[_-]voice' -- docs/configuration.md docs/troubleshooting.md docs/uinput-setup.md docs/latency-baseline.md CONTRIBUTING.md config.example.yaml config.yaml demo_hd2.yaml about.toml about.hbs` returns zero.",
+      "created_at": "2026-04-25T21:15:52.223Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Rewrite every living document and config template to reference `vibe-attack` instead of `hd-linux-voice`. README is excluded — it was already rewritten in S02 alongside the test inversion. Historical artifacts under `docs/latency-proofs/` are excluded — they are timestamped records, not living docs.",
+      "success_criteria": "Every file in the scope is updated. The grep sweep against the listed file set returns zero. Doc internal cross-references and command examples (`cargo run --bin vibe-attack`, etc.) reflect the new binary names. Config example files use the new package name in any commented-out paths.",
+      "proof_level": "Contract — the documents are files; their correctness is verified by reading them and by the grep sweep.",
+      "integration_closure": "None at this layer; documentation is a static surface.",
+      "observability_impact": "None.",
+      "sequence": 3,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M002",
+      "id": "S04",
+      "title": "Packaging — PKGBUILD, AppImage build script, desktop entry",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S01"
+      ],
+      "demo": "After this: `packaging/appimage/build.sh` produces a runnable `vibe-attack-x86_64.AppImage`; the desktop file is renamed and updated; PKGBUILD references `pkgname=vibe-attack`; invoking the AppImage with `--help` exits zero.",
+      "created_at": "2026-04-25T21:15:52.223Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Update the Arch PKGBUILD (`pkgname`, `_pkgname` if used, `source` array, `package()` install paths) and the AppImage build script (any references to the old binary, AppRun script content, output filename). Rename `packaging/appimage/hd-linux-voice.desktop` to `packaging/appimage/vibe-attack.desktop` and update its `Exec=`, `Icon=`, and `Name=` fields. Run the AppImage build to completion as proof.",
+      "success_criteria": "PKGBUILD is structurally valid for `pkgname=vibe-attack` (a static read confirms `pkgname`, `pkgdesc`, source filenames, and `package()` install paths align). `packaging/appimage/build.sh` references the new binary and produces `vibe-attack-x86_64.AppImage`. The AppImage runs `--help` cleanly. `rg -i 'hd[_-]linux[_-]voice' -- packaging/` returns zero.",
+      "proof_level": "Real for AppImage (the build is executed end-to-end against the renamed source). Contract for PKGBUILD (no `makepkg` run unless the Arch toolchain is available locally; structural validity is confirmed by reading).",
+      "integration_closure": "The AppImage build is itself the integration test — it bundles the binary, the desktop entry, the icon, and the AppRun script into a single artifact and runs it. A failure anywhere in the rename chain surfaces here.",
+      "observability_impact": "AppImage build script emits its standard output during the run; the slice summary captures the build log path and the artifact location.",
+      "sequence": 4,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M002",
+      "id": "S05",
+      "title": "Cleanup — delete legacy marker directory and final grep sweep",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S03",
+        "S04"
+      ],
+      "demo": "After this: `.planning/phases/07-rebrand-from-hd-linux-voice-to-vibe-attack/` is deleted; the milestone-wide grep sweep (`rg -i 'hd[_-]linux[_-]voice' -- src/ tests/ docs/ packaging/ Cargo.toml README.md CONTRIBUTING.md config*.yaml demo_hd2.yaml about.toml about.hbs examples/`) returns zero, excluding `docs/latency-proofs/` historical artifacts.",
+      "created_at": "2026-04-25T21:15:52.223Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Delete the empty `.planning/phases/07-rebrand-from-hd-linux-voice-to-vibe-attack/` marker directory that originally scoped this work. Run the milestone-wide grep sweep and resolve any stragglers — files not anticipated by S01–S04. The sweep is the structural proof that the rename is complete.",
+      "success_criteria": "The marker directory is gone. The milestone-wide grep returns zero across the in-scope file set. Any unexpected matches are either resolved (by editing the file) or explicitly justified in the slice summary (e.g. an intentional historical reference).",
+      "proof_level": "Contract — verified by `rg` output and `ls`.",
+      "integration_closure": "None at this layer.",
+      "observability_impact": "None.",
+      "sequence": 5,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M002",
+      "id": "S06",
+      "title": "Final integration — end-to-end smoke and milestone summary",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S05"
+      ],
+      "demo": "After this: the renamed daemon launches against an empty home and creates `~/.config/vibe-attack/`; the renamed GUI binary's config app reads/writes the same on-disk config; the milestone summary documents the manual `mv` migration command for the developer's existing config and the pending GitHub-slug decision; M002 closes.",
+      "created_at": "2026-04-25T21:15:52.223Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Exercise the renamed system end-to-end against a real environment to prove the assembled rename works — not just a build, but actual config-dir creation and daemon startup. Capture the manual user actions (XDG `mv`, GitHub repo slug rename) in the milestone summary so they aren't lost. This is the explicit final integration slice required by the multi-runtime-boundary planning rule (daemon + GUI + AppImage).",
+      "success_criteria": "Daemon launches against `HOME=$(mktemp -d)` (or equivalent isolated home), creates `~/.config/vibe-attack/`, and exits cleanly. The renamed GUI binary launches and locates its config at the same path. The milestone summary records: the build evidence, the AppImage `--help` output, the daemon-against-empty-home transcript, the manual `mv` command, and the pending GitHub-slug decision.",
+      "proof_level": "Real — the daemon is launched against a clean filesystem and observed to interact with the new XDG path live.",
+      "integration_closure": "Daemon + GUI + on-disk XDG config + AppImage are all exercised together as a system; this is the assembly proof.",
+      "observability_impact": "Captures the daemon's startup log lines as evidence in the slice summary. The milestone summary itself becomes a future-agent observability surface — when someone asks `did the rename happen and was it complete?`, the answer is one file read away.",
+      "sequence": 6,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 /// Top-level daemon configuration.
-/// Loaded from $XDG_CONFIG_HOME/hd-linux-voice/config.yaml (D-13, D-14).
+/// Loaded from $XDG_CONFIG_HOME/vibe-attack/config.yaml (D-13, D-14).
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
@@ -274,13 +274,13 @@ pub struct KeyAction {
 }
 
 /// Return the XDG config file path (D-14).
-/// $XDG_CONFIG_HOME/hd-linux-voice/config.yaml, or ~/.config/hd-linux-voice/config.yaml.
+/// $XDG_CONFIG_HOME/vibe-attack/config.yaml, or ~/.config/vibe-attack/config.yaml.
 /// Return the XDG config file path (D-14), creating the config directory if needed.
-/// $XDG_CONFIG_HOME/hd-linux-voice/config.yaml, or ~/.config/hd-linux-voice/config.yaml.
+/// $XDG_CONFIG_HOME/vibe-attack/config.yaml, or ~/.config/vibe-attack/config.yaml.
 pub fn default_config_path() -> Result<PathBuf> {
-    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
+    let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
     xdg.place_config_file("config.yaml")
-        .context("Failed to create XDG config directory for hd-linux-voice")
+        .context("Failed to create XDG config directory for vibe-attack")
 }
 
 /// Load and deserialize config from the given path (or XDG default).

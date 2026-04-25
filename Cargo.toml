@@ -1,18 +1,18 @@
 [package]
-name = "hd-linux-voice"
+name = "vibe-attack"
 version = "0.1.0"
 edition = "2021"
 description = "Voice-macro daemon for Helldivers 2 on Linux"
 license = "AGPL-3.0-only"
-repository = "https://github.com/yourusername/hd-linux-voice"
+repository = "https://github.com/yourusername/vibe-attack"
 
 [[bin]]
-name = "hd-linux-voice"
+name = "vibe-attack"
 path = "src/main.rs"
 
 [[bin]]
-name = "hd-linux-voice-config"
-path = "src/bin/hd-linux-voice-config.rs"
+name = "vibe-attack-config"
+path = "src/bin/vibe-attack-config.rs"
 required-features = ["gui"]
 
 [features]

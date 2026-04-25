@@ -103,8 +103,8 @@ fn handle_switch_profile(name: &str, dispatcher: &Dispatcher) -> Result<()> {
 }
 
 fn get_socket_path() -> Result<PathBuf> {
-    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
+    let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
 
-    xdg.place_runtime_file("hd-linux-voice.sock")
+    xdg.place_runtime_file("vibe-attack.sock")
         .context("Failed to place UDS socket in runtime directory")
 }
