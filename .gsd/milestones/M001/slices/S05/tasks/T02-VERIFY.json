@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T02",
+  "unitId": "M001/S05/T02",
+  "timestamp": 1777146323662,
+  "passed": true,
+  "discoverySource": "task-plan",
+  "checks": [
+    {
+      "command": "test -f packaging/PKGBUILD",
+      "exitCode": 0,
+      "durationMs": 4,
+      "verdict": "pass"
+    },
+    {
+      "command": "test -f packaging/appimage/hd-linux-voice.desktop",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    },
+    {
+      "command": "test -f packaging/appimage/build.sh",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'pkgname=' packaging/PKGBUILD",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'Name=' packaging/appimage/hd-linux-voice.desktop",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    }
+  ]
+}

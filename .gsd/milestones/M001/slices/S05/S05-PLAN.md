@@ -103,7 +103,7 @@ IMPORTANT CONSTRAINTS:
   - Files: `packaging/PKGBUILD`, `packaging/appimage/hd-linux-voice.desktop`, `packaging/appimage/build.sh`, `tests/ui_distribution.rs`
   - Verify: test -f packaging/PKGBUILD && test -f packaging/appimage/hd-linux-voice.desktop && test -f packaging/appimage/build.sh && grep -q 'pkgname=' packaging/PKGBUILD && grep -q 'Name=' packaging/appimage/hd-linux-voice.desktop && cargo test --test ui_distribution 2>&1 | grep -E 'test result|running'
 
-- [ ] **T03: Add feature-gated egui binary and verify daemon stays headless** `est:45m`
+- [x] **T03: Add feature-gated egui binary and verify daemon stays headless** `est:45m`
   Add egui/eframe as an optional dependency behind a `gui` feature flag, create a minimal `src/bin/hd-linux-voice-config.rs` binary that uses FirstRunState and ConfigApp, and add a feature-gate separation test. This task ensures the daemon binary (default features) never links GUI libraries while the config binary is available via `cargo build --features gui`.
 
 **Step 1: Update Cargo.toml**

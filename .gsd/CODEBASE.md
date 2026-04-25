@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-25T19:42:41Z | Files: 105 | Described: 0/105
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:42:41Z","fingerprint":"88e1c5f76deecebee70c6804f17fee13128ff2e8","fileCount":105,"truncated":false} -->
+Generated: 2026-04-25T19:45:23Z | Files: 108 | Described: 0/108
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:45:23Z","fingerprint":"8b2c258f1e13fe59b63827c367fc361ac30b8cc9","fileCount":108,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -91,6 +91,13 @@ Generated: 2026-04-25T19:42:41Z | Files: 105 | Described: 0/105
 
 ### models/whisper/
 - `models/whisper/ggml-tiny.en.bin`
+
+### packaging/
+- `packaging/PKGBUILD`
+
+### packaging/appimage/
+- `packaging/appimage/build.sh`
+- `packaging/appimage/hd-linux-voice.desktop`
 
 ### profiles/hd2/
 - `profiles/hd2/pack.yaml`

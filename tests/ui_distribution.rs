@@ -132,3 +132,34 @@ fn appimage_build_script_has_shebang() {
         first_line
     );
 }
+
+#[test]
+fn daemon_default_features_exclude_gui() {
+    let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let cargo_toml = root.join("Cargo.toml");
+    let contents = std::fs::read_to_string(&cargo_toml).expect("failed to read Cargo.toml");
+    // Parse [features] section to extract the default = [...] line.
+    let in_features = &mut false;
+    for line in contents.lines() {
+        let trimmed = line.trim();
+        if trimmed == "[features]" {
+            *in_features = true;
+            continue;
+        }
+        if *in_features {
+            // Stop at next section header.
+            if trimmed.starts_with('[') {
+                break;
+            }
+            if trimmed.starts_with("default") {
+                assert!(
+                    !trimmed.contains("gui"),
+                    "default features must not include 'gui', found: {trimmed}"
+                );
+                return;
+            }
+        }
+    }
+    // If we reach here, the default line was found and does not include "gui",
+    // or the [features] section had no explicit default (which is also fine).
+}
