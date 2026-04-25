@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=HD Linux Voice
-Exec=hd-linux-voice
-Type=Application
-Icon=hd-linux-voice
-Comment=Voice macro daemon for Helldivers 2
-Categories=Game;Utility;
-Terminal=false

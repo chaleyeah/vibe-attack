@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PKGNAME="hd-linux-voice"
+PKGNAME="vibe-attack"
 APPDIR="AppDir"
 
 echo "Building $PKGNAME release binary..."
@@ -17,8 +17,8 @@ echo "Copying binary..."
 cp "target/release/$PKGNAME" "$APPDIR/usr/bin/$PKGNAME"
 
 echo "Copying .desktop file..."
-cp "packaging/appimage/hd-linux-voice.desktop" "$APPDIR/usr/share/applications/"
-cp "packaging/appimage/hd-linux-voice.desktop" "$APPDIR/$PKGNAME.desktop"
+cp "packaging/appimage/vibe-attack.desktop" "$APPDIR/usr/share/applications/"
+cp "packaging/appimage/vibe-attack.desktop" "$APPDIR/$PKGNAME.desktop"
 
 echo "Copying icon (placeholder if not present)..."
 if [ -f "assets/$PKGNAME.png" ]; then
