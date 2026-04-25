@@ -9,3 +9,4 @@ pub mod wake;
 pub mod control;
 pub mod pack;
 pub mod tui;
+pub mod ui;

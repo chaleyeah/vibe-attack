@@ -9,8 +9,8 @@
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:executing",
-      "label": "Phase: executing",
+      "id": "concept:phase:planning",
+      "label": "Phase: planning",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -373,5 +373,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-25T19:10:30.849Z"
+  "builtAt": "2026-04-25T19:32:50.520Z"
 }

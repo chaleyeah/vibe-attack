@@ -13,10 +13,10 @@
 - [x] **S03: S03** `risk:medium` `depends:[]`
   > After this: unit tests prove phrase-matching-dispatch works
 
-- [ ] **S04: S04** `risk:medium` `depends:[]`
+- [x] **S04: S04** `risk:medium` `depends:[]`
   > After this: unit tests prove pack-system-hd2-bundle works
 
-- [ ] **S05: UI + Distribution — egui config window, system tray, first Run wizard, AppImage, AUR/PKGBUILD** `risk:medium` `depends:[S04]`
+- [ ] **S05: S05** `risk:medium` `depends:[]`
   > After this: unit tests prove UI + Distribution — egui config window, system tray, first-run wizard, AppImage, AUR/PKGBUILD works
 
 - [ ] **S06: Documentation — Usage docs, troubleshooting, and contributor guides** `risk:medium` `depends:[S05]`
