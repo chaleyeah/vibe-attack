@@ -59,3 +59,8 @@
 {"id":"de7202b4-ce2d-4d72-8f8f-7af7df6789c2","ts":"2026-04-25T20:08:49.073Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"1a756b5b-7a09-4484-be8b-0245cf6c51a0","ts":"2026-04-25T20:08:49.084Z","severity":"info","message":"Verification gate: 2/2 checks passed","source":"notify","read":false}
 {"id":"417137aa-a5ea-4ba8-b132-719819e56c7b","ts":"2026-04-25T20:08:49.090Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"968e7ce2-0f7d-4b38-9895-9f5e3e9925db","ts":"2026-04-25T20:10:14.302Z","severity":"info","message":"Committed: test: Add dual_init_wake_and_vad_coexist test to tests/wake_word.rs pro…","source":"notify","read":false}
+{"id":"6d5f987a-f740-4235-96b0-f8b448628d65","ts":"2026-04-25T20:10:14.308Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"ec4db8d0-bc20-4946-8446-63c0ab973e3f","ts":"2026-04-25T20:10:14.308Z","severity":"warning","message":"Safety: task T02 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"3ffa6585-d25a-4792-91dd-9aa425dc6295","ts":"2026-04-25T20:10:14.320Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
+{"id":"4b07d44a-2fa0-455a-9ff4-c1952c070199","ts":"2026-04-25T20:10:14.324Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

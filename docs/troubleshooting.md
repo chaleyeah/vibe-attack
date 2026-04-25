@@ -86,9 +86,14 @@ stt:
 sherpa-onnx release page and set the `encoder`, `decoder`, `joiner`, `tokens`, and
 `keywords` paths in `config.yaml`. See `config.example.yaml` for the full structure.
 
-**ONNX Runtime errors:** Two concurrent ONNX Runtime instances can conflict. If you see
-a `bad_alloc` or ORT initialization error, ensure only one feature (STT *or* wake) is
-enabled at a time.
+**ONNX Runtime errors:** `libonnxruntime.so` and `libsherpa-onnx-c-api.so` are placed
+next to the binary at build time and are loaded automatically at startup. If you move
+the binary to a different directory without the `.so` files, or if you see an ORT
+initialization error in a custom install, set `ORT_DYLIB_PATH` to the full path of
+`libonnxruntime.so`:
+```bash
+export ORT_DYLIB_PATH=/path/to/libonnxruntime.so
+```
 
 ---
 
@@ -156,3 +161,8 @@ cargo build --no-default-features
 ```
 
 See `CONTRIBUTING.md` for the full list of feature flags.
+
+**Shared library deployment:** `cargo build` automatically copies `libonnxruntime.so`
+and `libsherpa-onnx-c-api.so` into the `target/` output directory alongside the binary.
+Both files must be present next to the binary at runtime for wake-word detection and VAD
+to work. When packaging or deploying the binary, copy those `.so` files with it.

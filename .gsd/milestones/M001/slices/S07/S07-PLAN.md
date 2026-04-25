@@ -128,7 +128,7 @@ The test is env-gated with `RUN_KWS_TESTS=1` like the existing test, since it re
   - Files: `tests/wake_word.rs`
   - Verify: grep -q 'dual_init_wake_and_vad_coexist' tests/wake_word.rs && grep -q 'load_silero_vad_with_options' tests/wake_word.rs && grep -q 'ORT_DYLIB_PATH' tests/wake_word.rs
 
-- [ ] **T03: Update docs to remove ORT conflict warnings and document shared .so deployment** `est:20m`
+- [x] **T03: Update docs to remove ORT conflict warnings and document shared .so deployment** `est:20m`
   ## Description
 
 Now that the dual-ORT conflict is resolved by the shared feature switch, update documentation to remove the stale "enable only one at a time" warnings and add deployment guidance for the shared `.so` files.

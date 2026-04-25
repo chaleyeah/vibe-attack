@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T02",
+  "unitId": "M001/S07/T02",
+  "timestamp": 1777147814309,
+  "passed": true,
+  "discoverySource": "task-plan",
+  "checks": [
+    {
+      "command": "grep -q 'dual_init_wake_and_vad_coexist' tests/wake_word.rs",
+      "exitCode": 0,
+      "durationMs": 3,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'load_silero_vad_with_options' tests/wake_word.rs",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'ORT_DYLIB_PATH' tests/wake_word.rs",
+      "exitCode": 0,
+      "durationMs": 3,
+      "verdict": "pass"
+    }
+  ]
+}

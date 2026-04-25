@@ -169,8 +169,10 @@ A successful keyword detection opens the `listen_window_secs` recording window.
 All five model paths must point to a compatible BPE keyword-spotting bundle. Place
 `bpe.model` in the same directory as `encoder.onnx` — it is auto-detected.
 
-> **Note:** Running both STT and wake-word simultaneously may cause ONNX Runtime
-> conflicts. If you see initialization errors, enable only one at a time.
+> **Note:** `libonnxruntime.so` and `libsherpa-onnx-c-api.so` are automatically placed
+> next to the binary at build time, so STT and wake-word can run simultaneously. For
+> custom installs where the `.so` files are not next to the binary, set
+> `ORT_DYLIB_PATH=/path/to/libonnxruntime.so` before starting the daemon.
 
 ---
 
