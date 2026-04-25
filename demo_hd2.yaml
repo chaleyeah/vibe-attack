@@ -5,9 +5,9 @@
 #
 # USAGE:
 # 1. Ensure the Whisper model is present at:
-#    ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+#    ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
 # 2. Run the daemon:
-#    ./target/debug/hd-linux-voice --config demo_hd2.yaml
+#    ./target/debug/vibe-attack --config demo_hd2.yaml
 # 3. Use LEFT CTRL as your Push-To-Talk key.
 #
 # NOTE: If you are running on a clean system, you may need to rebuild the 
@@ -26,7 +26,7 @@ pipeline:
 
 stt:
   enabled: true
-  model_path: ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+  model_path: ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
 
 macros:
   # --- Standard Stratagems ---

@@ -1,6 +1,6 @@
-# hd-linux-voice — example configuration
-# Copy to: $XDG_CONFIG_HOME/hd-linux-voice/config.yaml
-# (usually: ~/.config/hd-linux-voice/config.yaml)
+# vibe-attack — example configuration
+# Copy to: $XDG_CONFIG_HOME/vibe-attack/config.yaml
+# (usually: ~/.config/vibe-attack/config.yaml)
 #
 # Contract:
 # - stdout is reserved for machine-readable JSONL transcript output
@@ -38,13 +38,13 @@ stt:
   # Whisper model file (local-only; NOT downloaded automatically).
   #
   # Recommended default location:
-  #   ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+  #   ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
   #
   # One-time download example:
-  #   mkdir -p ~/.local/share/hd-linux-voice/models/whisper
-  #   curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
+  #   mkdir -p ~/.local/share/vibe-attack/models/whisper
+  #   curl -L -o ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin \
   #     https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
-  model_path: ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+  model_path: ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
   # Optional: bias whisper toward known stratagem vocabulary.
   # Comma-separated phrases matching your macro names work best.
   # initial_prompt: "reinforce, resupply, eagle airstrike, precision strike, railcannon, gas strike, autocannon"
@@ -53,11 +53,11 @@ wake:
   enabled: false
   # sherpa-onnx keyword spotter artifacts (local-only; not downloaded automatically)
   # BPE KWS bundles: place `bpe.model` in the same directory as `encoder.onnx` (auto-detected).
-  encoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/encoder.onnx
-  decoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/decoder.onnx
-  joiner: ~/.local/share/hd-linux-voice/models/sherpa/kws/joiner.onnx
-  tokens: ~/.local/share/hd-linux-voice/models/sherpa/kws/tokens.txt
-  keywords: ~/.local/share/hd-linux-voice/models/sherpa/kws/keywords.txt
+  encoder: ~/.local/share/vibe-attack/models/sherpa/kws/encoder.onnx
+  decoder: ~/.local/share/vibe-attack/models/sherpa/kws/decoder.onnx
+  joiner: ~/.local/share/vibe-attack/models/sherpa/kws/joiner.onnx
+  tokens: ~/.local/share/vibe-attack/models/sherpa/kws/tokens.txt
+  keywords: ~/.local/share/vibe-attack/models/sherpa/kws/keywords.txt
 
 macros:
   - name: test_sequence

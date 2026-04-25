@@ -1,6 +1,6 @@
 # about.toml — cargo-about 0.8.4 config
 # AGPL-3.0-only is accepted here so cargo-about can validate it, but the
-# about.hbs template uses {{#unless (eq crate.name "hd-linux-voice")}} to
+# about.hbs template uses {{#unless (eq crate.name "vibe-attack")}} to
 # exclude our own entry from the generated LICENSES.md output (D-16).
 accepted = [
     "Apache-2.0",

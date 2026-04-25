@@ -1,4 +1,4 @@
-# Contributing to hd-linux-voice
+# Contributing to vibe-attack
 
 Thank you for your interest in contributing. This guide covers how to build, test, and submit changes.
 

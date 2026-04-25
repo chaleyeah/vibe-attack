@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Quick-reference for common `hd-linux-voice` failure modes. Each section follows the
+Quick-reference for common `vibe-attack` failure modes. Each section follows the
 pattern: **symptom → likely cause → fix**.
 
 For full uinput/permissions setup, see [docs/uinput-setup.md](uinput-setup.md) — this
@@ -45,11 +45,11 @@ configured device name is wrong.
 
 **Fix:** List available devices, then update `config.yaml`:
 ```bash
-hd-linux-voice --list-devices
+vibe-attack --list-devices
 ```
 
 The output shows CPAL device names. Copy the exact string for your microphone into
-`~/.config/hd-linux-voice/config.yaml`:
+`~/.config/vibe-attack/config.yaml`:
 ```yaml
 audio:
   device: "Your Device Name Here"
@@ -70,8 +70,8 @@ the binary.
 
 **Fix for Whisper STT:**
 ```bash
-mkdir -p ~/.local/share/hd-linux-voice/models/whisper
-curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
+mkdir -p ~/.local/share/vibe-attack/models/whisper
+curl -L -o ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin \
   https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
 ```
 
@@ -79,7 +79,7 @@ Then ensure `config.yaml` points to the file:
 ```yaml
 stt:
   enabled: true
-  model_path: ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+  model_path: ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
 ```
 
 **Fix for wake-word (sherpa-onnx):** Download the BPE keyword-spotting bundle from the
@@ -126,13 +126,13 @@ though the daemon appears to be running.
 
 **Fix:** Use the `ping` subcommand to check daemon health:
 ```bash
-hd-linux-voice ping
+vibe-attack ping
 ```
 
 A healthy daemon prints `pong`. If the socket is stale, remove it and restart:
 ```bash
-rm -f /run/user/"$(id -u)"/hd-linux-voice.sock
-hd-linux-voice daemon &
+rm -f /run/user/"$(id -u)"/vibe-attack.sock
+vibe-attack daemon &
 ```
 
 ---

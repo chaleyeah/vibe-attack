@@ -1,6 +1,6 @@
 # Configuration Reference
 
-`hd-linux-voice` is configured via a single YAML file. This document explains every
+`vibe-attack` is configured via a single YAML file. This document explains every
 option. The annotated example lives in `config.example.yaml` at the repo root.
 
 ---
@@ -10,14 +10,14 @@ option. The annotated example lives in `config.example.yaml` at the repo root.
 The daemon follows the XDG Base Directory specification:
 
 ```
-~/.config/hd-linux-voice/config.yaml
+~/.config/vibe-attack/config.yaml
 ```
 
 If `$XDG_CONFIG_HOME` is set, it uses that instead of `~/.config`.
 
 To use a different file, pass `--config` on the command line:
 ```bash
-hd-linux-voice --config /path/to/my-config.yaml daemon
+vibe-attack --config /path/to/my-config.yaml daemon
 ```
 
 The `--config` flag is the only way to override the path at runtime — there is no
@@ -59,7 +59,7 @@ audio:
 
 List available names:
 ```bash
-hd-linux-voice --list-devices
+vibe-attack --list-devices
 ```
 
 ---
@@ -132,7 +132,7 @@ triggers on noise, raise it.
 ```yaml
 stt:
   enabled: false
-  model_path: ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+  model_path: ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
   # initial_prompt: "reinforce, resupply, eagle airstrike"
 ```
 
@@ -146,7 +146,7 @@ Models are **not downloaded automatically**. See [docs/troubleshooting.md](troub
 for the one-time download command. The recommended default path is:
 
 ```
-~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin
+~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
 ```
 
 ---
@@ -156,11 +156,11 @@ for the one-time download command. The recommended default path is:
 ```yaml
 wake:
   enabled: false
-  encoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/encoder.onnx
-  decoder: ~/.local/share/hd-linux-voice/models/sherpa/kws/decoder.onnx
-  joiner:  ~/.local/share/hd-linux-voice/models/sherpa/kws/joiner.onnx
-  tokens:  ~/.local/share/hd-linux-voice/models/sherpa/kws/tokens.txt
-  keywords: ~/.local/share/hd-linux-voice/models/sherpa/kws/keywords.txt
+  encoder: ~/.local/share/vibe-attack/models/sherpa/kws/encoder.onnx
+  decoder: ~/.local/share/vibe-attack/models/sherpa/kws/decoder.onnx
+  joiner:  ~/.local/share/vibe-attack/models/sherpa/kws/joiner.onnx
+  tokens:  ~/.local/share/vibe-attack/models/sherpa/kws/tokens.txt
+  keywords: ~/.local/share/vibe-attack/models/sherpa/kws/keywords.txt
 ```
 
 When `enabled: true`, the daemon runs a sherpa-onnx keyword spotter in the background.
