@@ -83,7 +83,7 @@ This is the core fix for the dual-ORT heap corruption that has kept `wake.enable
   - Files: `Cargo.toml`, `src/pipeline/coordinator.rs`
   - Verify: grep 'default-features = false' Cargo.toml | grep -q sherpa && grep -q 'ORT_DYLIB_PATH' src/pipeline/coordinator.rs && grep -q 'set_var' src/pipeline/coordinator.rs
 
-- [ ] **T02: Add dual-init coexistence test for sherpa-onnx + silero-vad-rust** `est:20m`
+- [x] **T02: Add dual-init coexistence test for sherpa-onnx + silero-vad-rust** `est:20m`
   ## Description
 
 Add a new test to `tests/wake_word.rs` that initializes both a sherpa-onnx `KeywordSpotter` and silero-vad-rust's OnnxModel in sequence within the same process. This test proves the dual-ORT conflict is resolved — if both can co-initialize without panic or bad_alloc, the shared `.so` approach works.

@@ -54,3 +54,8 @@
 {"id":"77186d84-8b8c-4082-9505-282a3d29f380","ts":"2026-04-25T20:00:29.348Z","severity":"info","message":"Auto-mode started. Will loop until milestone complete.","source":"notify","read":false}
 {"id":"b22c4181-88fd-4b8a-aea4-0fc2d9b25b2b","ts":"2026-04-25T20:00:29.349Z","severity":"info","message":"Dynamic routing: disabled — all tasks will use claude-code/claude-sonnet-4-6","source":"notify","read":false}
 {"id":"e7fadb56-ce5b-4488-9a37-f2c7b912cf1b","ts":"2026-04-25T20:04:49.839Z","severity":"info","message":"Native Anthropic web search active","source":"notify","read":false}
+{"id":"047d9804-0014-48be-9afd-c6871059c310","ts":"2026-04-25T20:08:49.067Z","severity":"info","message":"Committed: feat: Switch sherpa-onnx to shared ORT linking and add ORT_DYLIB_PATH a…","source":"notify","read":false}
+{"id":"4dc22c90-481b-498c-b20a-e740f6b6a991","ts":"2026-04-25T20:08:49.073Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"de7202b4-ce2d-4d72-8f8f-7af7df6789c2","ts":"2026-04-25T20:08:49.073Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"1a756b5b-7a09-4484-be8b-0245cf6c51a0","ts":"2026-04-25T20:08:49.084Z","severity":"info","message":"Verification gate: 2/2 checks passed","source":"notify","read":false}
+{"id":"417137aa-a5ea-4ba8-b132-719819e56c7b","ts":"2026-04-25T20:08:49.090Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
