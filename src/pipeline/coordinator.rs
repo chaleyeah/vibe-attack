@@ -228,6 +228,21 @@ pub fn spawn_pipeline(
         None
     };
 
+    // ORT_DYLIB_PATH auto-discovery: point the `ort` crate at the same
+    // libonnxruntime.so that sherpa-onnx ships (shared feature), so both
+    // runtimes share one ORT global environment instead of colliding.
+    // Respect any existing user-supplied value.
+    if std::env::var_os("ORT_DYLIB_PATH").is_none() {
+        if let Ok(exe) = std::env::current_exe() {
+            if let Some(exe_dir) = exe.parent() {
+                let so_path = exe_dir.join("libonnxruntime.so");
+                // SAFETY: single-threaded at this point — no pipeline threads spawned yet.
+                unsafe { std::env::set_var("ORT_DYLIB_PATH", &so_path) };
+                tracing::info!(path = %so_path.display(), "ORT_DYLIB_PATH auto-set to sherpa-onnx shared library");
+            }
+        }
+    }
+
     // VAD model is required for utterance segmentation (CPU-only baseline, D-16).
     //
     // IMPORTANT: `ort` (ONNX Runtime) can panic at runtime if `libonnxruntime.so`

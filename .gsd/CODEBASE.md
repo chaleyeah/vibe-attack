@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-25T19:56:14Z | Files: 112 | Described: 0/112
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:56:14Z","fingerprint":"bad45cf5ba0ab02f8710bbcc47b142f0df631f09","fileCount":112,"truncated":false} -->
+Generated: 2026-04-25T19:58:30Z | Files: 114 | Described: 0/114
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:58:30Z","fingerprint":"0af13e25f2b1744eaa57669a36a636989c259248","fileCount":114,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -18,7 +18,9 @@ Generated: 2026-04-25T19:56:14Z | Files: 112 | Described: 0/112
 - `README.md`
 
 ### docs/
+- `docs/configuration.md`
 - `docs/latency-baseline.md`
+- `docs/troubleshooting.md`
 - `docs/uinput-setup.md`
 
 ### docs/latency-proofs/phase-02-target-hardware/
