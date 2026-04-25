@@ -40,7 +40,10 @@ pub fn run_editor() -> Result<()> {
     Ok(())
 }
 
-fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> anyhow::Result<()>
+where
+    B::Error: std::error::Error + Send + Sync + 'static,
+{
     loop {
         terminal.draw(|f| app.draw(f))?;
 

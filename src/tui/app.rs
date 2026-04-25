@@ -43,7 +43,7 @@ impl App {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints([Constraint::Length(3), Constraint::Min(0), Constraint::Length(3)])
-            .split(f.size());
+            .split(f.area());
 
         // Header
         let header = Paragraph::new(" HD-LINUX-VOICE // TACTICAL MACRO EDITOR ")
