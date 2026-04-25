@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-25T19:02:13Z | Files: 99 | Described: 0/99
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:02:13Z","fingerprint":"39c56bb56b1b18ef0d6088948fe70bc044a5b798","fileCount":99,"truncated":false} -->
+Generated: 2026-04-25T19:20:23Z | Files: 101 | Described: 0/101
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:20:23Z","fingerprint":"f854aa8c5aa27f628b2ae9016d5204cc6cc251db","fileCount":101,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -22,6 +22,7 @@ Generated: 2026-04-25T19:02:13Z | Files: 99 | Described: 0/99
 ### docs/latency-proofs/phase-02-target-hardware/
 - `docs/latency-proofs/phase-02-target-hardware/error.txt`
 - `docs/latency-proofs/phase-02-target-hardware/README.md`
+- `docs/latency-proofs/phase-02-target-hardware/RESULTS.md`
 - `docs/latency-proofs/phase-02-target-hardware/RESULTS.template.md`
 - `docs/latency-proofs/phase-02-target-hardware/timing.log`
 - `docs/latency-proofs/phase-02-target-hardware/transcript.jsonl`
@@ -148,6 +149,7 @@ Generated: 2026-04-25T19:02:13Z | Files: 99 | Described: 0/99
 - `tests/drop_oldest_queue.rs`
 - `tests/jsonl_schema.rs`
 - `tests/macro_inject.rs`
+- `tests/pack_hd2_bundle.rs`
 - `tests/stt_smoke.rs`
 - `tests/uinput_smoke.rs`
 - `tests/wake_word.rs`
