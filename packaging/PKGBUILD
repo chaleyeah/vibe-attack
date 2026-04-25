@@ -1,0 +1,27 @@
+# Maintainer: Your Name <your@email.com>
+pkgname=hd-linux-voice
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Voice-macro daemon for Helldivers 2 on Linux'
+arch=('x86_64')
+url='https://github.com/yourusername/hd-linux-voice'
+license=('AGPL-3.0-only')
+depends=('alsa-lib')
+makedepends=('rust' 'cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "$pkgname-$pkgver"
+    cargo build --release --locked
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+
+    install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+    install -Dm644 "packaging/appimage/hd-linux-voice.desktop" \
+        "$pkgdir/usr/share/applications/hd-linux-voice.desktop"
+    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

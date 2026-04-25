@@ -87,3 +87,48 @@ fn config_app_log_capped_at_max() {
     // The oldest lines should have been dropped; the last line is still present.
     assert!(app.log_lines.last().unwrap().contains(&format!("{}", MAX_LOG_LINES + 9)));
 }
+
+#[test]
+fn pkgbuild_file_exists_and_has_required_fields() {
+    let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let pkgbuild = root.join("packaging/PKGBUILD");
+    assert!(pkgbuild.exists(), "packaging/PKGBUILD must exist");
+    let contents = std::fs::read_to_string(&pkgbuild).expect("failed to read PKGBUILD");
+    assert!(contents.contains("pkgname="), "PKGBUILD missing pkgname=");
+    assert!(contents.contains("pkgver="), "PKGBUILD missing pkgver=");
+    assert!(contents.contains("url="), "PKGBUILD missing url=");
+    assert!(contents.contains("license="), "PKGBUILD missing license=");
+}
+
+#[test]
+fn desktop_file_exists_and_has_required_keys() {
+    let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let desktop = root.join("packaging/appimage/hd-linux-voice.desktop");
+    assert!(desktop.exists(), "packaging/appimage/hd-linux-voice.desktop must exist");
+    let contents = std::fs::read_to_string(&desktop).expect("failed to read .desktop file");
+    assert!(contents.contains("Name="), ".desktop missing Name=");
+    assert!(contents.contains("Exec="), ".desktop missing Exec=");
+    assert!(contents.contains("Type="), ".desktop missing Type=");
+}
+
+#[test]
+fn appimage_build_script_exists() {
+    let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let build_sh = root.join("packaging/appimage/build.sh");
+    assert!(build_sh.exists(), "packaging/appimage/build.sh must exist");
+    let contents = std::fs::read_to_string(&build_sh).expect("failed to read build.sh");
+    assert!(!contents.is_empty(), "build.sh must not be empty");
+}
+
+#[test]
+fn appimage_build_script_has_shebang() {
+    let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let build_sh = root.join("packaging/appimage/build.sh");
+    let contents = std::fs::read_to_string(&build_sh).expect("failed to read build.sh");
+    let first_line = contents.lines().next().expect("build.sh must not be empty");
+    assert!(
+        first_line.starts_with("#!"),
+        "build.sh first line must be a shebang, got: {:?}",
+        first_line
+    );
+}

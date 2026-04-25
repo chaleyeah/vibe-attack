@@ -50,7 +50,7 @@ IMPORTANT CONSTRAINTS:
   - Files: `src/ui/mod.rs`, `src/ui/first_run.rs`, `src/ui/config_app.rs`, `src/lib.rs`, `tests/ui_distribution.rs`
   - Verify: cargo test --test ui_distribution 2>&1 | grep -E 'test result|running' && test $(grep -c '#\[test\]' tests/ui_distribution.rs) -ge 11
 
-- [ ] **T02: Create packaging scaffolding (PKGBUILD, AppImage, .desktop) and add structural tests** `est:30m`
+- [x] **T02: Create packaging scaffolding (PKGBUILD, AppImage, .desktop) and add structural tests** `est:30m`
   Create the `packaging/` directory tree with three distribution artifacts and add 4 structural tests to `tests/ui_distribution.rs`.
 
 **Files to create:**

@@ -16,3 +16,7 @@
 {"id":"e71e95d7-4f38-4fd9-b405-83269bc07d8f","ts":"2026-04-25T19:29:58.284Z","severity":"info","message":"Committed: fix: Final static verification pass for tests/pack_hd2_bundle.rs — all…","source":"notify","read":false}
 {"id":"a7b62a64-df7a-48e5-9bb8-5a23e0601d02","ts":"2026-04-25T19:30:58.759Z","severity":"info","message":"Committed: fix: Final S04 completion gate — all 22 tests in tests/pack_hd2_bundle.…","source":"notify","read":false}
 {"id":"79a395f5-1205-474b-8498-e6345a32208c","ts":"2026-04-25T19:37:37.598Z","severity":"info","message":"Native Anthropic web search active","source":"notify","read":false}
+{"id":"bcffa13d-1d43-4ea2-b7c7-7ae524062810","ts":"2026-04-25T19:42:41.375Z","severity":"info","message":"Committed: test: Added src/ui/ module with pure-logic FirstRunState, SetupStep, an…","source":"notify","read":false}
+{"id":"b3a3fcee-d54b-421f-8a3c-46ea62496c32","ts":"2026-04-25T19:42:41.381Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"3784dd05-0a11-4ff2-a420-42f044179e66","ts":"2026-04-25T19:42:41.382Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"ef36c06b-d74a-44ab-b7db-65ed8a93d67d","ts":"2026-04-25T19:42:41.389Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

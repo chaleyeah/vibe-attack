@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-25T19:37:37Z | Files: 101 | Described: 0/101
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:37:37Z","fingerprint":"f854aa8c5aa27f628b2ae9016d5204cc6cc251db","fileCount":101,"truncated":false} -->
+Generated: 2026-04-25T19:42:41Z | Files: 105 | Described: 0/105
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:42:41Z","fingerprint":"88e1c5f76deecebee70c6804f17fee13128ff2e8","fileCount":105,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -135,6 +135,11 @@ Generated: 2026-04-25T19:37:37Z | Files: 101 | Described: 0/101
 - `src/tui/editor.rs`
 - `src/tui/mod.rs`
 
+### src/ui/
+- `src/ui/config_app.rs`
+- `src/ui/first_run.rs`
+- `src/ui/mod.rs`
+
 ### src/vad/
 - `src/vad/mod.rs`
 
@@ -151,5 +156,6 @@ Generated: 2026-04-25T19:37:37Z | Files: 101 | Described: 0/101
 - `tests/macro_inject.rs`
 - `tests/pack_hd2_bundle.rs`
 - `tests/stt_smoke.rs`
+- `tests/ui_distribution.rs`
 - `tests/uinput_smoke.rs`
 - `tests/wake_word.rs`
