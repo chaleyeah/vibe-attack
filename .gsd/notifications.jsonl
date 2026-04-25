@@ -1,0 +1,4 @@
+{"id":"f3c83554-fa19-42c3-a0fc-1fefa8212747","ts":"2026-04-25T02:37:16.146Z","severity":"info","message":"Writing .gsd directory…","source":"notify","read":false}
+{"id":"af3ee513-6b7b-4d40-a779-f9197da31fce","ts":"2026-04-25T02:37:16.153Z","severity":"info","message":"✓ Migration complete — 53 file(s) written to .gsd/","source":"notify","read":false}
+{"id":"2bcb2654-477c-47af-ada7-c637602e34ec","ts":"2026-04-25T02:39:29.603Z","severity":"info","message":"Native Anthropic web search active","source":"notify","read":false}
+{"id":"922f9730-46ef-4527-8ad8-25214b20894d","ts":"2026-04-25T02:39:29.603Z","severity":"info","message":"Model: claude-code/claude-sonnet-4-6","source":"notify","read":false}

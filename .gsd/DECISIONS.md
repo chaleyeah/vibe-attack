@@ -1,0 +1,8 @@
+- Use unix milliseconds for wall clock timestamps (allowed by D-21) to avoid new time-format deps.
+- Keep segmentation logic deterministic/testable by accepting scored frames, while providing a Silero-scoring path built on a 512-sample sliding window.
+- Wake-word requires continuous audio buffering; CPAL callback always pushes to ringbuf, and PTT/LISTENING gating happens on the pipeline thread.
+- Silero VAD is initialized with CPU-only options (`force_onnx_cpu: true`) to match Phase 2 baseline constraints.
+- Stdout is reserved for JSONL only via a dedicated output thread; all status/instrumentation stays on stderr via tracing.
+- Phase 2 latency proof metric is end-of-speech → transcript JSONL emit; end-of-speech → first key event is validated in Phase 3 dispatch.
+- `e2e_ms` is defined as `output_done_ms - vad_done_ms` and computed at JSONL emission time using monotonic markers
+- `vad_ms` measures compute cost (Instant elapsed) for Silero scoring + segmentation per frame, accumulated only while an utterance is active
