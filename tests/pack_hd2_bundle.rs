@@ -7,6 +7,7 @@
 
 use std::io::Write;
 
+use serial_test::serial;
 use vibe_attack::{
     config::{KeyAction, MacroConfig},
     pack::{Category, Pack},
@@ -324,6 +325,7 @@ fn pack_export_zip_no_sounds_dir_does_not_error() {
 }
 
 #[test]
+#[serial]
 fn pack_import_from_zip_reads_name_and_macros() {
     // Build a zip in a temp dir, import it, and verify the imported pack content.
     // import() extracts to XDG_CONFIG_HOME/vibe-attack/profiles/<name>.
@@ -363,6 +365,7 @@ fn pack_import_from_zip_reads_name_and_macros() {
 }
 
 #[test]
+#[serial]
 fn pack_import_extracts_sounds_to_profile_dir() {
     let source_dir = tempfile::tempdir().unwrap();
     let import_root = tempfile::tempdir().unwrap();
@@ -461,6 +464,7 @@ fn profile_manager_none_active_persists() {
 }
 
 #[test]
+#[serial]
 fn profile_manager_get_active_pack_resolves_from_profiles_dir() {
     let dir = tempfile::tempdir().unwrap();
     let profiles_dir = dir.path().join("vibe-attack/profiles");
@@ -484,6 +488,7 @@ fn profile_manager_get_active_pack_resolves_from_profiles_dir() {
 }
 
 #[test]
+#[serial]
 fn profile_manager_get_active_pack_none_when_no_active() {
     let dir = tempfile::tempdir().unwrap();
     std::env::set_var("XDG_CONFIG_HOME", dir.path());
@@ -495,6 +500,7 @@ fn profile_manager_get_active_pack_none_when_no_active() {
 }
 
 #[test]
+#[serial]
 fn profile_manager_get_active_pack_none_when_dir_missing() {
     let dir = tempfile::tempdir().unwrap();
     std::env::set_var("XDG_CONFIG_HOME", dir.path());
@@ -512,6 +518,7 @@ fn profile_manager_get_active_pack_none_when_dir_missing() {
 // ---------------------------------------------------------------------------
 
 #[test]
+#[serial]
 fn hd2_pack_full_lifecycle_export_import_activate_retrieve() {
     let export_dir = tempfile::tempdir().unwrap();
     let config_root = tempfile::tempdir().unwrap();

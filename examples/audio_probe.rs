@@ -742,12 +742,11 @@ fn real_main() -> anyhow::Result<()> {
         println!("Available input devices:");
         for d in host.input_devices()? {
             let name = d
-                .description()
-                .map(|x| x.name().to_string())
+                .name()
                 .unwrap_or_else(|_| "<?>".into());
             let cfg = d
                 .default_input_config()
-                .map(|c| format!("{} ch @ {} Hz", c.channels(), c.sample_rate()))
+                .map(|c| format!("{} ch @ {} Hz", c.channels(), c.sample_rate().0))
                 .unwrap_or_else(|_| "<?>".into());
             println!("  {name}  ({cfg})");
         }
@@ -761,22 +760,21 @@ fn real_main() -> anyhow::Result<()> {
         Some(target) => host
             .input_devices()?
             .find(|d| {
-                d.description()
-                    .map(|x| x.name() == target)
+                d.name()
+                    .map(|n| n == target)
                     .unwrap_or(false)
             })
             .ok_or_else(|| anyhow::anyhow!("Device not found: {target}"))?,
     };
 
     let name = device
-        .description()
-        .map(|x| x.name().to_string())
+        .name()
         .unwrap_or_else(|_| "<?>".into());
     let default_cfg = device.default_input_config()?;
     println!(
         "Using device: {name}  (native {} ch @ {} Hz, {:?})",
         default_cfg.channels(),
-        default_cfg.sample_rate(),
+        default_cfg.sample_rate().0,
         default_cfg.sample_format()
     );
 
@@ -784,7 +782,7 @@ fn real_main() -> anyhow::Result<()> {
     config.buffer_size = cpal::BufferSize::Fixed(1024);
     println!(
         "Opening stream: {} ch @ {} Hz, buffer Fixed(1024)",
-        config.channels, config.sample_rate
+        config.channels, config.sample_rate.0
     );
 
     let sample_count = Arc::new(AtomicUsize::new(0));
@@ -809,52 +807,27 @@ fn real_main() -> anyhow::Result<()> {
 
     stream.play()?;
 
-    // If --move-to-thread is given, move the Stream into a spawned OS thread
-    // (mirroring the daemon's spawn_pipeline architecture) and let that thread
-    // hold the stream alive.  Tests whether moving cpal::Stream across threads
-    // breaks the audio callback.
-    let move_to_thread = std::env::args().any(|a| a == "--move-to-thread");
-    let secs_copy = secs;
-    let sc2 = Arc::clone(&sample_count);
-    let cc2 = Arc::clone(&callback_count);
-    let join = if move_to_thread {
-        eprintln!(">> moving stream into spawned thread");
-        Some(std::thread::spawn(move || {
-            // Hold the stream in this thread's stack until sleep finishes.
-            let _keep = stream;
-            let start = Instant::now();
-            while start.elapsed() < Duration::from_secs(secs_copy) {
-                std::thread::sleep(Duration::from_millis(250));
-                let n = sc2.load(Ordering::Relaxed);
-                let c = cc2.load(Ordering::Relaxed);
-                eprint!("\r  callbacks={c:4}  samples={n:8}          ");
-            }
-            eprintln!();
-            drop(_keep);
-        }))
-    } else {
-        println!("Capturing for {secs}s...");
-        let start = Instant::now();
-        while start.elapsed() < Duration::from_secs(secs) {
-            std::thread::sleep(Duration::from_millis(250));
-            let n = sample_count.load(Ordering::Relaxed);
-            let c = callback_count.load(Ordering::Relaxed);
-            eprint!("\r  callbacks={c:4}  samples={n:8}          ");
-        }
-        eprintln!();
-        drop(stream);
-        None
-    };
-    if let Some(j) = join {
-        j.join().ok();
+    // cpal::Stream is !Send on ALSA/Linux, so --move-to-thread is unsupported here.
+    if std::env::args().any(|a| a == "--move-to-thread") {
+        eprintln!("!! --move-to-thread: cpal::Stream is !Send on this platform; running on main thread instead");
     }
+    println!("Capturing for {secs}s...");
+    let start = Instant::now();
+    while start.elapsed() < Duration::from_secs(secs) {
+        std::thread::sleep(Duration::from_millis(250));
+        let n = sample_count.load(Ordering::Relaxed);
+        let c = callback_count.load(Ordering::Relaxed);
+        eprint!("\r  callbacks={c:4}  samples={n:8}          ");
+    }
+    eprintln!();
+    drop(stream);
 
     let total = sample_count.load(Ordering::Relaxed);
     let cbs = callback_count.load(Ordering::Relaxed);
     println!("\nResult:");
     println!("  callbacks fired : {cbs}");
     println!("  samples total   : {total}");
-    let expected = (config.sample_rate as u64 * secs * config.channels as u64) as usize;
+    let expected = (config.sample_rate.0 as u64 * secs * config.channels as u64) as usize;
     println!("  samples expected: ~{expected}");
     if total == 0 {
         println!("  VERDICT: FAILED — CPAL opened stream but host delivered zero samples.");
