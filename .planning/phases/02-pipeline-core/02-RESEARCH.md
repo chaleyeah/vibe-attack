@@ -364,4 +364,3 @@ use sherpa_onnx::{KeywordSpotter, KeywordSpotterConfig};
 
 **Research date:** 2026-04-22  
 **Valid until:** 2026-05-22 (recheck crate versions + sherpa model docs if planning slips)
-

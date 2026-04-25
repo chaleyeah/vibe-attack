@@ -1,100 +1,34 @@
 ---
-phase: 02-pipeline-core
-plan: 04
-subsystem: testing
-tags: [latency, jsonl, stress-test, concurrency, crossbeam-channel]
-
-requires:
-  - phase: 02-03
-    provides: "End-to-end pipeline wiring + JSONL stdout + timing instrumentation fields"
-provides:
-  - "Reproducible Phase 2 latency baseline procedure (end-of-speech → transcript JSONL emit)"
-  - "Env-gated concurrency stress test artifact for bounded queue + thread progress"
-  - "Validation bookkeeping updated to reflect Wave 0 scaffolding readiness"
-affects: [phase-03-dispatch, verification, nyquist]
-
-tech-stack:
-  added: []
-  patterns:
-    - "Env-gated, #[ignore] integration stress tests that never run by default"
-    - "Operational proof artifacts: stdout JSONL + stderr timing logs captured to files"
-
-key-files:
-  created:
-    - docs/latency-baseline.md
-    - tests/concurrency_stress.rs
-  modified:
-    - .planning/phases/02-pipeline-core/02-VALIDATION.md
-
-key-decisions:
-  - "Phase 2 latency proof metric is end-of-speech → transcript JSONL emit; end-of-speech → first key event is validated in Phase 3 dispatch."
-
-patterns-established:
-  - "Stress tests must be both env-gated and ignored to keep default cargo test fast."
-
-requirements-completed: [STT-04]
-
-duration: 2min
-completed: 2026-04-22
+phase: "02"
+plan: "04"
 ---
 
-# Phase 2 Plan 04 Summary
+# T04: 02-pipeline-core 04
 
-**Added Phase 2 proof artifacts: a repeatable latency baseline procedure (end-of-speech → transcript JSONL emit, p95 < 500ms) plus an opt-in concurrency stress test to catch deadlocks and bounded-queue regressions.**
+****
 
-## Performance
+## What Happened
 
-- **Duration:** 2 min
-- **Started:** 2026-04-22T12:35:12Z
-- **Completed:** 2026-04-22T12:36:54Z
-- **Tasks:** 3/3
-- **Files modified:** 3
+No summary recorded.
 
-## Accomplishments
+## Verification
 
-- Documented a reproducible latency-baseline run with artifact capture and pass/fail criteria aligned to Phase 2 success criteria.
-- Added an env-gated, ignored stress test that exercises bounded drop-oldest queue behavior and concurrent stage progress.
-- Updated validation bookkeeping to reflect that Wave 0 scaffolding exists.
+No verification recorded.
 
-## Task Commits
+## Verification Evidence
 
-Each task was committed atomically:
+| # | Command | Exit Code | Verdict | Duration |
+|---|---------|-----------|---------|----------|
+| — | No verification commands discovered | — | — | — |
 
-1. **Task 1: Write a reproducible Phase 2 latency baseline procedure** - `073e542` (docs)
-2. **Task 2: Add env-gated concurrency stress test** - `fbb8c46` (test)
-3. **Task 3: Update validation frontmatter after Wave 0 scaffolding exists** - `d9d4809` (docs)
-
-**Plan metadata:** (captured in the plan completion docs commit)
-
-## Files Created/Modified
-
-- `docs/latency-baseline.md` - Phase 2 “latency proof” procedure and acceptance criteria (p95 < 500ms).
-- `tests/concurrency_stress.rs` - Opt-in concurrency stress harness (`RUN_STRESS_TESTS=1`, `#[ignore]`).
-- `.planning/phases/02-pipeline-core/02-VALIDATION.md` - Mark Wave 0 scaffolding complete (`wave_0_complete: true`).
-
-## Decisions Made
-
-- Phase 2 measures STT-04 via **end-of-speech → transcript JSONL emit** as the proxy; dispatch (“→ first key event”) is validated in Phase 3.
-
-## Deviations from Plan
-
-None - plan executed exactly as written.
-
-## Issues Encountered
+## Deviations
 
 None.
 
-## User Setup Required
+## Known Issues
 
-None - no external service configuration required.
+None.
 
-## Next Phase Readiness
+## Files Created/Modified
 
-- Phase 2 now has concrete “proof artifacts” for verification runs on target hardware.
-- Phase 3 can reuse the same Phase 2 latency metric while extending measurement through dispatch (“first key event”).
-
-## Self-Check: PASSED
-
-- Confirmed files exist: `docs/latency-baseline.md`, `tests/concurrency_stress.rs`, `.planning/phases/02-pipeline-core/02-04-SUMMARY.md`
-- Confirmed task commits exist: `073e542`, `fbb8c46`, `d9d4809`
-
+None.
