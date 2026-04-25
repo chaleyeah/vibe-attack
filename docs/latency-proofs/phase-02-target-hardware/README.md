@@ -15,7 +15,7 @@ For each run, capture and commit:
 **Important:** stdout must remain JSONL-only and logs must go to stderr (D-20). Capture output like:
 
 ```bash
-./target/release/hd-linux-voice --config /path/to/config.yaml -v \
+./target/release/vibe-attack --config /path/to/config.yaml -v \
   > transcript.jsonl \
   2> timing.log
 ```
@@ -29,13 +29,13 @@ If you are running with `stt.enabled: true`, you must provide a local Whisper mo
 
 Recommended default path:
 
-- `~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin`
+- `~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin`
 
 Download example:
 
 ```bash
-mkdir -p ~/.local/share/hd-linux-voice/models/whisper
-curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
+mkdir -p ~/.local/share/vibe-attack/models/whisper
+curl -L -o ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin \
   https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
 ```
 
