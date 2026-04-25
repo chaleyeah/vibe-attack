@@ -463,7 +463,7 @@ fn profile_manager_none_active_persists() {
 #[test]
 fn profile_manager_get_active_pack_resolves_from_profiles_dir() {
     let dir = tempfile::tempdir().unwrap();
-    let profiles_dir = dir.path().join("profiles");
+    let profiles_dir = dir.path().join("hd-linux-voice/profiles");
     let hd2_dir = profiles_dir.join("Helldivers 2");
     std::fs::create_dir_all(&hd2_dir).unwrap();
 
