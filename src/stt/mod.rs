@@ -146,6 +146,16 @@ impl SttService {
 
                 let base_params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
 
+                // Create state once and reuse across jobs — avoids heap fragmentation from
+                // repeated 190 MB alloc/free cycles that cause bad_alloc after ~N utterances.
+                let mut state = match ctx.create_state() {
+                    Ok(s) => s,
+                    Err(e) => {
+                        tracing::error!("Failed to create whisper state: {e}");
+                        return;
+                    }
+                };
+
                 loop {
                     if shutdown.is_cancelled() {
                         break;
@@ -165,14 +175,6 @@ impl SttService {
                             if let Some(ref prompt) = initial_prompt {
                                 params.set_initial_prompt(prompt);
                             }
-
-                            let mut state = match ctx.create_state() {
-                                Ok(s) => s,
-                                Err(e) => {
-                                    tracing::error!(utterance_id = job.utterance_id, "Failed to create whisper state: {e}");
-                                    continue;
-                                }
-                            };
 
                             if let Err(e) = state.full(params, &job.audio) {
                                 tracing::warn!(utterance_id = job.utterance_id, "whisper full() failed: {e}");
