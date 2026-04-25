@@ -1,6 +1,6 @@
-# hd-linux-voice — example configuration
-# Copy to: $XDG_CONFIG_HOME/hd-linux-voice/config.yaml
-# (usually: ~/.config/hd-linux-voice/config.yaml)
+# vibe-attack — example configuration
+# Copy to: $XDG_CONFIG_HOME/vibe-attack/config.yaml
+# (usually: ~/.config/vibe-attack/config.yaml)
 #
 # Contract:
 # - stdout is reserved for machine-readable JSONL transcript output
