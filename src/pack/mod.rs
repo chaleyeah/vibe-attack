@@ -150,8 +150,10 @@ impl Pack {
 }
 
 pub fn get_profiles_dir() -> Result<PathBuf> {
-    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice")?;
-    let dir = xdg.get_config_home().join("profiles");
+    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
+    let config_home = xdg.get_config_home()
+        .context("Failed to determine config directory")?;
+    let dir = config_home.join("profiles");
     std::fs::create_dir_all(&dir)?;
     Ok(dir)
 }

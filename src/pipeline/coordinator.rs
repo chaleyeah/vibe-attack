@@ -73,7 +73,7 @@ pub fn spawn_pipeline(
     // - min_speech_ms smaller to accept short commands
     // - tail/preroll smaller (wake pre-roll already handled separately)
     // - cap utterance length smaller for wake commands
-    const WAKE_END_SILENCE_MS: u64 = 180;
+    const WAKE_END_SILENCE_MS: u64 = 150;
     const WAKE_MIN_SPEECH_MS: u64 = 60;
     const WAKE_VAD_PREROLL_MS: u64 = 80;
     const WAKE_VAD_TAIL_MS: u64 = 80;
@@ -181,7 +181,7 @@ pub fn spawn_pipeline(
         #[cfg(feature = "stt")]
         {
             Some(
-                SttService::new(model_path, shutdown.clone())
+                SttService::new(model_path, config.stt.initial_prompt.clone(), shutdown.clone())
                     .context("create STT service")?
                     .spawn()
                     .context("spawn STT thread")?,

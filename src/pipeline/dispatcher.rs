@@ -36,6 +36,10 @@ pub struct Dispatcher {
     default_gap_ms: u64,
 }
 
+// Dispatcher is safe to send between threads since all its fields are either Send or Arc-wrapped
+unsafe impl Send for Dispatcher {}
+unsafe impl Sync for Dispatcher {}
+
 impl Dispatcher {
     pub fn new(
         threshold: f32,

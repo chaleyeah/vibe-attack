@@ -34,6 +34,7 @@ pub struct SttResult {
 #[derive(Debug)]
 pub struct SttService {
     model_path: PathBuf,
+    initial_prompt: Option<String>,
     job_tx: Sender<SttMsg>,
     job_rx: Receiver<SttMsg>,
     result_tx: Sender<SttResult>,
@@ -77,7 +78,11 @@ impl SttService {
     /// Create the STT service and preload the model from `model_path`.
     ///
     /// This function spawns a long-lived `std::thread` and returns immediately.
-    pub fn new(model_path: impl AsRef<Path>, shutdown: CancellationToken) -> Result<Self> {
+    pub fn new(
+        model_path: impl AsRef<Path>,
+        initial_prompt: Option<String>,
+        shutdown: CancellationToken,
+    ) -> Result<Self> {
         let model_path = model_path.as_ref().to_path_buf();
         ensure_model_exists(&model_path)?;
 
@@ -87,6 +92,7 @@ impl SttService {
 
         Ok(Self {
             model_path,
+            initial_prompt,
             job_tx,
             job_rx,
             result_tx,
@@ -103,6 +109,7 @@ impl SttService {
         let shutdown = self.shutdown.clone();
 
         let model_path = self.model_path.clone();
+        let initial_prompt = self.initial_prompt.clone();
 
         let handle = std::thread::spawn(move || {
             tracing::info!("STT thread started");
@@ -150,13 +157,14 @@ impl SttService {
                             let stt_start = Instant::now();
 
                             let mut params = base_params.clone();
-                            // CPU-only inference baseline (D-16). whisper.cpp uses CPU by default;
-                            // keep params conservative and final-only (D-14).
                             params.set_print_special(false);
                             params.set_print_progress(false);
                             params.set_print_realtime(false);
                             params.set_print_timestamps(false);
                             params.set_translate(false);
+                            if let Some(ref prompt) = initial_prompt {
+                                params.set_initial_prompt(prompt);
+                            }
 
                             let mut state = match ctx.create_state() {
                                 Ok(s) => s,

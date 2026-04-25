@@ -13,6 +13,7 @@ path = "src/main.rs"
 [features]
 default = []
 stt = ["dep:whisper-rs"]
+stt-vulkan = ["stt", "whisper-rs/vulkan"]
 
 [dependencies]
 cpal        = "0.15"
@@ -43,3 +44,6 @@ crossterm = "0.27"
 
 [dev-dependencies]
 tempfile = "3"
+
+[patch.crates-io]
+whisper-rs = { path = "vendor/whisper-rs" }

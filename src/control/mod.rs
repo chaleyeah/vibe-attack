@@ -37,21 +37,24 @@ pub async fn spawn_control_listener(dispatcher: Arc<Dispatcher>) -> Result<()> {
         loop {
             match listener.accept().await {
                 Ok((mut stream, _)) => {
+                    let dispatcher_clone = Arc::clone(&dispatcher);
                     tokio::spawn(async move {
                         let (reader, mut writer) = stream.split();
                         let mut reader = BufReader::new(reader);
                         let mut line = String::new();
-                        
+
                         if let Ok(n) = reader.read_line(&mut line).await {
                             if n == 0 { return; }
-                            
+
                             let response = match serde_json::from_str::<ControlRequest>(&line) {
                                 Ok(req) => {
                                     tracing::debug!("Control request: {:?}", req);
                                     match req {
                                         ControlRequest::Ping => ControlResponse::Pong,
                                         ControlRequest::SwitchProfile { name } => {
-                                            match handle_switch_profile(&name, &dispatcher) {
+                                            match tokio::task::block_in_place(|| {
+                                                handle_switch_profile(&name, &dispatcher_clone)
+                                            }) {
                                                 Ok(_) => ControlResponse::Ok,
                                                 Err(e) => ControlResponse::Error { message: e.to_string() },
                                             }
@@ -100,10 +103,8 @@ fn handle_switch_profile(name: &str, dispatcher: &Dispatcher) -> Result<()> {
 }
 
 fn get_socket_path() -> Result<PathBuf> {
-    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice")
-        .context("Failed to get XDG directories")?;
-    
-    // Use get_runtime_file for the socket (typically /run/user/$UID/hd-linux-voice/...)
+    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
+
     xdg.place_runtime_file("hd-linux-voice.sock")
         .context("Failed to place UDS socket in runtime directory")
 }

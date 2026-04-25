@@ -166,7 +166,7 @@ fn default_min_speech_ms() -> u64 {
     100
 }
 fn default_end_silence_ms() -> u64 {
-    400
+    200
 }
 fn default_preroll_ms() -> u64 {
     150
@@ -201,6 +201,10 @@ pub struct SttConfig {
     pub model_path: Option<PathBuf>,
     #[serde(default = "default_stt_confidence_threshold")]
     pub confidence_threshold: f32,
+    /// Optional prompt injected before each decode to bias whisper toward known vocabulary.
+    /// Comma-separated phrases work well (e.g. "reinforce, resupply, eagle airstrike").
+    #[serde(default)]
+    pub initial_prompt: Option<String>,
 }
 
 fn default_stt_confidence_threshold() -> f32 {
@@ -209,7 +213,12 @@ fn default_stt_confidence_threshold() -> f32 {
 
 impl Default for SttConfig {
     fn default() -> Self {
-        SttConfig { enabled: false, model_path: None, confidence_threshold: default_stt_confidence_threshold() }
+        SttConfig {
+            enabled: false,
+            model_path: None,
+            confidence_threshold: default_stt_confidence_threshold(),
+            initial_prompt: None,
+        }
     }
 }
 

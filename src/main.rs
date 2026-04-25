@@ -82,13 +82,12 @@ async fn main() -> anyhow::Result<()> {
         match host.input_devices() {
             Ok(devices) => {
                 let mut found = false;
-                for device in devices {
+                for (idx, device) in devices.enumerate() {
                     found = true;
-                    let name = format!("{:?}", device);
                     let cfg = device.default_input_config()
                         .map(|c| format!("{} ch @ {} Hz", c.channels(), c.sample_rate().0))
                         .unwrap_or_else(|_| "no supported config".to_string());
-                    println!("  {name}  ({cfg})");
+                    println!("  Device {}: {}", idx, cfg);
                 }
                 if !found {
                     println!("  (no input devices found)");

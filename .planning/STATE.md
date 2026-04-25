@@ -100,6 +100,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 7 added: Rebrand from hd-linux-voice to vibe-attack
+- Phase 8 added: Fix compilation errors from dependency updates and API mismatches
 
 ### Pending Todos
 

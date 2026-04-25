@@ -134,3 +134,13 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 Plans:
 - [ ] TBD (run /gsd-plan-phase 7 to break down)
+
+### Phase 8: Fix compilation errors from dependency updates and API mismatches
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 7
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 8 to break down)

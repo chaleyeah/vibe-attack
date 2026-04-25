@@ -39,8 +39,10 @@ impl ProfileManager {
 
     /// Get the path to manager.yaml.
     pub fn get_path() -> Result<PathBuf> {
-        let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice")?;
-        Ok(xdg.get_config_home().join("manager.yaml"))
+        let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
+        let config_home = xdg.get_config_home()
+            .context("Failed to determine config directory")?;
+        Ok(config_home.join("manager.yaml"))
     }
 
     /// Load the currently active pack, if any.

@@ -26,7 +26,7 @@ pub fn send_command(req: ControlRequest) -> Result<ControlResponse> {
 }
 
 fn get_socket_path() -> Result<PathBuf> {
-    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice")?;
+    let xdg = xdg::BaseDirectories::with_prefix("hd-linux-voice");
     xdg.find_runtime_file("hd-linux-voice.sock")
         .context("Could not find daemon socket. Is the daemon running?")
 }

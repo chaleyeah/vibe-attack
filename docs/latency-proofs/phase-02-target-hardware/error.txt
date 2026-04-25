@@ -1,0 +1,38 @@
+chadmin@CHADMIN-BS:~/Github/hd-linux-voice$ cargo build --release --all-features
+   Compiling whisper-rs v0.16.0
+error[E0432]: unresolved imports `whisper_rs_sys::ggml_backend_vk_buffer_type`, `whisper_rs_sys::ggml_backend_vk_get_device_count`, `whisper_rs_sys::ggml_backend_vk_get_device_description`, `whisper_rs_sys::ggml_backend_vk_get_device_memory`
+ --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/whisper-rs-0.16.0/src/vulkan.rs:3:33
+  |
+3 |     ggml_backend_buffer_type_t, ggml_backend_vk_buffer_type, ggml_backend_vk_get_device_count,
+  |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `ggml_backend_vk_get_device_count` in the root
+  |                                 |
+  |                                 no `ggml_backend_vk_buffer_type` in the root
+4 |     ggml_backend_vk_get_device_description, ggml_backend_vk_get_device_memory,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `ggml_backend_vk_get_device_memory` in the root
+  |     |
+  |     no `ggml_backend_vk_get_device_description` in the root
+  |
+help: a similar name exists in the module
+  |
+3 -     ggml_backend_buffer_type_t, ggml_backend_vk_buffer_type, ggml_backend_vk_get_device_count,
+3 +     ggml_backend_buffer_type_t, ggml_backend_dev_buffer_type, ggml_backend_vk_get_device_count,
+  |
+help: a similar name exists in the module
+  |
+3 -     ggml_backend_buffer_type_t, ggml_backend_vk_buffer_type, ggml_backend_vk_get_device_count,
+3 +     ggml_backend_buffer_type_t, ggml_backend_vk_buffer_type, ggml_backend_reg_dev_count,
+  |
+help: a similar name exists in the module
+  |
+4 -     ggml_backend_vk_get_device_description, ggml_backend_vk_get_device_memory,
+4 +     ggml_backend_dev_description, ggml_backend_vk_get_device_memory,
+  |
+help: a similar name exists in the module
+  |
+4 -     ggml_backend_vk_get_device_description, ggml_backend_vk_get_device_memory,
+4 +     ggml_backend_vk_get_device_description, ggml_backend_get_device,
+  |
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `whisper-rs` (lib) due to 1 previous error
+chadmin@CHADMIN-BS:~/Github/hd-linux-voice$ 
