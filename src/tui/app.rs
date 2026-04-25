@@ -46,7 +46,7 @@ impl App {
             .split(f.area());
 
         // Header
-        let header = Paragraph::new(" HD-LINUX-VOICE // TACTICAL MACRO EDITOR ")
+        let header = Paragraph::new(" VIBE-ATTACK // TACTICAL MACRO EDITOR ")
             .block(Block::default().borders(Borders::ALL).border_type(BorderType::Thick))
             .style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
             .alignment(Alignment::Center);

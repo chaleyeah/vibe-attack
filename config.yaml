@@ -33,18 +33,18 @@ vad:
 
 stt:
   enabled: true
-  model_path: /home/chadmin/Github/hd-linux-voice/models/whisper/ggml-tiny.en.bin  # local-only; not downloaded automatically
+  model_path: models/whisper/ggml-tiny.en.bin  # local-only; not downloaded automatically
   initial_prompt: "reinforce, resupply, eagle airstrike, precision strike, railcannon, gas strike, sos beacon, autocannon, shield"
 
 wake:
   enabled: true
   # sherpa-onnx keyword spotter artifacts (local-only; not downloaded automatically)
   # BPE KWS bundles: place `bpe.model` in the same directory as `encoder.onnx` (auto-detected).
-  encoder: /home/chadmin/Github/hd-linux-voice/models/sherpa/kws/encoder.onnx
-  decoder: /home/chadmin/Github/hd-linux-voice/models/sherpa/kws/decoder.onnx
-  joiner: /home/chadmin/Github/hd-linux-voice/models/sherpa/kws/joiner.onnx
-  tokens: /home/chadmin/Github/hd-linux-voice/models/sherpa/kws/tokens.txt
-  keywords: /home/chadmin/Github/hd-linux-voice/models/sherpa/kws/keywords.txt
+  encoder: models/sherpa/kws/encoder.onnx
+  decoder: models/sherpa/kws/decoder.onnx
+  joiner: models/sherpa/kws/joiner.onnx
+  tokens: models/sherpa/kws/tokens.txt
+  keywords: models/sherpa/kws/keywords.txt
 
 macros:
   - name: test_sequence

@@ -119,7 +119,7 @@ speech.
 
 ## Daemon
 
-**Symptom:** A second `hd-linux-voice` invocation fails, or no macros are executed even
+**Symptom:** A second `vibe-attack` invocation fails, or no macros are executed even
 though the daemon appears to be running.
 
 **Likely cause:** The UDS (Unix Domain Socket) is missing or the daemon crashed silently.

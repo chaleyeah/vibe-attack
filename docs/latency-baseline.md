@@ -49,13 +49,13 @@ This project does **not** bundle Whisper models and does **not** auto-download t
 
 Recommended default location (XDG data):
 
-- `~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin`
+- `~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin`
 
 One-time download example:
 
 ```bash
-mkdir -p ~/.local/share/hd-linux-voice/models/whisper
-curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
+mkdir -p ~/.local/share/vibe-attack/models/whisper
+curl -L -o ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin \
   https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
 ```
 
@@ -64,7 +64,7 @@ curl -L -o ~/.local/share/hd-linux-voice/models/whisper/ggml-tiny.en.bin \
 From the repo root:
 
 ```bash
-./target/release/hd-linux-voice --config /path/to/config.yaml -v \
+./target/release/vibe-attack --config /path/to/config.yaml -v \
   > transcript.jsonl \
   2> timing.log
 ```

@@ -1,11 +1,11 @@
 # uinput Setup Guide
 
-The `hd-linux-voice` daemon requires access to `/dev/uinput` to inject key events
+The `vibe-attack` daemon requires access to `/dev/uinput` to inject key events
 into your Wayland session. This file explains how to grant that access.
 
 ## Why This Is Needed
 
-HD Linux Voice creates a virtual keyboard device via the Linux `uinput` kernel module.
+Vibe Attack creates a virtual keyboard device via the Linux `uinput` kernel module.
 This allows key sequences to reach fullscreen Wayland games (like Helldivers 2) without
 compositor-level shortcuts, which are blocked when a game holds exclusive focus.
 
