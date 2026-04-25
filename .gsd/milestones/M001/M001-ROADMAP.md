@@ -22,5 +22,5 @@
 - [x] **S06: S06** `risk:medium` `depends:[]`
   > After this: unit tests prove Documentation — Usage docs, troubleshooting, and contributor guides works
 
-- [ ] **S07: S07** `risk:medium` `depends:[]`
+- [x] **S07: S07** `risk:medium` `depends:[]`
   > After this: unit tests prove Wake-word Activation (DEFERRED from Phase 2) — Resolve dual-ONNX-Runtime conflict between sherpa-onnx (statically-linked ORT) and `ort` crate (dynamically-loaded ORT) so the wake-word path runs without heap corruption works

@@ -6,7 +6,7 @@ This document exists to make Phase 2 target-hardware proof runs attributable and
 
 ## Run ID
 
-- Run folder name: `run-YYYYMMDD-HHMM-{hostname-or-machine}/`
+- Run folder name: `run-20260425-HHMM-{hostname-or-machine}/`
 - Date/time (UTC):
 
 ## Machine metadata

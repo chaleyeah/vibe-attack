@@ -64,3 +64,9 @@
 {"id":"ec4db8d0-bc20-4946-8446-63c0ab973e3f","ts":"2026-04-25T20:10:14.308Z","severity":"warning","message":"Safety: task T02 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"3ffa6585-d25a-4792-91dd-9aa425dc6295","ts":"2026-04-25T20:10:14.320Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
 {"id":"4b07d44a-2fa0-455a-9ff4-c1952c070199","ts":"2026-04-25T20:10:14.324Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"7012f362-ec3d-46bf-bfe2-3b589b4a1255","ts":"2026-04-25T20:11:25.004Z","severity":"info","message":"Committed: feat: Replaced stale ORT dual-instance conflict warnings with shared .s…","source":"notify","read":false}
+{"id":"3cfd6615-8e4b-4510-b6dc-5c09ef68557f","ts":"2026-04-25T20:11:25.009Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"222d8375-9995-481a-a086-ee2d127c0c0a","ts":"2026-04-25T20:11:25.009Z","severity":"warning","message":"Safety: task T03 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"0feaf9ac-cc2a-4323-a0bb-917b62484e0b","ts":"2026-04-25T20:11:25.022Z","severity":"info","message":"Verification gate: 4/4 checks passed","source":"notify","read":false}
+{"id":"deebde8a-7c48-464b-8ace-c528628aa14d","ts":"2026-04-25T20:11:25.026Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"d2a7e068-3647-4867-afe6-66122adf33c8","ts":"2026-04-25T20:16:53.699Z","severity":"warning","message":"[dispatch] Implementation artifact check inconclusive for M001 — proceeding (git context unavailable)","source":"workflow-logger","read":false}
