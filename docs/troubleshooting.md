@@ -166,3 +166,30 @@ See `CONTRIBUTING.md` for the full list of feature flags.
 and `libsherpa-onnx-c-api.so` into the `target/` output directory alongside the binary.
 Both files must be present next to the binary at runtime for wake-word detection and VAD
 to work. When packaging or deploying the binary, copy those `.so` files with it.
+
+---
+
+## AppImage
+
+**Symptom:** The AppImage launches but wake-word or VAD fails immediately with an ORT
+initialization error, even though the AppImage was built successfully.
+
+**Likely cause:** `libonnxruntime.so` is not being found at runtime. Inside an AppImage,
+the FUSE mount path is not on the system `LD_LIBRARY_PATH`, so `dlopen` cannot locate the
+bundled `.so` files unless the `AppRun` wrapper sets the path explicitly.
+
+**How the build handles this:** `packaging/appimage/build.sh` discovers
+`libonnxruntime.so` (checking `target/release/`, `ORT_DYLIB_PATH`, then the system via
+`ldconfig`) and copies it into `AppDir/usr/lib/`. It then writes an `AppRun` script that
+sets `LD_LIBRARY_PATH=$APPDIR/usr/lib:$LD_LIBRARY_PATH` before exec-ing the binary. As
+long as you build with `build.sh`, the AppImage is self-contained.
+
+**Manual install (without AppImage):** If you copy the binary to a custom location
+without using the AppImage, ensure `libonnxruntime.so` and `libsherpa-onnx-c-api.so` are
+in the same directory as the binary, or set `ORT_DYLIB_PATH`:
+```bash
+export ORT_DYLIB_PATH=/path/to/libonnxruntime.so
+```
+
+**Rebuilding after ORT version change:** If you upgrade `onnxruntime` on your system,
+rebuild the AppImage so `build.sh` re-discovers and re-bundles the new `.so` version.
