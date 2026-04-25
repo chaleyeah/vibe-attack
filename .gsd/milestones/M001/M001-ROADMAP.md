@@ -16,10 +16,10 @@
 - [x] **S04: S04** `risk:medium` `depends:[]`
   > After this: unit tests prove pack-system-hd2-bundle works
 
-- [ ] **S05: S05** `risk:medium` `depends:[]`
+- [x] **S05: S05** `risk:medium` `depends:[]`
   > After this: unit tests prove UI + Distribution — egui config window, system tray, first-run wizard, AppImage, AUR/PKGBUILD works
 
-- [ ] **S06: Documentation — Usage docs, troubleshooting, and contributor guides** `risk:medium` `depends:[S05]`
+- [ ] **S06: S06** `risk:medium` `depends:[]`
   > After this: unit tests prove Documentation — Usage docs, troubleshooting, and contributor guides works
 
 - [ ] **S07: Wake Word Activation (DEFERRED from Phase 2) — Resolve dual ONNX Runtime conflict between sherpa Onnx (statically Linked ORT) and `ort` crate (dynamically Loaded ORT) so the wake Word path runs without heap corruption** `risk:medium` `depends:[S06]`

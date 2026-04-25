@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-25T19:45:23Z | Files: 108 | Described: 0/108
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:45:23Z","fingerprint":"8b2c258f1e13fe59b63827c367fc361ac30b8cc9","fileCount":108,"truncated":false} -->
+Generated: 2026-04-25T19:47:45Z | Files: 109 | Described: 0/109
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:47:45Z","fingerprint":"e95958eb19821c77abe73e5c87f965520a1d15c2","fileCount":109,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -110,6 +110,9 @@ Generated: 2026-04-25T19:45:23Z | Files: 108 | Described: 0/108
 
 ### src/audio/
 - `src/audio/mod.rs`
+
+### src/bin/
+- `src/bin/hd-linux-voice-config.rs`
 
 ### src/control/
 - `src/control/client.rs`

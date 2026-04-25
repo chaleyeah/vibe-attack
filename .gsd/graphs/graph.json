@@ -183,6 +183,24 @@
       "sourceFile": "milestones/M001/slices/S05/S05-PLAN.md"
     },
     {
+      "id": "task:M001:S05:T01",
+      "label": "T01: Create src/ui/ module with FirstRunState and ConfigApp pure-logic structs plus tests",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M001:S05:T02",
+      "label": "T02: Create packaging scaffolding (PKGBUILD, AppImage, .desktop) and add structural tests",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M001:S05:T03",
+      "label": "T03: Add feature-gated egui binary and verify daemon stays headless",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
       "id": "slice:M001:S06",
       "label": "S06: Documentation — Usage docs, troubleshooting, and contributor guides",
       "type": "slice",
@@ -361,6 +379,24 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "slice:M001:S05",
+      "to": "task:M001:S05:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M001:S05",
+      "to": "task:M001:S05:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M001:S05",
+      "to": "task:M001:S05:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M001",
       "to": "slice:M001:S06",
       "type": "contains",
@@ -373,5 +409,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-25T19:32:50.520Z"
+  "builtAt": "2026-04-25T19:49:47.687Z"
 }
