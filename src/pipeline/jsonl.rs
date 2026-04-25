@@ -63,6 +63,21 @@ pub enum JsonlEvent<'a> {
         message: &'a str,
         mono_ms: u64,
     },
+    /// Emitted when a transcript matches a macro and the macro fires.
+    Dispatch {
+        utterance_id: u64,
+        macro_id: &'a str,
+        score: f32,
+        wall_time_ms: u64,
+        mono_ms: u64,
+    },
+    /// Emitted when a transcript does not match any phrase above threshold.
+    NoMatch {
+        utterance_id: u64,
+        transcript: &'a str,
+        wall_time_ms: u64,
+        mono_ms: u64,
+    },
 }
 
 /// JSONL writer that guarantees "one JSON object per line" on the provided writer.
@@ -135,6 +150,32 @@ impl<W: Write> JsonlWriter<W> {
             mono_ms: self.clock.elapsed_ms(),
             stage,
             status,
+        };
+        self.write_event(&evt)
+    }
+
+    pub fn write_dispatch(
+        &mut self,
+        utterance_id: u64,
+        macro_id: &str,
+        score: f32,
+    ) -> IoResult<()> {
+        let evt = JsonlEvent::Dispatch {
+            utterance_id,
+            macro_id,
+            score,
+            wall_time_ms: wall_time_ms(),
+            mono_ms: self.clock.elapsed_ms(),
+        };
+        self.write_event(&evt)
+    }
+
+    pub fn write_no_match(&mut self, utterance_id: u64, transcript: &str) -> IoResult<()> {
+        let evt = JsonlEvent::NoMatch {
+            utterance_id,
+            transcript,
+            wall_time_ms: wall_time_ms(),
+            mono_ms: self.clock.elapsed_ms(),
         };
         self.write_event(&evt)
     }

@@ -76,3 +76,44 @@ fn jsonl_timing_fields_are_non_negative() {
     assert!(v["stt_ms"].as_u64().is_some());
 }
 
+#[test]
+fn dispatch_event_has_required_fields_and_stable_type_key() {
+    let evt = hd_linux_voice::pipeline::jsonl::JsonlEvent::Dispatch {
+        utterance_id: 7,
+        macro_id: "eagle_airstrike",
+        score: 0.95,
+        wall_time_ms: 1_700_000_000_000,
+        mono_ms: 456,
+    };
+
+    let line = serde_json::to_string(&evt).expect("serialize");
+    assert!(!line.contains('\n'), "must be single-line JSON");
+    let v: serde_json::Value = serde_json::from_str(&line).expect("parse");
+
+    assert_eq!(v["type"], "dispatch");
+    assert_eq!(v["utterance_id"], 7);
+    assert_eq!(v["macro_id"], "eagle_airstrike");
+    assert!(v["score"].as_f64().is_some(), "score must be f64");
+    assert!(v.get("wall_time_ms").is_some(), "wall_time_ms missing");
+    assert!(v.get("mono_ms").is_some(), "mono_ms missing");
+}
+
+#[test]
+fn no_match_event_has_required_fields_and_stable_type_key() {
+    let evt = hd_linux_voice::pipeline::jsonl::JsonlEvent::NoMatch {
+        utterance_id: 3,
+        transcript: "orbital strike",
+        wall_time_ms: 1_700_000_000_000,
+        mono_ms: 789,
+    };
+
+    let line = serde_json::to_string(&evt).expect("serialize");
+    assert!(!line.contains('\n'), "must be single-line JSON");
+    let v: serde_json::Value = serde_json::from_str(&line).expect("parse");
+
+    assert_eq!(v["type"], "no_match");
+    assert_eq!(v["utterance_id"], 3);
+    assert_eq!(v["transcript"], "orbital strike");
+    assert!(v.get("wall_time_ms").is_some(), "wall_time_ms missing");
+    assert!(v.get("mono_ms").is_some(), "mono_ms missing");
+}

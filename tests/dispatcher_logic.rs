@@ -1,8 +1,68 @@
 use hd_linux_voice::config::{MacroConfig, KeyAction};
-use hd_linux_voice::pipeline::dispatcher::Dispatcher;
+use hd_linux_voice::pipeline::dispatcher::{Dispatcher, DispatchOutcome};
 use hd_linux_voice::input::inject::MacroCmd;
 use std::sync::mpsc::channel;
 use evdev::KeyCode;
+
+/// Basic wiring proof: a matching transcript fires a MacroCmd on the injection channel.
+#[test]
+fn test_dispatcher_match_fires_macro_cmd() {
+    let (tx, rx) = channel();
+    let macros = vec![MacroConfig {
+        name: "eagle_airstrike".to_string(),
+        phrase: Some("eagle airstrike".to_string()),
+        if_flag: None,
+        set_flag: None,
+        sound: None,
+        keys: vec![
+            KeyAction { key: "KEY_W".to_string(), dwell_ms: None, gap_ms: None },
+            KeyAction { key: "KEY_A".to_string(), dwell_ms: None, gap_ms: None },
+        ],
+    }];
+
+    let dispatcher = Dispatcher::new(0.8, macros, tx, 50, 30);
+    let outcome = dispatcher.process("eagle airstrike");
+
+    match outcome {
+        DispatchOutcome::Fired { macro_id, score } => {
+            assert_eq!(macro_id, "eagle_airstrike");
+            assert!((score - 1.0).abs() < 0.001, "expected score ~1.0, got {score}");
+        }
+        DispatchOutcome::NoMatch => panic!("expected Fired, got NoMatch"),
+    }
+
+    let cmd = rx.try_recv().expect("MacroCmd must arrive on channel");
+    if let MacroCmd::Execute { keys, .. } = cmd {
+        assert_eq!(keys.len(), 2);
+        assert_eq!(keys[0].key_name, "KEY_W");
+        assert_eq!(keys[1].key_name, "KEY_A");
+    } else {
+        panic!("unexpected MacroCmd variant");
+    }
+}
+
+/// Below-threshold transcript must not fire any macro and must yield NoMatch.
+#[test]
+fn test_dispatcher_no_match_does_not_fire() {
+    let (tx, rx) = channel();
+    let macros = vec![MacroConfig {
+        name: "eagle_airstrike".to_string(),
+        phrase: Some("eagle airstrike".to_string()),
+        if_flag: None,
+        set_flag: None,
+        sound: None,
+        keys: vec![KeyAction { key: "KEY_W".to_string(), dwell_ms: None, gap_ms: None }],
+    }];
+
+    let dispatcher = Dispatcher::new(0.8, macros, tx, 50, 30);
+    let outcome = dispatcher.process("something completely different");
+
+    assert!(
+        matches!(outcome, DispatchOutcome::NoMatch),
+        "expected NoMatch outcome"
+    );
+    assert!(rx.try_recv().is_err(), "no MacroCmd should arrive for a no-match");
+}
 
 #[test]
 fn test_dispatcher_conditional_reuse() {

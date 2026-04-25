@@ -6,6 +6,15 @@ use std::collections::HashMap;
 use std::sync::mpsc::Sender;
 use std::sync::{Arc, RwLock};
 
+/// Outcome returned by `Dispatcher::process()` so callers can emit JSONL events.
+#[derive(Debug)]
+pub enum DispatchOutcome {
+    /// A macro matched and fired. `macro_id` and `score` identify which one.
+    Fired { macro_id: String, score: f32 },
+    /// No phrase matched above the confidence threshold.
+    NoMatch,
+}
+
 pub struct DispatcherState {
     pub flags: Arc<RwLock<HashMap<String, bool>>>,
 }
@@ -88,7 +97,7 @@ impl Dispatcher {
         }
     }
 
-    pub fn process(&self, transcript: &str) {
+    pub fn process(&self, transcript: &str) -> DispatchOutcome {
         let macros = self.macros.read().unwrap();
         let candidates = macros
             .iter()
@@ -122,7 +131,15 @@ impl Dispatcher {
                     };
                     self.state.set(flag_name, new_val);
                 }
+
+                return DispatchOutcome::Fired {
+                    macro_id: best_match_name.to_string(),
+                    score,
+                };
             }
         }
+
+        tracing::debug!(transcript, "No phrase matched above threshold");
+        DispatchOutcome::NoMatch
     }
 }

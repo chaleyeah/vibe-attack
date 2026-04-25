@@ -18,10 +18,18 @@ use tokio_util::sync::CancellationToken;
 
 use ringbuf::HeapCons;
 use crate::config::{Config, PipelineVerbosity};
+use crate::pipeline::dispatcher::DispatchOutcome;
 use crate::pipeline::jsonl::{JsonlVerbosity, JsonlWriter};
 use crate::stt::{SttResult, SttService};
 use crate::vad::{VadConfig as SegCfg, VadSegmenter, FRAME_SAMPLES};
 use crate::wake::WakeWord;
+
+/// Messages flowing from the dispatcher thread to the output thread.
+enum OutputMsg {
+    Utterance(SttResult),
+    Dispatched { utterance_id: u64, macro_id: String, score: f32 },
+    NoMatch { utterance_id: u64, transcript: String },
+}
 
 pub struct PipelineHandles {
     pub pipeline: std::thread::JoinHandle<()>,
@@ -91,8 +99,8 @@ pub fn spawn_pipeline(
     };
 
     // Output thread owns stdout writer and ensures stdout remains JSONL-only.
-    let (out_tx, out_rx) = crossbeam_channel::bounded::<SttResult>(8);
-    
+    let (out_tx, out_rx) = crossbeam_channel::bounded::<OutputMsg>(16);
+
     // Dispatcher thread receives STT results, runs macros, then forwards to JSONL output
     let (dispatch_tx, dispatch_rx) = crossbeam_channel::bounded::<SttResult>(8);
     let dispatch_rx_for_drop = dispatch_rx.clone();
@@ -112,8 +120,17 @@ pub fn spawn_pipeline(
         while !dispatcher_shutdown.is_cancelled() {
             match dispatch_rx.recv_timeout(Duration::from_millis(50)) {
                 Ok(r) => {
-                    dispatcher_for_thread.process(&r.text);
-                    let _ = dispatch_out_tx.send(r);
+                    let utterance_id = r.utterance_id;
+                    let transcript = r.text.clone();
+                    match dispatcher_for_thread.process(&r.text) {
+                        DispatchOutcome::Fired { macro_id, score } => {
+                            let _ = dispatch_out_tx.send(OutputMsg::Dispatched { utterance_id, macro_id, score });
+                        }
+                        DispatchOutcome::NoMatch => {
+                            let _ = dispatch_out_tx.send(OutputMsg::NoMatch { utterance_id, transcript });
+                        }
+                    }
+                    let _ = dispatch_out_tx.send(OutputMsg::Utterance(r));
                 }
                 Err(crossbeam_channel::RecvTimeoutError::Timeout) => continue,
                 Err(crossbeam_channel::RecvTimeoutError::Disconnected) => break,
@@ -142,7 +159,7 @@ pub fn spawn_pipeline(
 
         while !output_shutdown.is_cancelled() {
             match out_rx.recv_timeout(Duration::from_millis(50)) {
-                Ok(mut r) => {
+                Ok(OutputMsg::Utterance(mut r)) => {
                     r.timings.mark_output_done();
                     if let Err(e) = w.write_utterance(
                         r.utterance_id,
@@ -154,6 +171,16 @@ pub fn spawn_pipeline(
                         r.end_frame_idx,
                     ) {
                         tracing::error!("Failed to write stdout JSONL: {e}");
+                    }
+                }
+                Ok(OutputMsg::Dispatched { utterance_id, macro_id, score }) => {
+                    if let Err(e) = w.write_dispatch(utterance_id, &macro_id, score) {
+                        tracing::error!("Failed to write dispatch JSONL: {e}");
+                    }
+                }
+                Ok(OutputMsg::NoMatch { utterance_id, transcript }) => {
+                    if let Err(e) = w.write_no_match(utterance_id, &transcript) {
+                        tracing::error!("Failed to write no_match JSONL: {e}");
                     }
                 }
                 Err(crossbeam_channel::RecvTimeoutError::Timeout) => continue,
