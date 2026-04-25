@@ -6,7 +6,7 @@
 //! CI strategy: Standard CI runs cargo test --lib only. A separate privileged job
 //! sets RUN_PRIVILEGED_TESTS=1 and runs the full suite.
 
-use hd_linux_voice::input::inject::{open_uinput_device, spawn_injection_thread, KeyStep, MacroCmd};
+use vibe_attack::input::inject::{open_uinput_device, spawn_injection_thread, KeyStep, MacroCmd};
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 

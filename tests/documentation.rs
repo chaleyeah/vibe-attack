@@ -37,12 +37,12 @@ fn readme_has_correct_project_name() {
     let file = root.join("README.md");
     let contents = std::fs::read_to_string(&file).expect("failed to read README.md");
     assert!(
-        contents.contains("hd-linux-voice"),
-        "README.md must contain 'hd-linux-voice'"
+        contents.contains("vibe-attack"),
+        "README.md must contain 'vibe-attack'"
     );
     assert!(
-        !contents.contains("vibe-attack"),
-        "README.md must not reference 'vibe-attack' (stale project name)"
+        !contents.contains("hd-linux-voice"),
+        "README.md must not reference 'hd-linux-voice' (old project name)"
     );
 }
 

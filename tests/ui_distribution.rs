@@ -1,5 +1,5 @@
-use hd_linux_voice::ui::config_app::{ConfigApp, MAX_LOG_LINES};
-use hd_linux_voice::ui::first_run::{FirstRunState, SetupStep};
+use vibe_attack::ui::config_app::{ConfigApp, MAX_LOG_LINES};
+use vibe_attack::ui::first_run::{FirstRunState, SetupStep};
 
 #[test]
 fn first_run_complete_when_all_checks_pass() {
@@ -103,8 +103,8 @@ fn pkgbuild_file_exists_and_has_required_fields() {
 #[test]
 fn desktop_file_exists_and_has_required_keys() {
     let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let desktop = root.join("packaging/appimage/hd-linux-voice.desktop");
-    assert!(desktop.exists(), "packaging/appimage/hd-linux-voice.desktop must exist");
+    let desktop = root.join("packaging/appimage/vibe-attack.desktop");
+    assert!(desktop.exists(), "packaging/appimage/vibe-attack.desktop must exist");
     let contents = std::fs::read_to_string(&desktop).expect("failed to read .desktop file");
     assert!(contents.contains("Name="), ".desktop missing Name=");
     assert!(contents.contains("Exec="), ".desktop missing Exec=");

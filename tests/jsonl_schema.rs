@@ -1,6 +1,6 @@
 #[test]
 fn jsonl_event_has_required_fields_and_stable_keys() {
-    let evt = hd_linux_voice::pipeline::jsonl::JsonlEvent::Utterance {
+    let evt = vibe_attack::pipeline::jsonl::JsonlEvent::Utterance {
         utterance_id: 42,
         created_wall_time_ms: 1_700_000_000_000,
         wall_time_ms: 1_700_000_000_000,
@@ -49,7 +49,7 @@ fn jsonl_event_has_required_fields_and_stable_keys() {
 
 #[test]
 fn jsonl_timing_fields_are_non_negative() {
-    let evt = hd_linux_voice::pipeline::jsonl::JsonlEvent::Utterance {
+    let evt = vibe_attack::pipeline::jsonl::JsonlEvent::Utterance {
         utterance_id: 0,
         created_wall_time_ms: 0,
         wall_time_ms: 0,
@@ -78,7 +78,7 @@ fn jsonl_timing_fields_are_non_negative() {
 
 #[test]
 fn dispatch_event_has_required_fields_and_stable_type_key() {
-    let evt = hd_linux_voice::pipeline::jsonl::JsonlEvent::Dispatch {
+    let evt = vibe_attack::pipeline::jsonl::JsonlEvent::Dispatch {
         utterance_id: 7,
         macro_id: "eagle_airstrike",
         score: 0.95,
@@ -100,7 +100,7 @@ fn dispatch_event_has_required_fields_and_stable_type_key() {
 
 #[test]
 fn no_match_event_has_required_fields_and_stable_type_key() {
-    let evt = hd_linux_voice::pipeline::jsonl::JsonlEvent::NoMatch {
+    let evt = vibe_attack::pipeline::jsonl::JsonlEvent::NoMatch {
         utterance_id: 3,
         transcript: "orbital strike",
         wall_time_ms: 1_700_000_000_000,

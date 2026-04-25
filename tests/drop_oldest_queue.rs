@@ -1,7 +1,7 @@
 use crossbeam_channel::{Receiver, Sender};
 
 fn try_send_drop_oldest<T>(tx: &Sender<T>, rx: &Receiver<T>, item: T) -> Result<(), T> {
-    hd_linux_voice::vad::try_send_drop_oldest(tx, rx, item)
+    vibe_attack::vad::try_send_drop_oldest(tx, rx, item)
 }
 
 #[test]

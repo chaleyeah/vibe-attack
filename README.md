@@ -1,6 +1,6 @@
-# hd-linux-voice
+# vibe-attack
 
-hd-linux-voice is an open-source voice-macro daemon for Helldivers 2 on Linux. Hold a push-to-talk key, speak a stratagem name, and the daemon injects the keystrokes automatically — no second monitor, no proprietary tools.
+vibe-attack is an open-source voice-macro daemon for Helldivers 2 on Linux. Hold a push-to-talk key, speak a stratagem name, and the daemon injects the keystrokes automatically — no second monitor, no proprietary tools.
 
 ## Features
 
@@ -51,19 +51,19 @@ Speech-to-text requires a Whisper model file. Models are **not** downloaded auto
 ### Clone and Build
 
 ```bash
-git clone https://github.com/chaleyeah/hd-linux-voice.git
-cd hd-linux-voice
+git clone https://github.com/chaleyeah/vibe-attack.git
+cd vibe-attack
 cargo build --release
 ```
 
-The binary will be at `./target/release/hd-linux-voice`.
+The binary will be at `./target/release/vibe-attack`.
 
 ## Usage
 
 Running with no subcommand starts the daemon:
 
 ```bash
-./target/release/hd-linux-voice
+./target/release/vibe-attack
 ```
 
 - **stdout** emits machine-readable JSONL transcripts (one JSON object per utterance).
@@ -75,7 +75,7 @@ Running with no subcommand starts the daemon:
 |------|-------------|
 | `-v` | Enable DEBUG logging |
 | `-vv` | Enable TRACE logging |
-| `--config FILE` | Use a specific config file (default: `$XDG_CONFIG_HOME/hd-linux-voice/config.yaml`) |
+| `--config FILE` | Use a specific config file (default: `$XDG_CONFIG_HOME/vibe-attack/config.yaml`) |
 | `--list-devices` | Print available audio input devices and exit |
 
 ### Subcommands
@@ -92,7 +92,7 @@ Running with no subcommand starts the daemon:
 ### Config File Location
 
 ```
-~/.config/hd-linux-voice/config.yaml
+~/.config/vibe-attack/config.yaml
 ```
 
 The `XDG_CONFIG_HOME` environment variable overrides the base directory. Copy `config.example.yaml` from the repo as a starting point.

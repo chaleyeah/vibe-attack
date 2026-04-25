@@ -51,7 +51,7 @@ fn concurrency_stress_pipeline_topology() {
                 produced.fetch_add(1, Ordering::Relaxed);
 
                 // MUST NOT block: use drop-oldest helper (D-03).
-                let _ = hd_linux_voice::vad::try_send_drop_oldest(&job_tx, &job_rx_for_drop, seq);
+                let _ = vibe_attack::vad::try_send_drop_oldest(&job_tx, &job_rx_for_drop, seq);
 
                 // Tight loop but yield periodically to reduce busy-spin in the test harness.
                 if seq % 64 == 0 {
@@ -126,6 +126,6 @@ fn concurrency_stress_pipeline_topology() {
 }
 
 fn try_send_drop_oldest<T>(tx: &Sender<T>, rx: &Receiver<T>, item: T) -> Result<(), T> {
-    hd_linux_voice::vad::try_send_drop_oldest(tx, rx, item)
+    vibe_attack::vad::try_send_drop_oldest(tx, rx, item)
 }
 

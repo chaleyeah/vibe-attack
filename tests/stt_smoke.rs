@@ -36,15 +36,15 @@ fn whisper_loads_model_and_runs_one_pass() {
         use tokio_util::sync::CancellationToken;
 
         let shutdown = CancellationToken::new();
-        let stt = hd_linux_voice::stt::SttService::new(&model_path, shutdown.clone())
+        let stt = vibe_attack::stt::SttService::new(&model_path, shutdown.clone())
             .expect("create STT service");
         let mut stt = stt.spawn().expect("spawn STT thread");
 
         // 1 second of silence @ 16kHz. We just want to validate the end-to-end call path.
-        let job = hd_linux_voice::vad::UtteranceJob {
+        let job = vibe_attack::vad::UtteranceJob {
             utterance_id: 1,
             audio: vec![0.0f32; 16_000],
-            timings: hd_linux_voice::pipeline::timing::UtteranceTimings::new(),
+            timings: vibe_attack::pipeline::timing::UtteranceTimings::new(),
             start_frame_idx: 0,
             end_frame_idx: 0,
         };

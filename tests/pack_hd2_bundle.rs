@@ -7,7 +7,7 @@
 
 use std::io::Write;
 
-use hd_linux_voice::{
+use vibe_attack::{
     config::{KeyAction, MacroConfig},
     pack::{Category, Pack},
     pack::manager::ProfileManager,
@@ -326,7 +326,7 @@ fn pack_export_zip_no_sounds_dir_does_not_error() {
 #[test]
 fn pack_import_from_zip_reads_name_and_macros() {
     // Build a zip in a temp dir, import it, and verify the imported pack content.
-    // import() extracts to XDG_CONFIG_HOME/hd-linux-voice/profiles/<name>.
+    // import() extracts to XDG_CONFIG_HOME/vibe-attack/profiles/<name>.
     // We redirect XDG_CONFIG_HOME to a second temp dir to stay hermetic.
     let source_dir = tempfile::tempdir().unwrap();
     let import_root = tempfile::tempdir().unwrap();
@@ -387,7 +387,7 @@ fn pack_import_extracts_sounds_to_profile_dir() {
 
     let extracted_wav = import_root
         .path()
-        .join("hd-linux-voice/profiles/SoundImport/sounds/reinforce.wav");
+        .join("vibe-attack/profiles/SoundImport/sounds/reinforce.wav");
     assert!(extracted_wav.exists(), "sounds/reinforce.wav must be extracted");
     assert_eq!(
         std::fs::read(&extracted_wav).unwrap(),
@@ -463,7 +463,7 @@ fn profile_manager_none_active_persists() {
 #[test]
 fn profile_manager_get_active_pack_resolves_from_profiles_dir() {
     let dir = tempfile::tempdir().unwrap();
-    let profiles_dir = dir.path().join("hd-linux-voice/profiles");
+    let profiles_dir = dir.path().join("vibe-attack/profiles");
     let hd2_dir = profiles_dir.join("Helldivers 2");
     std::fs::create_dir_all(&hd2_dir).unwrap();
 

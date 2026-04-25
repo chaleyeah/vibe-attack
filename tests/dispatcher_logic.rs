@@ -1,6 +1,6 @@
-use hd_linux_voice::config::{MacroConfig, KeyAction};
-use hd_linux_voice::pipeline::dispatcher::{Dispatcher, DispatchOutcome};
-use hd_linux_voice::input::inject::MacroCmd;
+use vibe_attack::config::{MacroConfig, KeyAction};
+use vibe_attack::pipeline::dispatcher::{Dispatcher, DispatchOutcome};
+use vibe_attack::input::inject::MacroCmd;
 use std::sync::mpsc::channel;
 use evdev::KeyCode;
 

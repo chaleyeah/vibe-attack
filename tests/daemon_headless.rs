@@ -6,11 +6,11 @@ use std::process::Command;
 fn daemon_bin() -> std::path::PathBuf {
     let mut p = std::env::current_dir().unwrap();
     for _ in 0..3 {
-        let bin = p.join("target/debug/hd-linux-voice");
+        let bin = p.join("target/debug/vibe-attack");
         if bin.exists() {
             return bin;
         }
-        let parent = p.join("../target/debug/hd-linux-voice");
+        let parent = p.join("../target/debug/vibe-attack");
         if parent.exists() {
             return parent;
         }
@@ -20,7 +20,7 @@ fn daemon_bin() -> std::path::PathBuf {
             break;
         }
     }
-    std::path::PathBuf::from("target/debug/hd-linux-voice")
+    std::path::PathBuf::from("target/debug/vibe-attack")
 }
 
 #[test]
@@ -67,7 +67,7 @@ fn daemon_exits_with_error_on_missing_config() {
 
     let output = Command::new(&bin)
         .arg("--config")
-        .arg("/tmp/hd_linux_voice_nonexistent_config_xyz.yaml")
+        .arg("/tmp/vibe_attack_nonexistent_config_xyz.yaml")
         .env_remove("WAYLAND_DISPLAY")
         .env_remove("DISPLAY")
         .output()
@@ -96,7 +96,7 @@ fn daemon_exits_with_error_on_missing_config() {
 #[test]
 fn uinput_permission_denied_message_links_to_docs() {
     // Test that DaemonError::UinputPermissionDenied mentions the setup doc (D-15).
-    let err_msg = format!("{}", hd_linux_voice::error::DaemonError::UinputPermissionDenied);
+    let err_msg = format!("{}", vibe_attack::error::DaemonError::UinputPermissionDenied);
     assert!(
         err_msg.contains("uinput-setup.md"),
         "D-15 error must link to docs/uinput-setup.md, got: {err_msg}"
