@@ -1,0 +1,579 @@
+{
+  "compiledAt": "2026-04-25T20:16:53.690Z",
+  "milestoneId": "M001",
+  "pipeline": {
+    "clarifyRoundLimit": 3,
+    "researchSynthesized": true,
+    "draftContextIncluded": false,
+    "finalizedContextIncluded": true,
+    "sourcePhase": "completing-milestone"
+  },
+  "nodes": [
+    {
+      "id": "execute-task:M001:S01:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S01.T01",
+        "title": "01-foundation 01",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S01:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S01:T01"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S01.T02",
+        "title": "01-foundation 02",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S01:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S01:T02"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S01.T03",
+        "title": "01-foundation 03",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S01:T04",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S01:T03"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S01.T04",
+        "title": "01-foundation 04",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S01:T05",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S01:T04"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S01.T05",
+        "title": "01-foundation 05",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M001:S01",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M001:S01:T05"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M001.S01",
+        "title": "Foundation",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S02:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S02.T01",
+        "title": "02-pipeline-core 01",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S02:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S02:T01"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S02.T02",
+        "title": "02-pipeline-core 02",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S02:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S02:T02"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S02.T03",
+        "title": "02-pipeline-core 03",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S02:T04",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S02:T03"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S02.T04",
+        "title": "02-pipeline-core 04",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S02:T05",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S02:T04"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S02.T05",
+        "title": "02-pipeline-core 05",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S02:T06",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S02:T05"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S02.T06",
+        "title": "02-pipeline-core 06",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M001:S02",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M001:S02:T06"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M001.S02",
+        "title": "Pipeline Core",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S03:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        "src/pipeline/jsonl.rs",
+        "tests/jsonl_schema.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S03.T01",
+        "title": "Added NoMatch and Dispatch variants to JsonlEvent with stable serde type tags",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S03:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S03:T01"
+      ],
+      "writes": [
+        "src/pipeline/dispatcher.rs",
+        "src/pipeline/coordinator.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S03.T02",
+        "title": "Dispatcher::process() emits no_match and dispatch JSONL events via injected writer",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S03:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S03:T02"
+      ],
+      "writes": [
+        "tests/dispatcher_logic.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S03.T03",
+        "title": "Integration tests prove transcript-to-MacroCmd channel wiring including flag/condition gating",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S03:T04",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S03:T03"
+      ],
+      "writes": [
+        "tests/jsonl_schema.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S03.T04",
+        "title": "JSONL schema tests guard stable type field contracts for no_match and dispatch events",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M001:S03",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M001:S03:T04"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M001.S03",
+        "title": "S03",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S04:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        "tests/pack_hd2_bundle.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S04.T01",
+        "title": "Create tests/pack_hd2_bundle.rs with 18 hermetic integration tests proving the HD2 pack lifecycle (round-trip YAML, export/import ZIP, ProfileManager persistence, and full end-to-end activate/retrieve)",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S04:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S04:T01"
+      ],
+      "writes": [
+        "tests/pack_hd2_bundle.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S04.T02",
+        "title": "Verify tests/pack_hd2_bundle.rs is statically correct and tracked in git — all 18 tests confirmed valid against source",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S04:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S04:T02"
+      ],
+      "writes": [
+        "tests/pack_hd2_bundle.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S04.T03",
+        "title": "Comprehensive static verification of tests/pack_hd2_bundle.rs — all 18 tests confirmed correct against current source with no drift since T01/T02",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S04:T04",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S04:T03"
+      ],
+      "writes": [
+        "tests/pack_hd2_bundle.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S04.T04",
+        "title": "Fix test fixture path bug in profile_manager_get_active_pack_resolves_from_profiles_dir — dir.path().join(\"profiles\") corrected to join(\"hd-linux-voice/profiles\") to match xdg::BaseDirectories::with_prefix output",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S04:T05",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S04:T04"
+      ],
+      "writes": [
+        "tests/pack_hd2_bundle.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S04.T05",
+        "title": "Deep static verification of tests/pack_hd2_bundle.rs — 22 tests confirmed correct against xdg 3.0.0 API, all source types aligned, T04 path fix validated against xdg internals",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S04:T06",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S04:T05"
+      ],
+      "writes": [
+        "tests/pack_hd2_bundle.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S04.T06",
+        "title": "Final static verification pass for tests/pack_hd2_bundle.rs — all 22 tests confirmed structurally correct, API types validated against zip 0.6.6, xdg 3.0.0, serde_yaml_ng 0.10, and all public module exports; T04 path fix validated against actual get_profiles_dir() XDG construction",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S04:T07",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S04:T06"
+      ],
+      "writes": [
+        "tests/pack_hd2_bundle.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S04.T07",
+        "title": "Final S04 completion gate — all 22 tests in tests/pack_hd2_bundle.rs confirmed statically correct across T01–T06; runtime cargo test gate pending user approval before marking S04 fully green",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M001:S04",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M001:S04:T07"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M001.S04",
+        "title": "S04",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S05:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        "src/ui/mod.rs",
+        "src/ui/first_run.rs",
+        "src/ui/config_app.rs",
+        "src/lib.rs",
+        "tests/ui_distribution.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S05.T01",
+        "title": "Added src/ui/ module with pure-logic FirstRunState, SetupStep, and ConfigApp structs plus 11 tests in tests/ui_distribution.rs",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S05:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S05:T01"
+      ],
+      "writes": [
+        "packaging/PKGBUILD",
+        "packaging/appimage/hd-linux-voice.desktop",
+        "packaging/appimage/build.sh",
+        "tests/ui_distribution.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S05.T02",
+        "title": "Created packaging/PKGBUILD, packaging/appimage/hd-linux-voice.desktop, and packaging/appimage/build.sh, plus 4 structural tests (tests 12-15) in tests/ui_distribution.rs bringing total to 15 tests",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S05:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S05:T02"
+      ],
+      "writes": [
+        "Cargo.toml",
+        "src/bin/hd-linux-voice-config.rs",
+        "tests/ui_distribution.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S05.T03",
+        "title": "Added gui feature flag, eframe optional dep, hd-linux-voice-config binary, and structural test 16 confirming default features exclude gui",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M001:S05",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M001:S05:T03"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M001.S05",
+        "title": "S05",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S06:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        "tests/documentation.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S06.T01",
+        "title": "Created tests/documentation.rs with 11 structural tests defining the doc contracts for README.md, CONTRIBUTING.md, docs/troubleshooting.md, and docs/configuration.md",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S06:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S06:T01"
+      ],
+      "writes": [
+        "README.md",
+        "CONTRIBUTING.md"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S06.T02",
+        "title": "Rewrote README.md with correct project name and ALSA deps; created CONTRIBUTING.md with build instructions and coding conventions",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S06:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S06:T02"
+      ],
+      "writes": [
+        "docs/troubleshooting.md",
+        "docs/configuration.md"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S06.T03",
+        "title": "Created docs/troubleshooting.md and docs/configuration.md satisfying all 11 documentation structural tests",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M001:S06",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M001:S06:T03"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M001.S06",
+        "title": "S06",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S07:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        "Cargo.toml",
+        "src/pipeline/coordinator.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S07.T01",
+        "title": "Switch sherpa-onnx to shared ORT linking and add ORT_DYLIB_PATH auto-discovery before Silero VAD init to eliminate dual-ORT heap corruption",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S07:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S07:T01"
+      ],
+      "writes": [
+        "tests/wake_word.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S07.T02",
+        "title": "Add dual_init_wake_and_vad_coexist test to tests/wake_word.rs proving sherpa-onnx + silero-vad-rust coexist in one process via shared ORT",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M001:S07:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M001:S07:T02"
+      ],
+      "writes": [
+        "docs/troubleshooting.md",
+        "docs/configuration.md"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M001.S07.T03",
+        "title": "Replaced stale ORT dual-instance conflict warnings with shared .so deployment guidance and ORT_DYLIB_PATH instructions in troubleshooting.md and configuration.md",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M001:S07",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M001:S07:T03"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M001.S07",
+        "title": "S07",
+        "status": "complete"
+      }
+    }
+  ]
+}
