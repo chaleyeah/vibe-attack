@@ -51,7 +51,7 @@ For content checks, read the file with `std::fs::read_to_string` and use `assert
   - Files: `tests/documentation.rs`
   - Verify: grep -c '#[test]' tests/documentation.rs returns >= 11
 
-- [ ] **T02: Rewrite README.md and create CONTRIBUTING.md** `est:40m`
+- [x] **T02: Rewrite README.md and create CONTRIBUTING.md** `est:40m`
   Rewrite README.md and create CONTRIBUTING.md to satisfy tests 1-5, 8-9 from T01.
 
 **README.md rewrite:**

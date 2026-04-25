@@ -30,3 +30,8 @@
 {"id":"d63a0559-75aa-4e61-a38e-51d1a3ae3d75","ts":"2026-04-25T19:47:45.630Z","severity":"warning","message":"Safety: task T03 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"30f2801b-8ab3-4788-adc5-88c5aa3ca8fa","ts":"2026-04-25T19:47:45.641Z","severity":"info","message":"Verification gate: 5/5 checks passed","source":"notify","read":false}
 {"id":"9c8b992a-d9d8-40ef-ac35-2da4905cca68","ts":"2026-04-25T19:47:45.645Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"8049f2c8-6c5c-4345-bfea-6fd32ff1047d","ts":"2026-04-25T19:55:04.611Z","severity":"info","message":"Committed: docs: Created tests/documentation.rs with 11 structural tests defining…","source":"notify","read":false}
+{"id":"4c9eb7e2-7cf2-4231-acd2-e306ebe7b69a","ts":"2026-04-25T19:55:04.617Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"94bff973-ceae-4247-a5b0-0a18c14437c0","ts":"2026-04-25T19:55:04.617Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"d4b6b0cb-11b5-4f8c-b06d-5d188c238e15","ts":"2026-04-25T19:55:04.623Z","severity":"info","message":"Verification gate: FAILED — grep -c '#[test]' tests/documentation.rs returns >= 11","source":"notify","read":false}
+{"id":"770aef34-b33f-480b-ba81-4016306a3159","ts":"2026-04-25T19:55:04.623Z","severity":"warning","message":"Verification failed (grep -c '#[test]' tests/documentation.rs returns >= 11) — auto-fix attempt 1/2","source":"notify","read":false}

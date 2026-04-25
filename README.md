@@ -1,155 +1,110 @@
-# vibe-attack
+# hd-linux-voice
 
-vibe-attack is an open-source, community-driven voice command system designed specifically for Helldivers 2 on Linux. It allows players to execute complex stratagem sequences using natural voice commands, enhancing the tactical experience without requiring a second monitor or complex third-party tools.
+hd-linux-voice is an open-source voice-macro daemon for Helldivers 2 on Linux. Hold a push-to-talk key, speak a stratagem name, and the daemon injects the keystrokes automatically — no second monitor, no proprietary tools.
 
 ## Features
 
 - **Stratagem Automation**: Trigger all 80+ Helldivers 2 stratagems with simple voice commands.
-- **Profile Management**: Import and export macro profiles (including custom ones) using a simple `.hdpack` zip format.
-- **Built-in Editor**: An interactive Text User Interface (TUI) to create and edit macros without touching YAML files.
+- **Profile Management**: Import and export macro profiles using a simple `.hdpack` zip format.
+- **Built-in Editor**: Interactive TUI to create and edit macros without touching YAML files.
 - **Sound System**: Integrated audio feedback using `rodio`, supporting custom sounds per macro.
-- **Fail-Safe Design**: Built-in delays and double-tap detection to prevent accidental activations in the heat of battle.
+- **Fail-Safe Design**: Built-in delays and double-tap detection to prevent accidental activations.
 
 ## Installation
 
 ### Prerequisites
-- **Linux Distribution**: Debian/Ubuntu or Arch Linux based systems.
-- **Audio Devices**: A working microphone (input) and ALSA loopback device (output).
-- **Rust**: Version 1.70+ (latest stable recommended)
+
+- Linux (Debian/Ubuntu or Arch-based recommended)
+- Rust stable toolchain ([rustup.rs](https://rustup.rs))
+- A working microphone
 
 ### System Dependencies
 
 **Debian / Ubuntu:**
 ```bash
-sudo apt-get update
 sudo apt-get install -y \
   build-essential \
   libasound2-dev \
-  libportaudio2 \
-  libportaudiocpp0 \
   pkg-config
 ```
 
 **Arch / Manjaro:**
 ```bash
-sudo pacman -Syu
-sudo pacman -S base-devel portaudio
+sudo pacman -S base-devel alsa-lib pkg-config
 ```
 
 ### Install Rust
 
-If you haven't installed Rust yet:
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source $HOME/.cargo/env
 ```
 
-## Building
+### uinput / evdev Permissions
 
-### Quick Start
+The daemon injects keypresses via `/dev/uinput`. See [docs/uinput-setup.md](docs/uinput-setup.md) for permission setup instructions.
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/chaleyeah/hd-linux-voice.git
-   cd hd-linux-voice
-   ```
+### Whisper Model
 
-2. **Build the project**:
-   ```bash
-   cargo build --release
-   ```
+Speech-to-text requires a Whisper model file. Models are **not** downloaded automatically — you must place the `.gguf` file yourself and point to it in `config.yaml` under `stt.model_path`.
 
-The compiled binary will be available at `./target/release/hd-linux-voice`.
+### Clone and Build
 
-### Build Options
-
-**Debug build** (faster compilation, slower runtime):
 ```bash
-cargo build
-./target/debug/hd-linux-voice
-```
-
-**Release build** (slower compilation, optimized runtime):
-```bash
+git clone https://github.com/chaleyeah/hd-linux-voice.git
+cd hd-linux-voice
 cargo build --release
-./target/release/hd-linux-voice
 ```
 
-### Running Tests
-
-Run the full test suite:
-```bash
-cargo test
-```
-
-Run tests with output:
-```bash
-cargo test -- --nocapture
-```
-
-Run specific test:
-```bash
-cargo test test_name
-```
-
-### Troubleshooting Build Issues
-
-**ALSA dependency conflict**: If you see an error about `alsa-sys` version conflict, this is due to incompatible versions of `cpal` in the dependency tree. This requires updating the `Cargo.toml` to use compatible versions:
-
-- Update `rodio` to a version compatible with `cpal v0.17.3`, or
-- Downgrade `cpal` to match `rodio`'s requirements
-
-This is a pre-existing issue in the project that needs to be resolved before tests can run.
-
-## Running the Application
-
-### Quick Start
-
-```bash
-./target/release/hd-linux-voice run
-```
-
-### Available Commands
-
-- **Run**: Starts the voice recognition service in the foreground.
-  ```bash
-  ./target/release/hd-linux-voice run
-  ```
-
-- **Import**: Imports a `.hdpack` file into the profiles directory.
-  ```bash
-  ./target/release/hd-linux-voice import path/to/pack.hdpack
-  ```
-
-- **Export**: Exports a profile to a `.hdpack` file.
-  ```bash
-  ./target/release/hd-linux-voice export profile-name path/to/output.hdpack
-  ```
-
-- **Edit**: Opens the interactive TUI to edit macros.
-  ```bash
-  ./target/release/hd-linux-voice edit
-  ```
+The binary will be at `./target/release/hd-linux-voice`.
 
 ## Usage
 
-### First Run
+Running with no subcommand starts the daemon:
 
-When you run the application for the first time, it will initialize the configuration directory at `~/.config/hd-linux-voice/` with default settings.
+```bash
+./target/release/hd-linux-voice
+```
 
-## Profile & Pack Management
+- **stdout** emits machine-readable JSONL transcripts (one JSON object per utterance).
+- **stderr** receives all log output.
 
-### Understanding Profiles
-Profiles are sets of macro configurations stored in `~/.config/hd-linux-voice/profiles/`.
+### Flags
 
-### Creating a Custom Pack
-1. Create a profile configuration file.
-2. Add custom macros and sounds.
-3. Export it to a `.hdpack` file.
-4. Share or use it with the `import` command.
+| Flag | Description |
+|------|-------------|
+| `-v` | Enable DEBUG logging |
+| `-vv` | Enable TRACE logging |
+| `--config FILE` | Use a specific config file (default: `$XDG_CONFIG_HOME/hd-linux-voice/config.yaml`) |
+| `--list-devices` | Print available audio input devices and exit |
+
+### Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `ping` | Check if a running daemon is alive |
+| `switch <name>` | Switch the active macro pack/profile |
+| `test <name>` | Execute a specific macro immediately (for testing) |
+| `import <file>` | Import a `.hdpack` file |
+| `export <name> [output]` | Export the current profile to a `.hdpack` file |
+| `edit` | Open the interactive TUI editor |
+
+### Config File Location
+
+```
+~/.config/hd-linux-voice/config.yaml
+```
+
+The `XDG_CONFIG_HOME` environment variable overrides the base directory. Copy `config.example.yaml` from the repo as a starting point.
 
 ## Configuration
 
-The application uses a `config.yaml` file to store persistent settings like wake word, activation mode, and volume.
+See [docs/configuration.md](docs/configuration.md) for a full reference of all config options, including push-to-talk key binding, audio device selection, VAD thresholds, and STT model path.
 
-See [Configuration Guide](CONFIG.md) for detailed information.
+## Troubleshooting
+
+See [docs/troubleshooting.md](docs/troubleshooting.md) for common issues including uinput permission errors, audio device problems, and Whisper model setup.
+
+## License
+
+AGPL-3.0-only — see [LICENSE](LICENSE) for details.
