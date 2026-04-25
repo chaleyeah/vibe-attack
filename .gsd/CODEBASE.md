@@ -1,15 +1,17 @@
 # Codebase Map
 
-Generated: 2026-04-25T19:47:45Z | Files: 109 | Described: 0/109
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:47:45Z","fingerprint":"e95958eb19821c77abe73e5c87f965520a1d15c2","fileCount":109,"truncated":false} -->
+Generated: 2026-04-25T19:56:14Z | Files: 112 | Described: 0/112
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T19:56:14Z","fingerprint":"bad45cf5ba0ab02f8710bbcc47b142f0df631f09","fileCount":112,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
+- `=`
 - `about.hbs`
 - `about.toml`
 - `Cargo.toml`
 - `config.example.yaml`
 - `config.yaml`
+- `CONTRIBUTING.md`
 - `demo_hd2.yaml`
 - `LICENSE`
 - `LICENSES.md`
@@ -161,6 +163,7 @@ Generated: 2026-04-25T19:47:45Z | Files: 109 | Described: 0/109
 - `tests/config_parse.rs`
 - `tests/daemon_headless.rs`
 - `tests/dispatcher_logic.rs`
+- `tests/documentation.rs`
 - `tests/drop_oldest_queue.rs`
 - `tests/jsonl_schema.rs`
 - `tests/macro_inject.rs`

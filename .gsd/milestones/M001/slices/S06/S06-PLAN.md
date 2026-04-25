@@ -80,7 +80,7 @@ IMPORTANT: Do NOT reference `portaudio` anywhere. The project uses CPAL with ALS
   - Files: `README.md`, `CONTRIBUTING.md`
   - Verify: grep -q 'hd-linux-voice' README.md && ! grep -qi 'portaudio' README.md && grep -q '## Installation' README.md && grep -q '## Usage' README.md && test -f CONTRIBUTING.md && grep -q 'cargo build' CONTRIBUTING.md && echo PASS
 
-- [ ] **T03: Create docs/troubleshooting.md and docs/configuration.md, verify all tests pass** `est:40m`
+- [x] **T03: Create docs/troubleshooting.md and docs/configuration.md, verify all tests pass** `est:40m`
   Create the two remaining doc files to satisfy tests 6-7, 10-11 from T01, then run the full test suite.
 
 **docs/troubleshooting.md:**
