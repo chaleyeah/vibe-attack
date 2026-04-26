@@ -62,3 +62,53 @@ impl FirstRunState {
         self.steps_remaining().into_iter().next()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn all_false_returns_all_four_steps() {
+        let state = FirstRunState::from_checks(false, false, false, false);
+        assert!(!state.is_setup_complete());
+        let steps = state.steps_remaining();
+        assert_eq!(steps.len(), 4);
+        assert_eq!(steps[0], SetupStep::CreateConfig);
+        assert_eq!(steps[1], SetupStep::InstallModel);
+        assert_eq!(steps[2], SetupStep::SetupUinput);
+        assert_eq!(steps[3], SetupStep::ConfigurePtt);
+    }
+
+    #[test]
+    fn all_true_returns_no_steps_and_is_complete() {
+        let state = FirstRunState::from_checks(true, true, true, true);
+        assert!(state.is_setup_complete());
+        assert!(state.steps_remaining().is_empty());
+        assert!(state.first_incomplete_step().is_none());
+    }
+
+    #[test]
+    fn partial_true_returns_correct_remaining_steps() {
+        // Config done, rest pending
+        let state = FirstRunState::from_checks(true, false, false, false);
+        let steps = state.steps_remaining();
+        assert_eq!(steps.len(), 3);
+        assert_eq!(steps[0], SetupStep::InstallModel);
+    }
+
+    #[test]
+    fn first_incomplete_step_returns_first_false() {
+        let state = FirstRunState::from_checks(true, true, false, false);
+        assert_eq!(state.first_incomplete_step(), Some(SetupStep::SetupUinput));
+    }
+
+    #[test]
+    fn only_ptt_missing_returns_configure_ptt_step() {
+        let state = FirstRunState::from_checks(true, true, true, false);
+        assert!(!state.is_setup_complete());
+        assert_eq!(
+            state.first_incomplete_step(),
+            Some(SetupStep::ConfigurePtt)
+        );
+    }
+}

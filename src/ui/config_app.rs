@@ -84,3 +84,64 @@ pub fn load_profiles() -> Vec<String> {
     info!(path = %dir.display(), count = names.len(), "Profiles loaded");
     names
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serial_test::serial;
+
+    #[test]
+    #[serial]
+    fn load_profiles_returns_empty_when_dir_absent() {
+        let tmp = tempfile::tempdir().unwrap();
+        unsafe { std::env::set_var("XDG_CONFIG_HOME", tmp.path()); }
+        let profiles = load_profiles();
+        unsafe { std::env::remove_var("XDG_CONFIG_HOME"); }
+        assert!(profiles.is_empty());
+    }
+
+    #[test]
+    #[serial]
+    fn load_profiles_returns_sorted_yaml_stems() {
+        let tmp = tempfile::tempdir().unwrap();
+        let profiles_dir = tmp.path().join("vibe-attack/profiles");
+        std::fs::create_dir_all(&profiles_dir).unwrap();
+        std::fs::write(profiles_dir.join("zulu.yaml"), b"").unwrap();
+        std::fs::write(profiles_dir.join("alpha.yaml"), b"").unwrap();
+        std::fs::write(profiles_dir.join("bravo.yaml"), b"").unwrap();
+
+        unsafe { std::env::set_var("XDG_CONFIG_HOME", tmp.path()); }
+        let profiles = load_profiles();
+        unsafe { std::env::remove_var("XDG_CONFIG_HOME"); }
+
+        assert_eq!(profiles, vec!["alpha", "bravo", "zulu"]);
+    }
+
+    #[test]
+    #[serial]
+    fn load_profiles_ignores_non_yaml_files() {
+        let tmp = tempfile::tempdir().unwrap();
+        let profiles_dir = tmp.path().join("vibe-attack/profiles");
+        std::fs::create_dir_all(&profiles_dir).unwrap();
+        std::fs::write(profiles_dir.join("hd2.yaml"), b"").unwrap();
+        std::fs::write(profiles_dir.join("README.md"), b"").unwrap();
+        std::fs::write(profiles_dir.join("hd2.yaml.bak"), b"").unwrap();
+
+        unsafe { std::env::set_var("XDG_CONFIG_HOME", tmp.path()); }
+        let profiles = load_profiles();
+        unsafe { std::env::remove_var("XDG_CONFIG_HOME"); }
+
+        assert_eq!(profiles, vec!["hd2"]);
+    }
+
+    #[test]
+    fn add_log_line_respects_max_cap() {
+        let mut app = ConfigApp::new();
+        for i in 0..MAX_LOG_LINES + 5 {
+            app.add_log_line(format!("line {i}"));
+        }
+        assert_eq!(app.log_lines.len(), MAX_LOG_LINES);
+        // Oldest entries dropped; newest retained
+        assert_eq!(app.log_lines.last().unwrap(), &format!("line {}", MAX_LOG_LINES + 4));
+    }
+}

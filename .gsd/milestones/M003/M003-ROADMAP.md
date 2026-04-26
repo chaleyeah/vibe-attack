@@ -24,7 +24,7 @@
 - [x] **S04: S04** `risk:medium` `depends:[]`
   > After this: After wizard completes, the main config view shows real profile names, a live mic level bar that responds to audio input, and log lines appearing as the daemon runs
 
-- [ ] **S05: Integration smoke tests** `risk:low` `depends:[S04]`
+- [x] **S05: S05** `risk:low` `depends:[]`
   > After this: cargo test covers probe module, FirstRunState transitions, and binary smoke; all pass in CI without a display server
 
 ## Boundary Map

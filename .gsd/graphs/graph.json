@@ -383,6 +383,25 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "slice:M003:S05",
+      "label": "S05: Integration smoke tests",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M003/slices/S05/S05-PLAN.md"
+    },
+    {
+      "id": "task:M003:S05:T01",
+      "label": "T01: Add FirstRunState unit tests and load_profiles tempdir test",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M003:S05:T02",
+      "label": "T02: Verify rewrite_ptt_key tests run and add edge case coverage",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
       "id": "decision:M001:1",
       "label": "**Shared ORT linking for sherpa-onnx** (`default-features = false, features = [\"shared\"]`): chose shared libonnxruntime.so over static embedding to eliminate the dual-ORT heap corruption that caused `std::bad_alloc` when both wake-word (sherpa-onnx) and VAD (silero-vad-rust via ort crate) ran in the same process. Alternative was keeping them as separate processes (IPC overhead) or disabling one permanently.",
       "type": "decision",
@@ -1191,6 +1210,24 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "milestone:M003",
+      "to": "slice:M003:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M003:S05",
+      "to": "task:M003:S05:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M003:S05",
+      "to": "task:M003:S05:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M001",
       "to": "decision:M001:1",
       "type": "relates_to",
@@ -1539,5 +1576,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-26T00:22:32.235Z"
+  "builtAt": "2026-04-26T00:24:10.353Z"
 }
