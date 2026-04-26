@@ -1,3 +1,4 @@
 pub mod config_app;
 pub mod first_run;
 pub mod probe;
+pub mod wizard;

@@ -20,6 +20,20 @@ fn xdg_data_model_path() -> Option<PathBuf> {
         .map(|p| p.join("models/whisper/ggml-tiny.en.bin"))
 }
 
+/// Resolved config file path as a display string (for wizard UI and logging).
+pub fn config_path_for_display() -> String {
+    xdg_config_path()
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|| "~/.config/vibe-attack/config.yaml".to_string())
+}
+
+/// Resolved model file path as a display string (for wizard UI).
+pub fn model_path_for_display() -> String {
+    xdg_data_model_path()
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|| "~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin".to_string())
+}
+
 fn check_config() -> bool {
     let Some(path) = xdg_config_path() else {
         warn!(check = "config", reason = "could not resolve XDG config path");

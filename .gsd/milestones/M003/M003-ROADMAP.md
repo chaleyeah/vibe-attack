@@ -18,7 +18,7 @@
 - [x] **S02: S02** `risk:medium` `depends:[]`
   > After this: Unit tests (no display server) pass: probe returns correct booleans for each check under hermetic XDG temp dirs; /dev/uinput open failure is correctly classified as inaccessible
 
-- [ ] **S03: Wizard UI panels** `risk:high` `depends:[S02]`
+- [x] **S03: S03** `risk:high` `depends:[]`
   > After this: Launching vibe-attack-config on a system missing prerequisites shows the wizard; clicking through each step performs the real action; after all steps pass, the app transitions to the main config view
 
 - [ ] **S04: Main config app wired up** `risk:medium` `depends:[S03]`
