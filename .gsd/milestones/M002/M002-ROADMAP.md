@@ -13,22 +13,22 @@
 
 ## Slices
 
-- [ ] **S01: Source rename — Cargo package, binaries, XDG prefix, log strings** `risk:high` `depends:[]`
+- [x] **S01: Source rename — Cargo package, binaries, XDG prefix, log strings** `risk:high` `depends:[]`
   > After this: `cargo build --all-features` succeeds; `target/debug/vibe-attack --help` and `target/debug/vibe-attack-config --help` both run; `rg -i 'hd[_-]linux[_-]voice' -- src/ Cargo.toml examples/` returns zero matches.
 
-- [ ] **S02: Test suite update — XDG fixture paths and documentation regression-guard inversion** `risk:high` `depends:[S01]`
+- [x] **S02: Test suite update — XDG fixture paths and documentation regression-guard inversion** `risk:high` `depends:[S01]`
   > After this: every file under `tests/` is updated; the README is rewritten in the same task as the test polarity inversion; the test suite builds; `rg -i 'hd[_-]linux[_-]voice' -- tests/ README.md` returns zero.
 
-- [ ] **S03: Documentation and config-template rewrite** `risk:medium` `depends:[S02]`
+- [x] **S03: Documentation and config-template rewrite** `risk:medium` `depends:[S02]`
   > After this: `docs/*.md` (excluding `docs/latency-proofs/`), `CONTRIBUTING.md`, `config.example.yaml`, `config.yaml`, `demo_hd2.yaml`, `about.toml`, `about.hbs` all reference `vibe-attack`; `rg -i 'hd[_-]linux[_-]voice' -- docs/configuration.md docs/troubleshooting.md docs/uinput-setup.md docs/latency-baseline.md CONTRIBUTING.md config.example.yaml config.yaml demo_hd2.yaml about.toml about.hbs` returns zero.
 
-- [ ] **S04: Packaging — PKGBUILD, AppImage build script, desktop entry** `risk:medium` `depends:[S01]`
+- [x] **S04: Packaging — PKGBUILD, AppImage build script, desktop entry** `risk:medium` `depends:[S01]`
   > After this: `packaging/appimage/build.sh` produces a runnable `vibe-attack-x86_64.AppImage`; the desktop file is renamed and updated; PKGBUILD references `pkgname=vibe-attack`; invoking the AppImage with `--help` exits zero.
 
-- [ ] **S05: Cleanup — delete legacy marker directory and final grep sweep** `risk:low` `depends:[S03,S04]`
+- [x] **S05: Cleanup — delete legacy marker directory and final grep sweep** `risk:low` `depends:[S03,S04]`
   > After this: `.planning/phases/07-rebrand-from-hd-linux-voice-to-vibe-attack/` is deleted; the milestone-wide grep sweep (`rg -i 'hd[_-]linux[_-]voice' -- src/ tests/ docs/ packaging/ Cargo.toml README.md CONTRIBUTING.md config*.yaml demo_hd2.yaml about.toml about.hbs examples/`) returns zero, excluding `docs/latency-proofs/` historical artifacts.
 
-- [ ] **S06: Final integration — end-to-end smoke and milestone summary** `risk:low` `depends:[S05]`
+- [x] **S06: Final integration — end-to-end smoke and milestone summary** `risk:low` `depends:[S05]`
   > After this: the renamed daemon launches against an empty home and creates `~/.config/vibe-attack/`; the renamed GUI binary's config app reads/writes the same on-disk config; the milestone summary documents the manual `mv` migration command for the developer's existing config and the pending GitHub-slug decision; M002 closes.
 
 ## Boundary Map
