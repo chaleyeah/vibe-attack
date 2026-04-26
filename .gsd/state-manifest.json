@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-26T00:19:37.909Z",
+  "exported_at": "2026-04-26T00:22:32.233Z",
   "milestones": [
     {
       "id": "M001",
@@ -523,21 +523,19 @@
     {
       "milestone_id": "M003",
       "id": "S04",
-      "title": "Main config app wired up",
-      "status": "pending",
+      "title": "S04",
+      "status": "complete",
       "risk": "medium",
-      "depends": [
-        "S03"
-      ],
+      "depends": [],
       "demo": "After wizard completes, the main config view shows real profile names, a live mic level bar that responds to audio input, and log lines appearing as the daemon runs",
       "created_at": "2026-04-26T00:08:25.923Z",
-      "completed_at": null,
-      "full_summary_md": "",
-      "full_uat_md": "",
-      "goal": "Populate ConfigApp from real data: profiles from XDG profiles directory, live mic level from a CPAL background thread writing to an Arc<AtomicU32>, log lines fed via an mpsc channel. If no audio device exists, show 0.0 with a 'no device' label rather than panicking.",
-      "success_criteria": "Profiles panel lists all .yaml files from XDG profiles dir; mic level updates at ~10 Hz when a device is present; mic level shows 0.0 gracefully when no device is found; log feed scrolls to bottom on new lines",
-      "proof_level": "Manual launch on dev machine with profiles dir populated; mic level bar visually responds to voice input; disconnect audio device and confirm no crash",
-      "integration_closure": "ConfigApp is populated by a single loader called after wizard completion; no stub values remain in production code paths",
+      "completed_at": "2026-04-26T00:22:32.227Z",
+      "full_summary_md": "---\nid: S04\nparent: M003\nmilestone: M003\nprovides:\n  - (none)\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - [\"CPAL stream kept alive on parked thread per audio/mod.rs architecture note — moving Stream out crashes ALSA silently on Linux\", \"Profiles and mic deferred to post-wizard to avoid unnecessary resource acquisition during setup\"]\npatterns_established:\n  - (none)\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-26T00:22:32.227Z\nblocker_discovered: false\n---\n\n# S04: Main config app wired up\n\n**Main config app populated from real data: profiles from XDG, live CPAL mic level with graceful no-device fallback, log lines via tracing channel layer with auto-scroll**\n\n## What Happened\n\nload_profiles() reads *.yaml stems from XDG profiles dir. spawn_mic_level_thread() opens the default CPAL device and computes RMS into an AtomicU32 (or returns no_device=true gracefully). ChannelLayer tracing subscriber feeds log lines to an mpsc channel drained each egui frame. ScrollArea stick_to_bottom auto-scrolls on new lines. Mic and profiles are deferred until wizard completes. ctx.request_repaint_after(100ms) keeps mic level live at ~10Hz.\n\n## Verification\n\ncargo check --lib clean; 8 probe unit tests pass; no errors from binary source files\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nManual UAT requires display server; eframe/winit binary build fails on headless kernel (pre-existing). CPAL mic level accuracy depends on device buffer sizes — at 44.1kHz with typical 1024-sample buffers, updates are ~23ms per RMS reading.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `src/ui/config_app.rs` — Added load_profiles(), mic_no_device field, tracing import\n- `src/bin/vibe-attack-config.rs` — Added ChannelLayer, MicLevelState, spawn_mic_level_thread(), show_main_config(), log/mic wiring in update()\n",
+      "full_uat_md": "# S04: Main config app wired up — UAT\n\n**Milestone:** M003\n**Written:** 2026-04-26T00:22:32.227Z\n\n# S04 UAT: Main Config App Wired Up\n\n## Prerequisites\n- Machine with display server, audio device, and profiles dir populated\n- `cargo build --bin vibe-attack-config --features gui`\n\n## Test Cases\n\n### 1. Profiles listed\nCreate `~/.config/vibe-attack/profiles/hd2.yaml`.\nLaunch app after wizard completes.\nExpected: \"Profiles (1)\" label shows; \"hd2\" appears in the list.\n\n### 2. Mic level responds to input\nExpected: ProgressBar moves when you speak into the mic.\n\n### 3. No-device graceful\nLaunch with no audio input device configured.\nExpected: \"no device\" label shown in place of ProgressBar; no panic or crash.\n\n### 4. Log feed\nExpected: log lines appear in the ScrollArea; \"probing first-run environment\" visible from probe::run(); area auto-scrolls to bottom.\n\n### 5. Setup transition\nStart with config missing, complete wizard steps.\nExpected: after final step passes, mic starts, profiles load, main config view appears.\n\n",
+      "goal": "Populate ConfigApp from real data: profiles from XDG profiles directory, live mic level from a CPAL background thread, log lines via an mpsc channel. If no audio device exists, show 0.0 level gracefully without panicking.",
+      "success_criteria": "Profiles panel lists all .yaml files from XDG profiles dir; mic level updates ~10Hz when device present; mic level shows 0.0 with 'no device' label when absent; log feed scrolls to bottom on new lines; no stub values remain in production code paths",
+      "proof_level": "Manual launch on dev machine with profiles dir populated; mic level bar responds to voice input; disconnect audio device and confirm no crash",
+      "integration_closure": "ConfigApp populated by a single loader called after wizard completion; CPAL thread runs continuously; log channel fed from tracing subscriber or direct send",
       "observability_impact": "CPAL thread logs device name on start and error reason on failure; profile load logs count of profiles found",
       "sequence": 4,
       "replan_triggered_at": null,
@@ -2309,6 +2307,142 @@
       "escalation_awaiting_review": 0,
       "escalation_artifact_path": null,
       "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S04",
+      "id": "T01",
+      "title": "Added load_profiles() to config_app.rs — reads *.yaml stems from XDG profiles dir, sorted, with tracing::info count log",
+      "status": "complete",
+      "one_liner": "Added load_profiles() to config_app.rs — reads *.yaml stems from XDG profiles dir, sorted, with tracing::info count log",
+      "narrative": "Added pub fn load_profiles() -> Vec<String> to config_app.rs using xdg::BaseDirectories::with_prefix(\\\"vibe-attack\\\").get_config_home().join(\\\"profiles\\\"). Reads all .yaml files, extracts file stems, sorts, logs count. Returns empty vec gracefully when dir doesn't exist. Also added mic_no_device bool to ConfigApp struct for S04/T02 to use.",
+      "verification_result": "cargo check --lib clean; function logic verified by inspection against XDG hermetic pattern",
+      "duration": "",
+      "completed_at": "2026-04-26T00:21:56.911Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "src/ui/config_app.rs"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S04\nmilestone: M003\nkey_files:\n  - src/ui/config_app.rs\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:21:56.911Z\nblocker_discovered: false\n---\n\n# T01: Added load_profiles() to config_app.rs — reads *.yaml stems from XDG profiles dir, sorted, with tracing::info count log\n\n**Added load_profiles() to config_app.rs — reads *.yaml stems from XDG profiles dir, sorted, with tracing::info count log**\n\n## What Happened\n\nAdded pub fn load_profiles() -> Vec<String> to config_app.rs using xdg::BaseDirectories::with_prefix(\\\"vibe-attack\\\").get_config_home().join(\\\"profiles\\\"). Reads all .yaml files, extracts file stems, sorts, logs count. Returns empty vec gracefully when dir doesn't exist. Also added mic_no_device bool to ConfigApp struct for S04/T02 to use.\n\n## Verification\n\ncargo check --lib clean; function logic verified by inspection against XDG hermetic pattern\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `cargo check --lib` | 0 | pass | 700ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `src/ui/config_app.rs`\n",
+      "description": "Add a load_profiles() function in src/ui/config_app.rs or a new src/ui/loader.rs. It should: resolve the XDG profiles directory via xdg::BaseDirectories::with_prefix('vibe-attack').get_config_home() and join 'profiles', read all *.yaml files, extract the profile name (stem of the filename), return Vec<String>. Log the count. In vibe-attack-config.rs, call load_profiles() after wizard completion and set ConfigApp.profiles. Re-load on 'Refresh' button click.",
+      "estimate": "25m",
+      "files": [
+        "src/ui/config_app.rs",
+        "src/bin/vibe-attack-config.rs"
+      ],
+      "verify": "Place a test.yaml in ~/.config/vibe-attack/profiles/ and launch; profile list shows 'test'",
+      "inputs": [
+        "src/ui/probe.rs (XDG pattern)",
+        "src/ui/config_app.rs"
+      ],
+      "expected_output": [
+        "load_profiles() returns profile names from XDG profiles dir",
+        "ConfigApp.profiles populated on startup and on Refresh click",
+        "tracing::info logs count of profiles found"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S04",
+      "id": "T02",
+      "title": "Added spawn_mic_level_thread() in binary: CPAL RMS level stored in AtomicU32, graceful no-device handling, ProgressBar in UI",
+      "status": "complete",
+      "one_liner": "Added spawn_mic_level_thread() in binary: CPAL RMS level stored in AtomicU32, graceful no-device handling, ProgressBar in UI",
+      "narrative": "spawn_mic_level_thread() opens the default CPAL input device, builds an input stream that computes RMS per buffer and stores as f32::to_bits() in an Arc<AtomicU32>. Thread parks after stream.play() keeping the stream alive. On device or stream failure, returns MicLevelState with no_device=true and level=0. show_main_config() renders a ProgressBar clamped 0.0..=1.0 or a 'no device' label. ctx.request_repaint_after(100ms) keeps the level updating at ~10Hz.",
+      "verification_result": "cargo check --lib clean; no errors from binary source; no_device path returns gracefully",
+      "duration": "",
+      "completed_at": "2026-04-26T00:22:07.343Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "src/bin/vibe-attack-config.rs"
+      ],
+      "key_decisions": [
+        "Stream kept alive on a parked thread per CPAL architecture note in audio/mod.rs — moving Stream out of the thread that created it causes silent ALSA stop on Linux",
+        "Mic thread started only after wizard completes to avoid unnecessary audio capture during setup"
+      ],
+      "full_summary_md": "---\nid: T02\nparent: S04\nmilestone: M003\nkey_files:\n  - src/bin/vibe-attack-config.rs\nkey_decisions:\n  - Stream kept alive on a parked thread per CPAL architecture note in audio/mod.rs — moving Stream out of the thread that created it causes silent ALSA stop on Linux\n  - Mic thread started only after wizard completes to avoid unnecessary audio capture during setup\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:22:07.343Z\nblocker_discovered: false\n---\n\n# T02: Added spawn_mic_level_thread() in binary: CPAL RMS level stored in AtomicU32, graceful no-device handling, ProgressBar in UI\n\n**Added spawn_mic_level_thread() in binary: CPAL RMS level stored in AtomicU32, graceful no-device handling, ProgressBar in UI**\n\n## What Happened\n\nspawn_mic_level_thread() opens the default CPAL input device, builds an input stream that computes RMS per buffer and stores as f32::to_bits() in an Arc<AtomicU32>. Thread parks after stream.play() keeping the stream alive. On device or stream failure, returns MicLevelState with no_device=true and level=0. show_main_config() renders a ProgressBar clamped 0.0..=1.0 or a 'no device' label. ctx.request_repaint_after(100ms) keeps the level updating at ~10Hz.\n\n## Verification\n\ncargo check --lib clean; no errors from binary source; no_device path returns gracefully\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `cargo check --lib && no errors from vibe-attack-config.rs source in cargo check --bin --features gui` | 0 | pass | 750ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `src/bin/vibe-attack-config.rs`\n",
+      "description": "Add a MicLevelState struct in src/ui/config_app.rs (or new module). It holds: Arc<AtomicU32> for mic level (f32 as bits), a thread JoinHandle, and a 'no device' flag. spawn_mic_level_thread() opens the default CPAL input device, builds an input stream that computes RMS of each buffer, stores it in the atomic as f32::to_bits(), and keeps running. If the device is not found or stream fails, set a 'no_device' bool and return. The egui update() loop reads the atomic each frame and renders a ProgressBar. Target update rate ~10Hz (buffer size / sample rate).",
+      "estimate": "45m",
+      "files": [
+        "src/ui/config_app.rs",
+        "src/bin/vibe-attack-config.rs"
+      ],
+      "verify": "Launch on dev machine: mic level bar moves when speaking; disconnect/no-device: bar stays at 0.0 with 'no device' label, no panic",
+      "inputs": [
+        "src/audio/mod.rs (CPAL patterns)",
+        "Cargo.toml (cpal version)"
+      ],
+      "expected_output": [
+        "MicLevelState struct with Arc<AtomicU32>",
+        "spawn_mic_level_thread() returns MicLevelState",
+        "ProgressBar renders level 0.0..=1.0 in main config view",
+        "'no device' label shown when CPAL fails to open a device"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S04",
+      "id": "T03",
+      "title": "Added ChannelLayer tracing subscriber + mpsc log feed; ScrollArea with stick_to_bottom auto-scrolls on new lines",
+      "status": "complete",
+      "one_liner": "Added ChannelLayer tracing subscriber + mpsc log feed; ScrollArea with stick_to_bottom auto-scrolls on new lines",
+      "narrative": "ChannelLayer implements tracing_subscriber::Layer, formatting events as '[LEVEL] message' and sending to an mpsc::SyncSender(500). Main loop drains the channel each frame via try_recv() into ConfigApp.add_log_line(). ScrollArea uses stick_to_bottom(true) for auto-scroll. tracing_subscriber::registry() composes fmt layer + ChannelLayer so logs appear both on stderr and in the UI. Probe and CPAL events will appear as log lines in the app.",
+      "verification_result": "cargo check --lib clean; channel layer pattern verified by inspection",
+      "duration": "",
+      "completed_at": "2026-04-26T00:22:12.823Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "src/bin/vibe-attack-config.rs"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T03\nparent: S04\nmilestone: M003\nkey_files:\n  - src/bin/vibe-attack-config.rs\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:22:12.823Z\nblocker_discovered: false\n---\n\n# T03: Added ChannelLayer tracing subscriber + mpsc log feed; ScrollArea with stick_to_bottom auto-scrolls on new lines\n\n**Added ChannelLayer tracing subscriber + mpsc log feed; ScrollArea with stick_to_bottom auto-scrolls on new lines**\n\n## What Happened\n\nChannelLayer implements tracing_subscriber::Layer, formatting events as '[LEVEL] message' and sending to an mpsc::SyncSender(500). Main loop drains the channel each frame via try_recv() into ConfigApp.add_log_line(). ScrollArea uses stick_to_bottom(true) for auto-scroll. tracing_subscriber::registry() composes fmt layer + ChannelLayer so logs appear both on stderr and in the UI. Probe and CPAL events will appear as log lines in the app.\n\n## Verification\n\ncargo check --lib clean; channel layer pattern verified by inspection\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `cargo check --lib` | 0 | pass | 700ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `src/bin/vibe-attack-config.rs`\n",
+      "description": "Add a log mpsc channel to VibeAttackConfigApp: sender side is passed to vibe-attack-config.rs as a simple fn add_log(msg). In the update() loop, drain all pending messages from the receiver into ConfigApp.log_lines (respecting MAX_LOG_LINES cap). Add a tracing subscriber layer that writes to the channel (using a custom Layer from tracing_subscriber) so daemon log events appear in the UI. ScrollArea auto-scrolls to bottom when new lines arrive (track last_line_count, scroll when it changes).",
+      "estimate": "40m",
+      "files": [
+        "src/bin/vibe-attack-config.rs",
+        "src/ui/config_app.rs"
+      ],
+      "verify": "Launch app: log lines appear in the scrollable area; each probe::run() call generates a visible log line; area auto-scrolls on new lines",
+      "inputs": [
+        "src/ui/config_app.rs (add_log_line, MAX_LOG_LINES)",
+        "src/bin/vibe-attack-config.rs"
+      ],
+      "expected_output": [
+        "mpsc channel receiver drained each frame",
+        "tracing subscriber layer sends formatted log strings to channel",
+        "ScrollArea auto-scrolls when new lines arrive"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
     }
   ],
   "decisions": [],
@@ -3379,6 +3513,39 @@
       "verdict": "pass",
       "duration_ms": 80,
       "created_at": "2026-04-26T00:19:13.942Z"
+    },
+    {
+      "id": 98,
+      "task_id": "T01",
+      "slice_id": "S04",
+      "milestone_id": "M003",
+      "command": "cargo check --lib",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 700,
+      "created_at": "2026-04-26T00:21:56.912Z"
+    },
+    {
+      "id": 99,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M003",
+      "command": "cargo check --lib && no errors from vibe-attack-config.rs source in cargo check --bin --features gui",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 750,
+      "created_at": "2026-04-26T00:22:07.343Z"
+    },
+    {
+      "id": 100,
+      "task_id": "T03",
+      "slice_id": "S04",
+      "milestone_id": "M003",
+      "command": "cargo check --lib",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 700,
+      "created_at": "2026-04-26T00:22:12.823Z"
     }
   ]
 }

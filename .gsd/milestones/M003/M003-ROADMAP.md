@@ -21,7 +21,7 @@
 - [x] **S03: S03** `risk:high` `depends:[]`
   > After this: Launching vibe-attack-config on a system missing prerequisites shows the wizard; clicking through each step performs the real action; after all steps pass, the app transitions to the main config view
 
-- [ ] **S04: Main config app wired up** `risk:medium` `depends:[S03]`
+- [x] **S04: S04** `risk:medium` `depends:[]`
   > After this: After wizard completes, the main config view shows real profile names, a live mic level bar that responds to audio input, and log lines appearing as the daemon runs
 
 - [ ] **S05: Integration smoke tests** `risk:low` `depends:[S04]`
