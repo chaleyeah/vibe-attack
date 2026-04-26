@@ -7,7 +7,7 @@ use eframe::egui;
 use vibe_attack::ui::config_app::{load_profiles, ConfigApp};
 use vibe_attack::ui::first_run::FirstRunState;
 use vibe_attack::ui::probe;
-use vibe_attack::ui::wizard::{show_wizard, ModelDownloadState, PttCaptureState};
+use vibe_attack::ui::wizard::{show_wizard, ModelDownloadState, PttCaptureState, UinputSetupState};
 
 // ── Log channel ──────────────────────────────────────────────────────────────
 
@@ -154,6 +154,7 @@ struct VibeAttackConfigApp {
     config: ConfigApp,
     ptt: PttCaptureState,
     dl: ModelDownloadState,
+    uinput: UinputSetupState,
     config_example_contents: &'static str,
     hd2_profile_contents: &'static str,
     mic: MicLevelState,
@@ -191,6 +192,7 @@ impl VibeAttackConfigApp {
             config,
             ptt: PttCaptureState::new(),
             dl: ModelDownloadState::new(),
+            uinput: UinputSetupState::new(),
             config_example_contents,
             hd2_profile_contents,
             mic,
@@ -217,6 +219,14 @@ impl eframe::App for VibeAttackConfigApp {
         // Repaint while model download is in progress.
         if self.dl.is_running() {
             ctx.request_repaint_after(std::time::Duration::from_millis(250));
+        }
+
+        // Repaint while uinput setup actions are running.
+        use vibe_attack::ui::wizard::SetupActionStatus;
+        if matches!(self.uinput.modprobe, SetupActionStatus::Running)
+            || matches!(self.uinput.usermod, SetupActionStatus::Running)
+        {
+            ctx.request_repaint_after(std::time::Duration::from_millis(200));
         }
 
         // Drain log channel.
@@ -246,6 +256,7 @@ impl eframe::App for VibeAttackConfigApp {
                 &mut self.first_run,
                 &mut self.ptt,
                 &mut self.dl,
+                &mut self.uinput,
                 self.config_example_contents,
                 self.hd2_profile_contents,
             );

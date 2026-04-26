@@ -64,6 +64,41 @@ mod inner {
         }
     }
 
+    // ── Uinput setup state ───────────────────────────────────────────────────
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum SetupActionStatus {
+        Idle,
+        Running,
+        Done,
+        Failed(String),
+    }
+
+    /// Per-action status for the two privileged uinput setup steps.
+    pub struct UinputSetupState {
+        pub modprobe: SetupActionStatus,
+        pub usermod: SetupActionStatus,
+        pub modprobe_handle: Option<std::thread::JoinHandle<Result<(), String>>>,
+        pub usermod_handle: Option<std::thread::JoinHandle<Result<(), String>>>,
+    }
+
+    impl UinputSetupState {
+        pub fn new() -> Self {
+            Self {
+                modprobe: SetupActionStatus::Idle,
+                usermod: SetupActionStatus::Idle,
+                modprobe_handle: None,
+                usermod_handle: None,
+            }
+        }
+    }
+
+    impl Default for UinputSetupState {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
     // ── PTT capture state ────────────────────────────────────────────────────
 
     /// Shared state for the PTT key capture background thread.
@@ -112,6 +147,7 @@ mod inner {
         state: &mut FirstRunState,
         ptt: &mut PttCaptureState,
         dl: &mut ModelDownloadState,
+        uinput: &mut UinputSetupState,
         config_example_contents: &str,
         hd2_profile_contents: &str,
     ) {
@@ -153,6 +189,32 @@ mod inner {
             }
         }
 
+        // Harvest modprobe and usermod thread results.
+        if let Some(h) = &uinput.modprobe_handle {
+            if h.is_finished() {
+                if let Some(handle) = uinput.modprobe_handle.take() {
+                    uinput.modprobe = match handle.join() {
+                        Ok(Ok(())) => SetupActionStatus::Done,
+                        Ok(Err(e)) => SetupActionStatus::Failed(e),
+                        Err(_) => SetupActionStatus::Failed("thread panicked".to_string()),
+                    };
+                    *state = probe::run();
+                }
+            }
+        }
+        if let Some(h) = &uinput.usermod_handle {
+            if h.is_finished() {
+                if let Some(handle) = uinput.usermod_handle.take() {
+                    uinput.usermod = match handle.join() {
+                        Ok(Ok(())) => SetupActionStatus::Done,
+                        Ok(Err(e)) => SetupActionStatus::Failed(e),
+                        Err(_) => SetupActionStatus::Failed("thread panicked".to_string()),
+                    };
+                    *state = probe::run();
+                }
+            }
+        }
+
         match state.first_incomplete_step() {
             None => {
                 ui.heading("Setup complete");
@@ -165,7 +227,7 @@ mod inner {
                 show_install_model(ui, state, dl);
             }
             Some(SetupStep::SetupUinput) => {
-                show_setup_uinput(ui, state);
+                show_setup_uinput(ui, state, uinput);
             }
             Some(SetupStep::ConfigurePtt) => {
                 show_configure_ptt(ui, state, ptt);
@@ -405,26 +467,77 @@ mod inner {
 
     // ── Step: SetupUinput ────────────────────────────────────────────────────
 
-    fn show_setup_uinput(ui: &mut egui::Ui, state: &mut FirstRunState) {
+    fn show_setup_uinput(
+        ui: &mut egui::Ui,
+        state: &mut FirstRunState,
+        uinput: &mut UinputSetupState,
+    ) {
+        // Request repaint while an action is running.
+        if matches!(uinput.modprobe, SetupActionStatus::Running)
+            || matches!(uinput.usermod, SetupActionStatus::Running)
+        {
+            ui.ctx().request_repaint_after(std::time::Duration::from_millis(200));
+        }
+
         ui.heading("Step 3 of 4: Set up uinput access");
         ui.add_space(8.0);
         ui.label("Vibe Attack needs /dev/uinput to inject key events into your game.");
-        ui.add_space(8.0);
+        ui.add_space(12.0);
 
+        // --- Action 1: load module ---
         ui.label("1. Load the uinput kernel module:");
-        copy_command_row(ui, "sudo modprobe uinput");
+        ui.add_space(4.0);
+        ui.horizontal(|ui| {
+            let button_text = match &uinput.modprobe {
+                SetupActionStatus::Idle => "Load module",
+                SetupActionStatus::Running => "Loading…",
+                SetupActionStatus::Done => "✓ Loaded",
+                SetupActionStatus::Failed(_) => "Retry",
+            };
+            let enabled = !matches!(uinput.modprobe, SetupActionStatus::Running);
+            if ui.add_enabled(enabled, egui::Button::new(button_text)).clicked() {
+                uinput.modprobe = SetupActionStatus::Running;
+                let handle = std::thread::spawn(|| run_pkexec(&["modprobe", "uinput"]));
+                uinput.modprobe_handle = Some(handle);
+            }
+            if let SetupActionStatus::Failed(ref msg) = uinput.modprobe {
+                ui.colored_label(egui::Color32::RED, msg.as_str());
+            }
+        });
         ui.add_space(4.0);
         ui.label("Optional — persist across reboots:");
         copy_command_row(
             ui,
             "echo \"uinput\" | sudo tee /etc/modules-load.d/uinput.conf",
         );
+        ui.add_space(12.0);
+
+        // --- Action 2: add to input group ---
+        ui.label("2. Add yourself to the input group:");
+        ui.add_space(4.0);
+        ui.horizontal(|ui| {
+            let button_text = match &uinput.usermod {
+                SetupActionStatus::Idle => "Add to input group",
+                SetupActionStatus::Running => "Running…",
+                SetupActionStatus::Done => "✓ Added",
+                SetupActionStatus::Failed(_) => "Retry",
+            };
+            let enabled = !matches!(uinput.usermod, SetupActionStatus::Running);
+            if ui.add_enabled(enabled, egui::Button::new(button_text)).clicked() {
+                let username = std::env::var("USER").unwrap_or_default();
+                uinput.usermod = SetupActionStatus::Running;
+                let handle = std::thread::spawn(move || {
+                    run_pkexec(&["usermod", "-aG", "input", &username])
+                });
+                uinput.usermod_handle = Some(handle);
+            }
+            if let SetupActionStatus::Failed(ref msg) = uinput.usermod {
+                ui.colored_label(egui::Color32::RED, msg.as_str());
+            }
+        });
         ui.add_space(8.0);
 
-        ui.label("2. Add yourself to the input group:");
-        copy_command_row(ui, "sudo usermod -aG input $USER");
-        ui.add_space(4.0);
-        ui.label("3. Apply without logging out:");
+        ui.label("3. Apply the group change without logging out (run in your terminal):");
         copy_command_row(ui, "newgrp input");
         ui.add_space(8.0);
 
@@ -436,6 +549,26 @@ mod inner {
         ui.add_space(12.0);
         if ui.button("Re-check").clicked() {
             *state = probe::run();
+        }
+    }
+
+    /// Run a command via pkexec (polkit) and return Ok(()) on exit 0, Err(msg) otherwise.
+    fn run_pkexec(args: &[&str]) -> Result<(), String> {
+        let mut cmd_args = vec!["pkexec"];
+        cmd_args.extend_from_slice(args);
+
+        let status = std::process::Command::new(cmd_args[0])
+            .args(&cmd_args[1..])
+            .status()
+            .map_err(|e| format!("failed to run pkexec: {e}"))?;
+
+        if status.success() {
+            Ok(())
+        } else {
+            Err(format!(
+                "command exited with code {}",
+                status.code().unwrap_or(-1)
+            ))
         }
     }
 
