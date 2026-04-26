@@ -1,19 +1,26 @@
 {
   "nodes": [
     {
-      "id": "milestone:M001",
-      "label": "M001: Migration",
+      "id": "milestone:M002",
+      "label": "M002: Rebrand to vibe-attack",
       "type": "milestone",
-      "description": "Active milestone: M001",
+      "description": "Active milestone: M002",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:validating-milestone",
-      "label": "Phase: validating-milestone",
+      "id": "concept:phase:planning",
+      "label": "Phase: planning",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
+    },
+    {
+      "id": "milestone:M001",
+      "label": "M001: M001: Migration",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-ROADMAP.md"
     },
     {
       "id": "slice:M001:S01",
@@ -249,6 +256,514 @@
       "label": "T03: Update docs to remove ORT conflict warnings and document shared .so deployment",
       "type": "task",
       "confidence": "EXTRACTED"
+    },
+    {
+      "id": "milestone:M003",
+      "label": "M003: First-Run GUI Wizard + Setup Script",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M003/M003-ROADMAP.md"
+    },
+    {
+      "id": "slice:M003:S01",
+      "label": "S01: Setup script",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M003/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M003:S01:T01",
+      "label": "T01: Scaffold script with CLI parsing and step registry",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M003:S01:T02",
+      "label": "T02: Implement copy-config step",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M003:S01:T03",
+      "label": "T03: Implement download-model step",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M003:S01:T04",
+      "label": "T04: Implement uinput setup step",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M003:S01:T05",
+      "label": "T05: Implement validation step and final summary",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "decision:M001:1",
+      "label": "**Shared ORT linking for sherpa-onnx** (`default-features = false, features = [\"shared\"]`): chose shared libonnxruntime.so over static embedding to eliminate the dual-ORT heap corruption that caused `std::bad_alloc` when both wake-word (sherpa-onnx) and VAD (silero-vad-rust via ort crate) ran in the same process. Alternative was keeping them as separate processes (IPC overhead) or disabling one permanently.",
+      "type": "decision",
+      "description": "Source: S07-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:2",
+      "label": "**ORT_DYLIB_PATH auto-discovery before VAD init**: chose `unsafe std::env::set_var` at the single-threaded coordinator call site (before any pipeline threads spawn) rather than requiring users to set the env var manually. The single-threaded invariant is documented inline.",
+      "type": "decision",
+      "description": "Source: S07-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:3",
+      "label": "**Feature-gated GUI binary via `required-features = [\"gui\"]`**: chose this over `cfg(feature = \"gui\")` guards scattered through source — keeps the default daemon build headless without any conditional compilation in library code.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/key_decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:4",
+      "label": "**Dispatcher injected writer (`Box<dyn Write + Send>`)**: chose dependency injection over cfg-test branching or global stdout capture so that JSONL output tests work with `Vec<u8>` and production uses stdout — same code path in both cases.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:5",
+      "label": "**Stdout exclusively for JSONL; stderr for all tracing**: chose a dedicated output thread writing only `#[serde(tag = \"type\")]` events to stdout, making the daemon composable with CLI tooling via pipe. All `tracing` instrumentation goes to stderr.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/key_decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:6",
+      "label": "**Documentation TDD (tests first, docs second)**: wrote `tests/documentation.rs` with 11 failing tests asserting file existence and section headings, then created the four doc files to satisfy them. Same portable `env!(\"CARGO_MANIFEST_DIR\")` + `to_lowercase().contains()` pattern as UI tests.",
+      "type": "decision",
+      "description": "Source: S06-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:7",
+      "label": "**tokio-util without features**: `CancellationToken` in `tokio_util::sync` is unconditionally compiled in tokio-util 0.7; the `sync` named feature does not exist and causes a build error.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:8",
+      "label": "**serde_yaml_ng over serde_yaml**: enforced per RESEARCH.md — serde_yaml deprecated March 2024 with unresolved libyaml CVE; serde_yaml_ng is the maintained fork.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Verification Results",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:9",
+      "label": "**CPAL 0.17 breaking API changes**: `SampleRate` is a `u32` type alias (not a tuple struct — `SampleRate(16_000)` is invalid); `device.name()` deprecated in favor of `device.description().name()`; ringbuf 0.4 renamed `push()` to `try_push()` and requires explicit `Consumer`/`Producer`/`Split` trait imports (not re-exported through `use super::*`).",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Deviations from Plan",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:10",
+      "label": "**xdg 3.0 path construction**: `BaseDirectories::with_prefix(\"app\")` returns `BaseDirectories` directly (not `Result` — no `.context()` needed), and appends the prefix to `config_home`, so test fixtures must use `dir.path().join(\"hd-linux-voice/profiles\")` not `dir.path().join(\"profiles\")`.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:11",
+      "label": "**evdev 0.13 deprecated `VirtualDeviceBuilder::new()`**: use `VirtualDevice::builder()` instead; the old constructor is deprecated and will be removed in a future version.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:12",
+      "label": "**cargo-about 0.8.4 data model change**: templates must iterate `{{#each crates}}` with `package.name`/`license` fields; the old `{{#each overview}}` with `crate.name`/`license.id`/`license.text` fields no longer exists. `[targets].include` is invalid — use `targets = [...]` array. Combined SPDX expressions (e.g. `\"MIT OR Apache-2.0\"`) in `accepted` list are invalid — list individual SPDX IDs.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:13",
+      "label": "**Auto-mode shell approval blocks cargo test/build**: S04–S07 could not run compiled tests in auto-mode. Static verification (grep, source inspection, cargo registry API cross-reference) was substituted. This means runtime test correctness for those slices is unconfirmed until CI runs — treat static-only verified slices as \"high confidence\" not \"validated\".",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Known Limitations, S05-SUMMARY.md/Known Limitations, S06-SUMMARY.md/Known Limitations, S07-SUMMARY.md/Known Limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:14",
+      "label": "**Dual ORT bad_alloc root cause**: sherpa-onnx statically embedded ~218 ORT symbols AND the `ort` crate (via silero-vad-rust) dynamically loaded its own ORT instance in the same process — two global runtime environments colliding on the heap. Fix: `features = [\"shared\"]` on sherpa-onnx-sys makes it link against the shared `libonnxruntime.so` used by the ort crate.",
+      "type": "decision",
+      "description": "Source: S07-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:15",
+      "label": "**`unsafe std::env::set_var` is safe pre-spawn**: calling `set_var` before any threads are spawned is safe because env var mutation is only unsound under concurrent reads. The `coordinator.rs` ORT_DYLIB_PATH block is at exactly that single-threaded point. Document the invariant inline.",
+      "type": "decision",
+      "description": "Source: S07-SUMMARY.md/key_decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:16",
+      "label": "**XDG env-var isolation pattern for hermetic tests**: set `XDG_CONFIG_HOME` to `tempdir.path()` before `BaseDirectories::with_prefix(...)` call, then `remove_var` immediately after. Failure to do this causes tests to write to the real user config directory.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:17",
+      "label": "**Injected writer for JSONL capture in tests**: `Box<dyn Write + Send>` on the Dispatcher lets tests use `Vec<u8>` to capture JSONL output and assert on stable serialization, while production code passes stdout. No cfg-test branching required.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:18",
+      "label": "**Env-gated + `#[ignore]` for heavy tests**: tests requiring real hardware (models, audio devices, uinput) are both `#[ignore]` and gated by an env var (e.g. `RUN_KWS_TESTS=1`, `RUN_PRIVILEGED_TESTS=1`). `#[ignore]` alone prevents accidental execution; env gate adds a hard stop with a clear error message.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/patterns_established, S07-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:19",
+      "label": "**Structural packaging/doc tests with `env!(\"CARGO_MANIFEST_DIR\")`**: use `env!(\"CARGO_MANIFEST_DIR\")` + `std::fs::read_to_string` + `to_lowercase().contains()` to assert doc file existence and required sections. Portable across any checkout path, no subprocess invocation.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/patterns_established, S06-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:20",
+      "label": "**Preflight checks before any thread spawn**: validate all external resources (config paths, model files, /dev/input readability, /dev/uinput openability) in the main thread before spawning long-lived pipeline threads. Errors surface with actionable messages before any background work starts.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/What Was Built, S02-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:21",
+      "label": "**`#[serde(tag = \"type\")]` for stable JSONL event schema**: use an internally-tagged enum for all pipeline JSONL events so the `type` field is always present and stable. Schema stability is enforced by fast, model-free serde_json tests in `tests/jsonl_schema.rs`.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/patterns_established, S03-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:22",
+      "label": "**ORT_DYLIB_PATH auto-discovery pattern**: in coordinator/pipeline init, check for existing `ORT_DYLIB_PATH` env var first (respect user overrides), then auto-set to `<exe_dir>/libonnxruntime.so` using `unsafe set_var` at the single-threaded call site. Log the auto-set path via `tracing::info!` for observability.",
+      "type": "decision",
+      "description": "Source: S07-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:23",
+      "label": "**CPAL 0.17 made three breaking changes at once**: `SampleRate` type alias (not struct), deprecated `device.name()`, and ringbuf renamed `push()` to `try_push()` with required trait imports — all discovered during S01 GREEN compilation. The plan was written against pre-0.17 docs.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:24",
+      "label": "**cargo-about 0.8.4 changed both the config format and the template data model**: the `about.toml` `[targets].include` key and the `{{#each overview}}` template block both became invalid simultaneously. The generated output was silently empty (no error) until the template was rewritten to iterate `{{#each crates}}`.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:25",
+      "label": "**XDG path bug not caught until T03 static analysis (S04)**: `profile_manager_get_active_pack_resolves_from_profiles_dir` had the wrong fixture path (`profiles/` vs `hd-linux-voice/profiles/`) — a one-line bug that would have caused a silent test failure at runtime. Static analysis across multiple tasks caught it before any compiled run.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M001:26",
+      "label": "**Auto-mode shell approval policy blocked all runtime test confirmation for S04–S07**: this was not anticipated during planning and meant four slices completed with static-only verification. The policy is not new, but its interaction with the increasing size of the test suite (pack, UI, docs, wake-word) created a growing gap between \"static verified\" and \"runtime confirmed\".",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Known Limitations, S05-SUMMARY.md/Known Limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:1",
+      "label": "**CPAL 0.17 breaking API changes**: `SampleRate` is a `u32` type alias (not a tuple struct — `SampleRate(16_000)` is invalid); `device.name()` deprecated in favor of `device.description().name()`; ringbuf 0.4 renamed `push()` to `try_push()` and requires explicit `Consumer`/`Producer`/`Split` trait imports (not re-exported through `use super::*`).",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations from Plan",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:2",
+      "label": "**xdg 3.0 path construction**: `BaseDirectories::with_prefix(\"app\")` returns `BaseDirectories` directly (not `Result` — no `.context()` needed), and appends the prefix to `config_home`, so test fixtures must use `dir.path().join(\"hd-linux-voice/profiles\")` not `dir.path().join(\"profiles\")`.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:3",
+      "label": "**evdev 0.13 deprecated `VirtualDeviceBuilder::new()`**: use `VirtualDevice::builder()` instead; the old constructor is deprecated and will be removed in a future version.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:4",
+      "label": "**cargo-about 0.8.4 data model change**: templates must iterate `{{#each crates}}` with `package.name`/`license` fields; the old `{{#each overview}}` with `crate.name`/`license.id`/`license.text` fields no longer exists. `[targets].include` is invalid — use `targets = [...]` array. Combined SPDX expressions (e.g. `\"MIT OR Apache-2.0\"`) in `accepted` list are invalid — list individual SPDX IDs.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:5",
+      "label": "**Auto-mode shell approval blocks cargo test/build**: S04–S07 could not run compiled tests in auto-mode. Static verification (grep, source inspection, cargo registry API cross-reference) was substituted. This means runtime test correctness for those slices is unconfirmed until CI runs — treat static-only verified slices as \"high confidence\" not \"validated\".",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Known Limitations, S05-SUMMARY.md/Known Limitations, S06-SUMMARY.md/Known Limitations, S07-SUMMARY.md/Known Limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:6",
+      "label": "**Dual ORT bad_alloc root cause**: sherpa-onnx statically embedded ~218 ORT symbols AND the `ort` crate (via silero-vad-rust) dynamically loaded its own ORT instance in the same process — two global runtime environments colliding on the heap. Fix: `features = [\"shared\"]` on sherpa-onnx-sys makes it link against the shared `libonnxruntime.so` used by the ort crate.",
+      "type": "lesson",
+      "description": "Source: S07-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:7",
+      "label": "**`unsafe std::env::set_var` is safe pre-spawn**: calling `set_var` before any threads are spawned is safe because env var mutation is only unsound under concurrent reads. The `coordinator.rs` ORT_DYLIB_PATH block is at exactly that single-threaded point. Document the invariant inline.",
+      "type": "lesson",
+      "description": "Source: S07-SUMMARY.md/key_decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:8",
+      "label": "**XDG env-var isolation pattern for hermetic tests**: set `XDG_CONFIG_HOME` to `tempdir.path()` before `BaseDirectories::with_prefix(...)` call, then `remove_var` immediately after. Failure to do this causes tests to write to the real user config directory.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:9",
+      "label": "**Injected writer for JSONL capture in tests**: `Box<dyn Write + Send>` on the Dispatcher lets tests use `Vec<u8>` to capture JSONL output and assert on stable serialization, while production code passes stdout. No cfg-test branching required.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:10",
+      "label": "**Env-gated + `#[ignore]` for heavy tests**: tests requiring real hardware (models, audio devices, uinput) are both `#[ignore]` and gated by an env var (e.g. `RUN_KWS_TESTS=1`, `RUN_PRIVILEGED_TESTS=1`). `#[ignore]` alone prevents accidental execution; env gate adds a hard stop with a clear error message.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/patterns_established, S07-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:11",
+      "label": "**Structural packaging/doc tests with `env!(\"CARGO_MANIFEST_DIR\")`**: use `env!(\"CARGO_MANIFEST_DIR\")` + `std::fs::read_to_string` + `to_lowercase().contains()` to assert doc file existence and required sections. Portable across any checkout path, no subprocess invocation.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/patterns_established, S06-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:12",
+      "label": "**Preflight checks before any thread spawn**: validate all external resources (config paths, model files, /dev/input readability, /dev/uinput openability) in the main thread before spawning long-lived pipeline threads. Errors surface with actionable messages before any background work starts.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/What Was Built, S02-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:13",
+      "label": "**`#[serde(tag = \"type\")]` for stable JSONL event schema**: use an internally-tagged enum for all pipeline JSONL events so the `type` field is always present and stable. Schema stability is enforced by fast, model-free serde_json tests in `tests/jsonl_schema.rs`.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/patterns_established, S03-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:14",
+      "label": "**ORT_DYLIB_PATH auto-discovery pattern**: in coordinator/pipeline init, check for existing `ORT_DYLIB_PATH` env var first (respect user overrides), then auto-set to `<exe_dir>/libonnxruntime.so` using `unsafe set_var` at the single-threaded call site. Log the auto-set path via `tracing::info!` for observability.",
+      "type": "lesson",
+      "description": "Source: S07-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:15",
+      "label": "**CPAL 0.17 made three breaking changes at once**: `SampleRate` type alias (not struct), deprecated `device.name()`, and ringbuf renamed `push()` to `try_push()` with required trait imports — all discovered during S01 GREEN compilation. The plan was written against pre-0.17 docs.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:16",
+      "label": "**cargo-about 0.8.4 changed both the config format and the template data model**: the `about.toml` `[targets].include` key and the `{{#each overview}}` template block both became invalid simultaneously. The generated output was silently empty (no error) until the template was rewritten to iterate `{{#each crates}}`.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:17",
+      "label": "**XDG path bug not caught until T03 static analysis (S04)**: `profile_manager_get_active_pack_resolves_from_profiles_dir` had the wrong fixture path (`profiles/` vs `hd-linux-voice/profiles/`) — a one-line bug that would have caused a silent test failure at runtime. Static analysis across multiple tasks caught it before any compiled run.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M001:18",
+      "label": "**Auto-mode shell approval policy blocked all runtime test confirmation for S04–S07**: this was not anticipated during planning and meant four slices completed with static-only verification. The policy is not new, but its interaction with the increasing size of the test suite (pack, UI, docs, wake-word) created a growing gap between \"static verified\" and \"runtime confirmed\".",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Known Limitations, S05-SUMMARY.md/Known Limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:1",
+      "label": "**Injected writer for JSONL capture in tests**: `Box<dyn Write + Send>` on the Dispatcher lets tests use `Vec<u8>` to capture JSONL output and assert on stable serialization, while production code passes stdout. No cfg-test branching required.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:2",
+      "label": "**Env-gated + `#[ignore]` for heavy tests**: tests requiring real hardware (models, audio devices, uinput) are both `#[ignore]` and gated by an env var (e.g. `RUN_KWS_TESTS=1`, `RUN_PRIVILEGED_TESTS=1`). `#[ignore]` alone prevents accidental execution; env gate adds a hard stop with a clear error message.",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/patterns_established, S07-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:3",
+      "label": "**Structural packaging/doc tests with `env!(\"CARGO_MANIFEST_DIR\")`**: use `env!(\"CARGO_MANIFEST_DIR\")` + `std::fs::read_to_string` + `to_lowercase().contains()` to assert doc file existence and required sections. Portable across any checkout path, no subprocess invocation.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/patterns_established, S06-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:4",
+      "label": "**Preflight checks before any thread spawn**: validate all external resources (config paths, model files, /dev/input readability, /dev/uinput openability) in the main thread before spawning long-lived pipeline threads. Errors surface with actionable messages before any background work starts.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/What Was Built, S02-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:5",
+      "label": "**`#[serde(tag = \"type\")]` for stable JSONL event schema**: use an internally-tagged enum for all pipeline JSONL events so the `type` field is always present and stable. Schema stability is enforced by fast, model-free serde_json tests in `tests/jsonl_schema.rs`.",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/patterns_established, S03-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:6",
+      "label": "**ORT_DYLIB_PATH auto-discovery pattern**: in coordinator/pipeline init, check for existing `ORT_DYLIB_PATH` env var first (respect user overrides), then auto-set to `<exe_dir>/libonnxruntime.so` using `unsafe set_var` at the single-threaded call site. Log the auto-set path via `tracing::info!` for observability.",
+      "type": "pattern",
+      "description": "Source: S07-SUMMARY.md/patterns_established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:7",
+      "label": "**CPAL 0.17 made three breaking changes at once**: `SampleRate` type alias (not struct), deprecated `device.name()`, and ringbuf renamed `push()` to `try_push()` with required trait imports — all discovered during S01 GREEN compilation. The plan was written against pre-0.17 docs.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:8",
+      "label": "**cargo-about 0.8.4 changed both the config format and the template data model**: the `about.toml` `[targets].include` key and the `{{#each overview}}` template block both became invalid simultaneously. The generated output was silently empty (no error) until the template was rewritten to iterate `{{#each crates}}`.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:9",
+      "label": "**XDG path bug not caught until T03 static analysis (S04)**: `profile_manager_get_active_pack_resolves_from_profiles_dir` had the wrong fixture path (`profiles/` vs `hd-linux-voice/profiles/`) — a one-line bug that would have caused a silent test failure at runtime. Static analysis across multiple tasks caught it before any compiled run.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M001:10",
+      "label": "**Auto-mode shell approval policy blocked all runtime test confirmation for S04–S07**: this was not anticipated during planning and meant four slices completed with static-only verification. The policy is not new, but its interaction with the increasing size of the test suite (pack, UI, docs, wake-word) created a growing gap between \"static verified\" and \"runtime confirmed\".",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Known Limitations, S05-SUMMARY.md/Known Limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M001:1",
+      "label": "**CPAL 0.17 made three breaking changes at once**: `SampleRate` type alias (not struct), deprecated `device.name()`, and ringbuf renamed `push()` to `try_push()` with required trait imports — all discovered during S01 GREEN compilation. The plan was written against pre-0.17 docs.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M001:2",
+      "label": "**cargo-about 0.8.4 changed both the config format and the template data model**: the `about.toml` `[targets].include` key and the `{{#each overview}}` template block both became invalid simultaneously. The generated output was silently empty (no error) until the template was rewritten to iterate `{{#each crates}}`.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M001:3",
+      "label": "**XDG path bug not caught until T03 static analysis (S04)**: `profile_manager_get_active_pack_resolves_from_profiles_dir` had the wrong fixture path (`profiles/` vs `hd-linux-voice/profiles/`) — a one-line bug that would have caused a silent test failure at runtime. Static analysis across multiple tasks caught it before any compiled run.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M001:4",
+      "label": "**Auto-mode shell approval policy blocked all runtime test confirmation for S04–S07**: this was not anticipated during planning and meant four slices completed with static-only verification. The policy is not new, but its interaction with the increasing size of the test suite (pack, UI, docs, wake-word) created a growing gap between \"static verified\" and \"runtime confirmed\".",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Known Limitations, S05-SUMMARY.md/Known Limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M001/M001-LEARNINGS.md"
     }
   ],
   "edges": [
@@ -479,7 +994,391 @@
       "to": "task:M001:S07:T03",
       "type": "contains",
       "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M003",
+      "to": "slice:M003:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M003:S01",
+      "to": "task:M003:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M003:S01",
+      "to": "task:M003:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M003:S01",
+      "to": "task:M003:S01:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M003:S01",
+      "to": "task:M003:S01:T04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M003:S01",
+      "to": "task:M003:S01:T05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:22",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:23",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:24",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:25",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "decision:M001:26",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "lesson:M001:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "pattern:M001:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "surprise:M001:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "surprise:M001:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "surprise:M001:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M001",
+      "to": "surprise:M001:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-25T20:13:08.225Z"
+  "builtAt": "2026-04-26T00:11:33.782Z"
 }

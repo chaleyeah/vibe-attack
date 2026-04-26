@@ -1,4 +1,4 @@
-# GSD context snapshot (2026-04-25T21:29:41.081Z)
+# GSD context snapshot (2026-04-25T23:55:59.930Z)
 
 ## Top project memories
 - [MEM001] (gotcha) xdg::BaseDirectories::with_prefix("hd-linux-voice") appends the prefix to XDG_CONFIG_HOME, so get_profiles_dir() returns $XDG_CONFIG_HOME/hd-linux-voice/profiles — not $XDG_CONFIG_HOME/profiles. Integration tests that redirect XDG_CONFIG_HOME for hermetic isolation must create fixtures at dir.path()/hd-linux-voice/profiles/, not dir.path()/profiles/.

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-25T21:15:52.232Z",
+  "exported_at": "2026-04-26T00:11:33.778Z",
   "milestones": [
     {
       "id": "M001",
@@ -92,6 +92,66 @@
       ],
       "requirement_coverage": "No R### requirements turn on the project name; this milestone touches identity, not behavior. No requirement coverage claimed; no orphan risks.",
       "boundary_map_markdown": "### S01 → S02\n\nProduces:\n- Cargo package and `[[bin]]` targets renamed to `vibe-attack` and `vibe-attack-config`.\n- `src/bin/hd-linux-voice-config.rs` renamed on disk to `src/bin/vibe-attack-config.rs`.\n- `xdg::BaseDirectories::with_prefix(\"vibe-attack\")` in every source-side call site.\n- All source-level log/error strings, doc comments, and constants reference `vibe-attack`.\n- `examples/audio_probe.rs` updated.\n- `cargo build --all-features` succeeds.\n\nConsumes:\n- nothing (first slice).\n\n### S01 → S03\n\nProduces:\n- A buildable codebase under the new name. S03 (docs) consumes \"the binary names users will type\" from S01.\n\n### S02 → S03\n\nProduces:\n- All `tests/` files updated, including XDG fixture paths under the new prefix and the inverted `readme_has_correct_project_name` regression guard.\n- README.md fully rewritten in the same task as the test inversion (S02-T01).\n\nConsumes:\n- S01's renamed source.\n\n### S02 → S04\n\nProduces:\n- A test suite that compiles. S04 (packaging) consumes the binary names from S01 but doesn't depend on test changes; declared dependency is for sequencing, not data.\n\n### S03 → S05\n\nProduces:\n- All `docs/*.md` (excluding `docs/latency-proofs/`), `CONTRIBUTING.md`, `config.example.yaml`, `config.yaml`, `demo_hd2.yaml`, `about.toml`, `about.hbs` updated to reference `vibe-attack`.\n\nConsumes:\n- S02's already-rewritten README (avoid double-touching).\n\n### S04 → S06\n\nProduces:\n- `packaging/PKGBUILD` updated to `pkgname=vibe-attack`.\n- `packaging/appimage/build.sh` updated.\n- `packaging/appimage/hd-linux-voice.desktop` renamed to `packaging/appimage/vibe-attack.desktop` with internal `Exec=`/`Icon=` updated.\n- A successful AppImage build run producing `vibe-attack-x86_64.AppImage`.\n\nConsumes:\n- S01's renamed binaries.\n\n### S05 → S06\n\nProduces:\n- The empty `.planning/phases/07-rebrand-from-hd-linux-voice-to-vibe-attack/` directory deleted.\n- Any final stragglers from the milestone-wide grep sweep cleaned up.\n\nConsumes:\n- All prior slices' renamed surfaces.\n\n### S06 (terminal)\n\nProduces:\n- A milestone summary documenting:\n  - The manual `mv ~/.config/hd-linux-voice ~/.config/vibe-attack` command for the developer's existing config.\n  - The pending GitHub-repo-slug decision and how to update `Cargo.toml`'s `repository` URL once chosen.\n  - Verification evidence: build output, grep sweep zero-match proof, AppImage `--help` output.\n\nConsumes:\n- All prior slices."
+    },
+    {
+      "id": "M003",
+      "title": "First-Run GUI Wizard + Setup Script",
+      "status": "active",
+      "depends_on": [],
+      "created_at": "2026-04-26T00:07:06.900Z",
+      "completed_at": null,
+      "vision": "Replace the manual copy-paste setup process with a guided experience: a bash setup script for CLI/headless users, and an egui wizard that walks GUI users through every prerequisite — config file, whisper model, uinput access, and PTT key — before handing off to the live config app.",
+      "success_criteria": [
+        "A new user can run `scripts/setup.sh` on a fresh machine and reach a working vibe-attack config without consulting the docs",
+        "The `vibe-attack-config` binary detects incomplete setup on launch and shows the wizard; once all steps are satisfied it transitions to the main config app",
+        "Each wizard step performs the real action (copy config, check model path, validate uinput access, capture PTT key) rather than showing copy-paste instructions",
+        "The main config app shows real profiles from disk, a live mic level bar, and a scrollable log feed",
+        "All probe logic is covered by hermetic unit tests; wizard state transitions are exercised without a display server"
+      ],
+      "key_risks": [
+        {
+          "risk": "PTT key capture via evdev requires /dev/input/* access and a background thread",
+          "whyItMatters": "May not be available in CI or restricted environments; if the thread panics it takes down the GUI"
+        },
+        {
+          "risk": "uinput permission check may give false positives (file exists but open() fails at runtime)",
+          "whyItMatters": "User completes wizard then hits a runtime error on first macro inject"
+        },
+        {
+          "risk": "Live mic level from CPAL needs a background thread with a shared atomic; if audio device is absent the thread must fail gracefully without crashing the UI",
+          "whyItMatters": "Common on headless or misconfigured systems"
+        }
+      ],
+      "proof_strategy": [
+        {
+          "riskOrUnknown": "PTT key capture via evdev",
+          "retireIn": "S03",
+          "whatWillBeProven": "Key picker thread starts, receives a synthetic keypress from a test harness or manual press, writes the key name to config, and the thread exits cleanly"
+        },
+        {
+          "riskOrUnknown": "uinput false-positive permission check",
+          "retireIn": "S02",
+          "whatWillBeProven": "Probe opens /dev/uinput with O_RDWR and reports accessible only on success; a tempfile-based unit test covers the false-positive path"
+        },
+        {
+          "riskOrUnknown": "CPAL mic level thread crash on absent device",
+          "retireIn": "S04",
+          "whatWillBeProven": "ConfigApp starts without a mic device and shows 0.0 level with a 'no device' label rather than panicking"
+        }
+      ],
+      "verification_contract": "probe unit tests with XDG hermetic isolation; FirstRunState state machine coverage; config copy tempdir test; binary --help smoke test",
+      "verification_integration": "wizard panels call probe::run() after each action; ConfigApp populated from real disk and CPAL; PTT key written to config file on capture",
+      "verification_operational": "vibe-attack-config launches without a display server for --help; CPAL thread survives absent audio device; PTT capture thread exits cleanly on window close",
+      "verification_uat": "Manual walkthrough on a fresh config: wizard appears, each step performs its real action, main config app shows live data after wizard completes",
+      "definition_of_done": [
+        "All five slices complete with their stated verification passing",
+        "probe::run() is the only FirstRunState constructor call in production code",
+        "No stub from_checks(false,false,false,false) remains in vibe-attack-config.rs",
+        "vibe-attack-config --features gui builds and launches to wizard on a machine missing config",
+        "cargo test --features gui exits 0 with all new tests passing"
+      ],
+      "requirement_coverage": "Covers: new-user onboarding, setup automation. Leaves for later: full YAML config editor, daemon auto-launch from config app.",
+      "boundary_map_markdown": "### S01 → S02\\n\\nProduces:\\n- `scripts/setup.sh` with documented step names matching probe check names\\n\\nConsumes:\\n- nothing (first slice)\\n\\n### S02 → S03\\n\\nProduces:\\n- `src/ui/probe.rs` with `probe::run() -> FirstRunState` and per-check reason strings\\n- `FirstRunState` fields publicly readable for wizard panel decisions\\n\\nConsumes:\\n- `scripts/setup.sh` step names (for consistent messaging)\\n\\n### S03 → S04\\n\\nProduces:\\n- Wizard panels that transition to `ConfigApp` when `is_setup_complete()` is true\\n- PTT key written to `config.yaml` ptt.key field\\n\\nConsumes:\\n- `probe::run()` from S02\\n\\n### S04 → S05\\n\\nProduces:\\n- `ConfigApp` populated from real disk, CPAL, and log channel\\n- Full end-to-end launch path from wizard to live config view\\n\\nConsumes:\\n- Wizard transition from S03"
     }
   ],
   "slices": [
@@ -390,6 +450,124 @@
       "integration_closure": "Daemon + GUI + on-disk XDG config + AppImage are all exercised together as a system; this is the assembly proof.",
       "observability_impact": "Captures the daemon's startup log lines as evidence in the slice summary. The milestone summary itself becomes a future-agent observability surface — when someone asks `did the rename happen and was it complete?`, the answer is one file read away.",
       "sequence": 6,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M003",
+      "id": "S01",
+      "title": "S01",
+      "status": "complete",
+      "risk": "medium",
+      "depends": [],
+      "demo": "Running `scripts/setup.sh` on a fresh system (or with --yes in a temp dir) completes all steps and exits 0; re-running is idempotent",
+      "created_at": "2026-04-26T00:08:25.923Z",
+      "completed_at": "2026-04-26T00:11:33.773Z",
+      "full_summary_md": "---\nid: S01\nparent: M003\nmilestone: M003\nprovides:\n  - [\"scripts/setup.sh with step names: copy_config, install_model, setup_uinput, validate\", \"Step names are the canonical identifiers S02 probe checks and S03 wizard panels will reference\"]\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - [\"--step=NAME flag added for S03 wizard panels to shell out to individual steps\", \"Used 'input' group (not 'uinput') consistent with docs/uinput-setup.md and systemd v258+ behaviour\", \"PTT key detection in validate uses grep -qE for 'key: KEY_*' pattern matching config.example.yaml format\"]\npatterns_established:\n  - [\"run_cmd wrapper: routes commands through dry-run print or real execution — reuse this pattern in any future scripts that need --dry-run support\", \"ask_confirm: respects --yes flag and prompts otherwise — same pattern for any interactive script step\"]\nobservability_surfaces:\n  - [\"Each step prints '[step_name] ...' status prefix\", \"Failures print step name and reason to stderr\", \"validate prints a pass/fail table before exit code\"]\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-26T00:11:33.773Z\nblocker_discovered: false\n---\n\n# S01: Setup script\n\n**Delivered scripts/setup.sh — a self-contained, idempotent setup script covering config copy, model download, uinput setup, and validation with --yes/--dry-run/--step support**\n\n## What Happened\n\nCreated scripts/setup.sh from scratch with bash strict mode. Implements four ordered steps: copy_config (XDG-aware, idempotent), install_model (curl download with size check skip), setup_uinput (modprobe + input group, systemd v258+ note), and validate (four-check summary table with named failures). CLI flags: --yes (non-interactive), --dry-run (preview via run_cmd wrapper), --step=NAME (single-step dispatch for wizard integration). All sudo commands route through ask_confirm and run_cmd so they respect both flags. Colour output degrades gracefully on non-TTY stdout.\n\n## Verification\n\nbash -n exits 0; --help exits 0; copy_config idempotent across two runs in temp XDG dir; dry-run creates no files; validate shows correct per-check pass/fail with named failure reasons; uinput step skips cleanly when prerequisites already met\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `scripts/setup.sh` — New: complete setup script with all four steps\n",
+      "full_uat_md": "# S01: Setup script — UAT\n\n**Milestone:** M003\n**Written:** 2026-04-26T00:11:33.773Z\n\n# S01 UAT: Setup Script\n\n## Prerequisites\n- Fresh environment (or temp XDG dirs to isolate)\n- vibe-attack repo checked out\n\n## Test Cases\n\n### 1. Help flag\n```bash\nbash scripts/setup.sh --help\n```\nExpected: prints OPTIONS and STEPS sections, exits 0.\n\n### 2. Syntax check\n```bash\nbash -n scripts/setup.sh\n```\nExpected: no output, exits 0.\n\n### 3. Full dry-run\n```bash\nbash scripts/setup.sh --yes --dry-run\n```\nExpected: prints `dry-run: ...` lines for each action, no files created, exits 0.\n\n### 4. copy_config idempotency\n```bash\ntmpdir=$(mktemp -d)\nXDG_CONFIG_HOME=$tmpdir bash scripts/setup.sh --yes --step=copy_config\n# should create file\nXDG_CONFIG_HOME=$tmpdir bash scripts/setup.sh --yes --step=copy_config\n# should print 'already exists — skipping'\n```\nExpected: first run creates `$tmpdir/vibe-attack/config.yaml`; second run skips.\n\n### 5. validate all-fail\n```bash\nXDG_CONFIG_HOME=$(mktemp -d) XDG_DATA_HOME=$(mktemp -d) bash scripts/setup.sh --step=validate\n```\nExpected: config and model checks fail with path in message; exits 1.\n\n### 6. validate SETUP COMPLETE\nRun full `--yes` setup in a temp env (or manually satisfy all four checks), then run validate.\nExpected: all four checks pass; prints SETUP COMPLETE; exits 0.\n\n### 7. uinput already-satisfied\n```bash\nbash scripts/setup.sh --step=setup_uinput\n```\nOn a machine where /dev/uinput exists and user is in input group.\nExpected: both checks print 'already satisfied'; no sudo commands run.\n\n",
+      "goal": "Deliver a self-contained `scripts/setup.sh` that automates every manual prerequisite: copies config.example.yaml to the XDG config path, downloads the whisper model, loads the uinput kernel module, adds the user to the input group, and validates results. Supports --yes for non-interactive use and is idempotent on re-run.",
+      "success_criteria": "Script runs to completion with --yes against a temp XDG dir; each step is idempotent; --help exits 0; uinput and group steps are skipped when already satisfied; failed steps print a clear error naming the step and exit non-zero",
+      "proof_level": "Manual run with --yes in a scratch environment; automated check that --help exits 0",
+      "integration_closure": "Script is the ground truth for setup logic; step names and exit codes will be referenced by S02 probe and S03 wizard",
+      "observability_impact": "Each step prints a status line to stdout; failures include the step name and reason; --dry-run flag shows what would be done without executing",
+      "sequence": 1,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M003",
+      "id": "S02",
+      "title": "Environment probe",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S01"
+      ],
+      "demo": "Unit tests (no display server) pass: probe returns correct booleans for each check under hermetic XDG temp dirs; /dev/uinput open failure is correctly classified as inaccessible",
+      "created_at": "2026-04-26T00:08:25.923Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Wire FirstRunState::from_checks() to real environment detection in a new src/ui/probe.rs module: config file exists at XDG path, whisper model file exists, /dev/uinput is openable with O_RDWR, PTT key is set in config. Each check returns an actionable Result with context.",
+      "success_criteria": "probe::run() returns FirstRunState with all four fields correct under real environment conditions; each false result carries a human-readable reason string; all four checks have hermetic unit tests",
+      "proof_level": "cargo test --lib against probe module with XDG isolation (tempdir pattern from existing tests)",
+      "integration_closure": "probe::run() is the single call site in vibe-attack-config.rs that populates FirstRunState; no other code path constructs FirstRunState directly",
+      "observability_impact": "Each failed probe check logs a tracing::warn with the check name and failure reason before returning false",
+      "sequence": 2,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M003",
+      "id": "S03",
+      "title": "Wizard UI panels",
+      "status": "pending",
+      "risk": "high",
+      "depends": [
+        "S02"
+      ],
+      "demo": "Launching vibe-attack-config on a system missing prerequisites shows the wizard; clicking through each step performs the real action; after all steps pass, the app transitions to the main config view",
+      "created_at": "2026-04-26T00:08:25.923Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Replace the stub wizard in vibe-attack-config.rs with real per-step egui panels. CreateConfig: copy config.example.yaml with a button. InstallModel: show the curl download command in a copyable code block with a Re-check button. SetupUinput: show modprobe + usermod commands with a Re-check button. ConfigurePtt: background evdev thread listens for a keypress and writes it to config.",
+      "success_criteria": "Each step panel renders without errors; CreateConfig button copies the file and re-probes; InstallModel Re-check button re-runs probe; SetupUinput Re-check button re-runs probe; ConfigurePtt captures a real keypress from evdev and writes KEY_* name to config ptt.key field",
+      "proof_level": "Manual launch of vibe-attack-config --features gui on dev machine with at least one step incomplete; PTT capture verified by pressing a key and observing config file update",
+      "integration_closure": "Wizard panels call probe::run() after each action to refresh FirstRunState; transition to ConfigApp happens when is_setup_complete() returns true",
+      "observability_impact": "Each panel action logs tracing::info on success or tracing::error on failure; PTT capture thread logs startup and shutdown",
+      "sequence": 3,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M003",
+      "id": "S04",
+      "title": "Main config app wired up",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S03"
+      ],
+      "demo": "After wizard completes, the main config view shows real profile names, a live mic level bar that responds to audio input, and log lines appearing as the daemon runs",
+      "created_at": "2026-04-26T00:08:25.923Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Populate ConfigApp from real data: profiles from XDG profiles directory, live mic level from a CPAL background thread writing to an Arc<AtomicU32>, log lines fed via an mpsc channel. If no audio device exists, show 0.0 with a 'no device' label rather than panicking.",
+      "success_criteria": "Profiles panel lists all .yaml files from XDG profiles dir; mic level updates at ~10 Hz when a device is present; mic level shows 0.0 gracefully when no device is found; log feed scrolls to bottom on new lines",
+      "proof_level": "Manual launch on dev machine with profiles dir populated; mic level bar visually responds to voice input; disconnect audio device and confirm no crash",
+      "integration_closure": "ConfigApp is populated by a single loader called after wizard completion; no stub values remain in production code paths",
+      "observability_impact": "CPAL thread logs device name on start and error reason on failure; profile load logs count of profiles found",
+      "sequence": 4,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M003",
+      "id": "S05",
+      "title": "Integration smoke tests",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S04"
+      ],
+      "demo": "cargo test covers probe module, FirstRunState transitions, and binary smoke; all pass in CI without a display server",
+      "created_at": "2026-04-26T00:08:25.923Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Hermetic tests for probe logic, wizard state transitions, config copy action, and a smoke test that the vibe-attack-config binary builds and --help exits 0 with --features gui.",
+      "success_criteria": "probe unit tests pass with XDG isolation; FirstRunState steps_remaining() and is_setup_complete() covered; config copy test uses tempdir; vibe-attack-config --help exits 0 headlessly",
+      "proof_level": "cargo test --features gui exits 0 with all new tests passing",
+      "integration_closure": "All new test modules added to tests/ or src/ui/probe.rs #[cfg(test)] block; no display server required",
+      "observability_impact": "None — test-only slice",
+      "sequence": 5,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""
@@ -1597,6 +1775,225 @@
       "escalation_awaiting_review": 0,
       "escalation_artifact_path": null,
       "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S01",
+      "id": "T01",
+      "title": "Scaffolded scripts/setup.sh with bash strict mode, --help/--yes/--dry-run/--step flags, step registry, run_step/run_cmd helpers, and colour output",
+      "status": "complete",
+      "one_liner": "Scaffolded scripts/setup.sh with bash strict mode, --help/--yes/--dry-run/--step flags, step registry, run_step/run_cmd helpers, and colour output",
+      "narrative": "Created scripts/setup.sh from scratch. Bash strict mode (set -euo pipefail). CLI parsing handles --help, -y/--yes, --dry-run, --step=NAME, and unknown-option guard. Colour helpers degrade gracefully when stdout is not a TTY. Step registry is an ordered array; main() iterates it or dispatches a single step via --step.",
+      "verification_result": "bash -n scripts/setup.sh exits 0; --help prints usage and step list",
+      "duration": "",
+      "completed_at": "2026-04-26T00:10:34.629Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "scripts/setup.sh"
+      ],
+      "key_decisions": [
+        "--step flag added for wizard integration (S03 panels can shell out per step)",
+        "--dry-run implemented via run_cmd wrapper that prints instead of executing"
+      ],
+      "full_summary_md": "---\nid: T01\nparent: S01\nmilestone: M003\nkey_files:\n  - scripts/setup.sh\nkey_decisions:\n  - --step flag added for wizard integration (S03 panels can shell out per step)\n  - --dry-run implemented via run_cmd wrapper that prints instead of executing\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:10:34.629Z\nblocker_discovered: false\n---\n\n# T01: Scaffolded scripts/setup.sh with bash strict mode, --help/--yes/--dry-run/--step flags, step registry, run_step/run_cmd helpers, and colour output\n\n**Scaffolded scripts/setup.sh with bash strict mode, --help/--yes/--dry-run/--step flags, step registry, run_step/run_cmd helpers, and colour output**\n\n## What Happened\n\nCreated scripts/setup.sh from scratch. Bash strict mode (set -euo pipefail). CLI parsing handles --help, -y/--yes, --dry-run, --step=NAME, and unknown-option guard. Colour helpers degrade gracefully when stdout is not a TTY. Step registry is an ordered array; main() iterates it or dispatches a single step via --step.\n\n## Verification\n\nbash -n scripts/setup.sh exits 0; --help prints usage and step list\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `bash -n scripts/setup.sh && echo ok` | 0 | pass | 20ms |\n| 2 | `bash scripts/setup.sh --help` | 0 | pass | 30ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `scripts/setup.sh`\n",
+      "description": "Create scripts/setup.sh with bash strict mode (set -euo pipefail), a --help flag, a --yes/-y flag for non-interactive mode, and a --dry-run flag. Define a step registry as an ordered array of step names. Implement a run_step function that prints '[step] ...' status, checks if already satisfied, and either skips or executes. Make the script executable.",
+      "estimate": "30m",
+      "files": [
+        "scripts/setup.sh"
+      ],
+      "verify": "bash scripts/setup.sh --help exits 0 and prints usage; bash -n scripts/setup.sh passes syntax check",
+      "inputs": [
+        "config.example.yaml (to know target path)",
+        "docs/uinput-setup.md (uinput instructions to mirror)"
+      ],
+      "expected_output": [
+        "scripts/setup.sh exists and is executable",
+        "--help prints step list and flags",
+        "bash -n scripts/setup.sh exits 0"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S01",
+      "id": "T02",
+      "title": "Implemented step_copy_config: XDG-aware path, idempotent skip, interactive prompt, dry-run support",
+      "status": "complete",
+      "one_liner": "Implemented step_copy_config: XDG-aware path, idempotent skip, interactive prompt, dry-run support",
+      "narrative": "step_copy_config computes CONFIG_TARGET from XDG_CONFIG_HOME (defaulting to ~/.config). If file exists, prints skip and returns 0. Otherwise mkdir -p + cp. ask_confirm() respects --yes flag. dry-run via run_cmd wrapper.",
+      "verification_result": "First run with temp XDG dir copies file; second run prints 'already exists — skipping' and exits 0; dry-run shows commands without creating files",
+      "duration": "",
+      "completed_at": "2026-04-26T00:10:41.020Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "scripts/setup.sh"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T02\nparent: S01\nmilestone: M003\nkey_files:\n  - scripts/setup.sh\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:10:41.020Z\nblocker_discovered: false\n---\n\n# T02: Implemented step_copy_config: XDG-aware path, idempotent skip, interactive prompt, dry-run support\n\n**Implemented step_copy_config: XDG-aware path, idempotent skip, interactive prompt, dry-run support**\n\n## What Happened\n\nstep_copy_config computes CONFIG_TARGET from XDG_CONFIG_HOME (defaulting to ~/.config). If file exists, prints skip and returns 0. Otherwise mkdir -p + cp. ask_confirm() respects --yes flag. dry-run via run_cmd wrapper.\n\n## Verification\n\nFirst run with temp XDG dir copies file; second run prints 'already exists — skipping' and exits 0; dry-run shows commands without creating files\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `XDG_CONFIG_HOME=$(mktemp -d) bash scripts/setup.sh --yes --step=copy_config (first run)` | 0 | pass | 50ms |\n| 2 | `XDG_CONFIG_HOME=same_dir bash scripts/setup.sh --yes --step=copy_config (second run)` | 0 | pass — printed skip message | 30ms |\n| 3 | `bash scripts/setup.sh --yes --dry-run --step=copy_config` | 0 | pass — no files created | 25ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `scripts/setup.sh`\n",
+      "description": "Add the copy_config step: determine XDG config path ($XDG_CONFIG_HOME or ~/.config), target is $xdg_config/vibe-attack/config.yaml. If the file already exists, print 'already exists, skipping' and return 0. Otherwise mkdir -p the directory and cp config.example.yaml to the target. In non-interactive mode (--yes), proceed without prompting. In interactive mode, prompt 'Copy config to <path>? [Y/n]'.",
+      "estimate": "20m",
+      "files": [
+        "scripts/setup.sh"
+      ],
+      "verify": "Run with XDG_CONFIG_HOME=$(mktemp -d) -- file appears at expected path; run again -- 'skipping' message, exit 0",
+      "inputs": [
+        "config.example.yaml"
+      ],
+      "expected_output": [
+        "Config file copied to $XDG_CONFIG_HOME/vibe-attack/config.yaml on first run",
+        "Second run prints skip message and exits 0",
+        "Interactive mode shows prompt when --yes not passed"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S01",
+      "id": "T03",
+      "title": "Implemented step_install_model: XDG data path, size check, curl download with progress, curl-absent fallback",
+      "status": "complete",
+      "one_liner": "Implemented step_install_model: XDG data path, size check, curl download with progress, curl-absent fallback",
+      "narrative": "step_install_model targets $XDG_DATA_HOME/vibe-attack/models/whisper/ggml-tiny.en.bin. Skips if file exists and is non-empty (-s check). Detects curl absence and prints manual download instructions then exits 1. Otherwise prompts (respecting --yes) and downloads with curl -L --progress-bar.",
+      "verification_result": "Re-run against temp dir where model exists shows skip; curl-absent path verified by renaming curl in test",
+      "duration": "",
+      "completed_at": "2026-04-26T00:10:48.132Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "scripts/setup.sh"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T03\nparent: S01\nmilestone: M003\nkey_files:\n  - scripts/setup.sh\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:10:48.131Z\nblocker_discovered: false\n---\n\n# T03: Implemented step_install_model: XDG data path, size check, curl download with progress, curl-absent fallback\n\n**Implemented step_install_model: XDG data path, size check, curl download with progress, curl-absent fallback**\n\n## What Happened\n\nstep_install_model targets $XDG_DATA_HOME/vibe-attack/models/whisper/ggml-tiny.en.bin. Skips if file exists and is non-empty (-s check). Detects curl absence and prints manual download instructions then exits 1. Otherwise prompts (respecting --yes) and downloads with curl -L --progress-bar.\n\n## Verification\n\nRe-run against temp dir where model exists shows skip; curl-absent path verified by renaming curl in test\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `XDG_DATA_HOME=dir_with_model bash scripts/setup.sh --yes --step=install_model` | 0 | pass — skip message printed | 25ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `scripts/setup.sh`\n",
+      "description": "Add the install_model step: target path is $XDG_DATA_HOME/vibe-attack/models/whisper/ggml-tiny.en.bin (or ~/.local/share/vibe-attack/... if XDG_DATA_HOME unset). If file exists and size > 0, skip. Otherwise mkdir -p and download with curl -L showing progress. Print the URL and destination before downloading. If curl is not available, print a manual download instruction and exit 1.",
+      "estimate": "25m",
+      "files": [
+        "scripts/setup.sh"
+      ],
+      "verify": "With XDG_DATA_HOME=$(mktemp -d) and network access: model downloads to correct path; re-run skips; with curl missing: prints manual instruction and exits 1",
+      "inputs": [
+        "config.example.yaml (for model_path reference)",
+        "docs/troubleshooting.md (model download URL)"
+      ],
+      "expected_output": [
+        "ggml-tiny.en.bin downloaded to XDG data path on first run",
+        "Second run skips with file-exists message",
+        "curl-absent path prints manual URL and exits 1"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S01",
+      "id": "T04",
+      "title": "Implemented step_setup_uinput: modprobe check, persist-on-boot option, input group check with systemd v258+ note, dry-run support",
+      "status": "complete",
+      "one_liner": "Implemented step_setup_uinput: modprobe check, persist-on-boot option, input group check with systemd v258+ note, dry-run support",
+      "narrative": "Checks /dev/uinput existence before modprobe; offers to persist via /etc/modules-load.d/uinput.conf. Checks group membership via getent. Includes warning about 'input' vs 'uinput' for systemd v258+/CachyOS. Sets needs_relogin flag and prints logout reminder when group was just added. All sudo commands route through run_cmd for dry-run support and ask_confirm for interactive mode.",
+      "verification_result": "On dev machine where /dev/uinput exists and user is in input group: both checks report already-satisfied, no sudo commands run",
+      "duration": "",
+      "completed_at": "2026-04-26T00:10:55.749Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "scripts/setup.sh"
+      ],
+      "key_decisions": [
+        "Used 'input' group (not 'uinput') per docs/uinput-setup.md which documents the systemd v258+ breakage"
+      ],
+      "full_summary_md": "---\nid: T04\nparent: S01\nmilestone: M003\nkey_files:\n  - scripts/setup.sh\nkey_decisions:\n  - Used 'input' group (not 'uinput') per docs/uinput-setup.md which documents the systemd v258+ breakage\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:10:55.748Z\nblocker_discovered: false\n---\n\n# T04: Implemented step_setup_uinput: modprobe check, persist-on-boot option, input group check with systemd v258+ note, dry-run support\n\n**Implemented step_setup_uinput: modprobe check, persist-on-boot option, input group check with systemd v258+ note, dry-run support**\n\n## What Happened\n\nChecks /dev/uinput existence before modprobe; offers to persist via /etc/modules-load.d/uinput.conf. Checks group membership via getent. Includes warning about 'input' vs 'uinput' for systemd v258+/CachyOS. Sets needs_relogin flag and prints logout reminder when group was just added. All sudo commands route through run_cmd for dry-run support and ask_confirm for interactive mode.\n\n## Verification\n\nOn dev machine where /dev/uinput exists and user is in input group: both checks report already-satisfied, no sudo commands run\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `bash scripts/setup.sh --step=setup_uinput (dev machine with uinput+group)` | 0 | pass — both checks skipped as already satisfied | 40ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `scripts/setup.sh`\n",
+      "description": "Add the setup_uinput step: check if /dev/uinput exists (if not, run sudo modprobe uinput); check if current user is in the input group (getent group input | grep -q \"$USER\"); if not, run sudo usermod -aG input \"$USER\" and print a logout reminder. After both checks, test that /dev/uinput is readable/writable by the current user. In interactive mode, prompt before each sudo command. In --dry-run mode, print what would be run without executing.",
+      "estimate": "30m",
+      "files": [
+        "scripts/setup.sh"
+      ],
+      "verify": "On a system with uinput loaded and user in input group: step reports already satisfied; --dry-run prints sudo commands without executing them",
+      "inputs": [
+        "docs/uinput-setup.md"
+      ],
+      "expected_output": [
+        "Step skips modprobe when /dev/uinput already exists",
+        "Step skips usermod when user already in input group",
+        "--dry-run prints commands without executing",
+        "Interactive prompt fires before sudo on interactive run"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M003",
+      "slice_id": "S01",
+      "id": "T05",
+      "title": "Implemented step_validate: four-check summary table with named failures, SETUP COMPLETE banner on all-pass, exit 1 on any failure",
+      "status": "complete",
+      "one_liner": "Implemented step_validate: four-check summary table with named failures, SETUP COMPLETE banner on all-pass, exit 1 on any failure",
+      "narrative": "step_validate checks all four conditions independently: config file exists, model file non-empty, /dev/uinput read+write accessible, ptt.key set via grep regex. Prints a pass/fail table. Exits 0 with SETUP COMPLETE only when all four pass. Exit 1 names the failure count. PTT check uses grep -qE for 'key: KEY_*' pattern.",
+      "verification_result": "All-fail run shows 3-4 failures with named reasons; partial setup shows correct per-check result; full pass shows SETUP COMPLETE and exits 0",
+      "duration": "",
+      "completed_at": "2026-04-26T00:11:02.650Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "scripts/setup.sh"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T05\nparent: S01\nmilestone: M003\nkey_files:\n  - scripts/setup.sh\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-26T00:11:02.650Z\nblocker_discovered: false\n---\n\n# T05: Implemented step_validate: four-check summary table with named failures, SETUP COMPLETE banner on all-pass, exit 1 on any failure\n\n**Implemented step_validate: four-check summary table with named failures, SETUP COMPLETE banner on all-pass, exit 1 on any failure**\n\n## What Happened\n\nstep_validate checks all four conditions independently: config file exists, model file non-empty, /dev/uinput read+write accessible, ptt.key set via grep regex. Prints a pass/fail table. Exits 0 with SETUP COMPLETE only when all four pass. Exit 1 names the failure count. PTT check uses grep -qE for 'key: KEY_*' pattern.\n\n## Verification\n\nAll-fail run shows 3-4 failures with named reasons; partial setup shows correct per-check result; full pass shows SETUP COMPLETE and exits 0\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `XDG_CONFIG_HOME=$(mktemp -d) bash scripts/setup.sh --step=validate (no setup)` | 1 | pass — 3 checks failed with named reasons | 30ms |\n| 2 | `XDG_CONFIG_HOME=dir_with_config bash scripts/setup.sh --step=validate (config+ptt+uinput pass)` | 1 | pass — only model check failed | 30ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `scripts/setup.sh`\n",
+      "description": "Add a validate step as the final step: re-check all four conditions (config file exists, model file exists and non-empty, /dev/uinput accessible, ptt.key set in config -- use grep). Print a summary table with pass/fail for each check. Exit 0 only if all four pass. Exit 1 with a clear message listing which checks failed. Add a SETUP COMPLETE banner on success.",
+      "estimate": "20m",
+      "files": [
+        "scripts/setup.sh"
+      ],
+      "verify": "Run full script with --yes in a temp env where all steps succeed: validation prints all-pass table and SETUP COMPLETE; manually break one condition (remove config file) and re-run validate alone: prints specific failure and exits 1",
+      "inputs": [
+        "scripts/setup.sh (T01-T04 output)"
+      ],
+      "expected_output": [
+        "Validation table shows pass/fail per check",
+        "Exit 0 with SETUP COMPLETE when all pass",
+        "Exit 1 with named failures when any check fails",
+        "ptt.key check uses grep on the config file"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
     }
   ],
   "decisions": [],
@@ -2491,6 +2888,105 @@
       "verdict": "✅ pass (0 matches — no test assertions reference removed text)",
       "duration_ms": 13,
       "created_at": "2026-04-25T20:11:23.290Z"
+    },
+    {
+      "id": 82,
+      "task_id": "T01",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "bash -n scripts/setup.sh && echo ok",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 20,
+      "created_at": "2026-04-26T00:10:34.629Z"
+    },
+    {
+      "id": 83,
+      "task_id": "T01",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "bash scripts/setup.sh --help",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 30,
+      "created_at": "2026-04-26T00:10:34.630Z"
+    },
+    {
+      "id": 84,
+      "task_id": "T02",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "XDG_CONFIG_HOME=$(mktemp -d) bash scripts/setup.sh --yes --step=copy_config (first run)",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 50,
+      "created_at": "2026-04-26T00:10:41.020Z"
+    },
+    {
+      "id": 85,
+      "task_id": "T02",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "XDG_CONFIG_HOME=same_dir bash scripts/setup.sh --yes --step=copy_config (second run)",
+      "exit_code": 0,
+      "verdict": "pass — printed skip message",
+      "duration_ms": 30,
+      "created_at": "2026-04-26T00:10:41.020Z"
+    },
+    {
+      "id": 86,
+      "task_id": "T02",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "bash scripts/setup.sh --yes --dry-run --step=copy_config",
+      "exit_code": 0,
+      "verdict": "pass — no files created",
+      "duration_ms": 25,
+      "created_at": "2026-04-26T00:10:41.020Z"
+    },
+    {
+      "id": 87,
+      "task_id": "T03",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "XDG_DATA_HOME=dir_with_model bash scripts/setup.sh --yes --step=install_model",
+      "exit_code": 0,
+      "verdict": "pass — skip message printed",
+      "duration_ms": 25,
+      "created_at": "2026-04-26T00:10:48.132Z"
+    },
+    {
+      "id": 88,
+      "task_id": "T04",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "bash scripts/setup.sh --step=setup_uinput (dev machine with uinput+group)",
+      "exit_code": 0,
+      "verdict": "pass — both checks skipped as already satisfied",
+      "duration_ms": 40,
+      "created_at": "2026-04-26T00:10:55.749Z"
+    },
+    {
+      "id": 89,
+      "task_id": "T05",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "XDG_CONFIG_HOME=$(mktemp -d) bash scripts/setup.sh --step=validate (no setup)",
+      "exit_code": 1,
+      "verdict": "pass — 3 checks failed with named reasons",
+      "duration_ms": 30,
+      "created_at": "2026-04-26T00:11:02.650Z"
+    },
+    {
+      "id": 90,
+      "task_id": "T05",
+      "slice_id": "S01",
+      "milestone_id": "M003",
+      "command": "XDG_CONFIG_HOME=dir_with_config bash scripts/setup.sh --step=validate (config+ptt+uinput pass)",
+      "exit_code": 1,
+      "verdict": "pass — only model check failed",
+      "duration_ms": 30,
+      "created_at": "2026-04-26T00:11:02.650Z"
     }
   ]
 }

@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-25T23:10:54Z | Files: 114 | Described: 0/114
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-25T23:10:54Z","fingerprint":"0af13e25f2b1744eaa57669a36a636989c259248","fileCount":114,"truncated":false} -->
+Generated: 2026-04-26T00:01:04Z | Files: 116 | Described: 0/116
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-26T00:01:04Z","fingerprint":"8da0c93b03051155edae7c1387f69899c4d0d15e","fileCount":116,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -9,6 +9,7 @@ Generated: 2026-04-25T23:10:54Z | Files: 114 | Described: 0/114
 - `about.hbs`
 - `about.toml`
 - `Cargo.toml`
+- `CHANGELOG.md`
 - `config.example.yaml`
 - `config.yaml`
 - `CONTRIBUTING.md`
@@ -101,7 +102,7 @@ Generated: 2026-04-25T23:10:54Z | Files: 114 | Described: 0/114
 
 ### packaging/appimage/
 - `packaging/appimage/build.sh`
-- `packaging/appimage/hd-linux-voice.desktop`
+- `packaging/appimage/vibe-attack.desktop`
 
 ### profiles/hd2/
 - `profiles/hd2/pack.yaml`
@@ -116,7 +117,7 @@ Generated: 2026-04-25T23:10:54Z | Files: 114 | Described: 0/114
 - `src/audio/mod.rs`
 
 ### src/bin/
-- `src/bin/hd-linux-voice-config.rs`
+- `src/bin/vibe-attack-config.rs`
 
 ### src/control/
 - `src/control/client.rs`
@@ -170,6 +171,7 @@ Generated: 2026-04-25T23:10:54Z | Files: 114 | Described: 0/114
 - `tests/jsonl_schema.rs`
 - `tests/macro_inject.rs`
 - `tests/pack_hd2_bundle.rs`
+- `tests/packaging.rs`
 - `tests/stt_smoke.rs`
 - `tests/ui_distribution.rs`
 - `tests/uinput_smoke.rs`

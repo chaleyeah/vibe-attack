@@ -86,3 +86,8 @@
 {"id":"70fedd9f-27d4-4304-9f94-364a15f7bbca","ts":"2026-04-25T20:59:42.404Z","severity":"info","message":"Codebase Map Stats:\n  Files: 114\n  Described: 0 (0%)\n  Undescribed: 114\n  Generated: 2026-04-25T20:16:53Z\n\nTip: Auto-refresh keeps the cache current, but /gsd codebase update forces an immediate refresh.","source":"notify","read":false}
 {"id":"f7df1bb5-aabd-4046-8b2e-8a165d34a357","ts":"2026-04-25T20:59:58.644Z","severity":"info","message":"Running codebase scan (focus: tech+arch)…","source":"notify","read":false}
 {"id":"7fc4a01b-fb5d-4ef4-bac5-22a7b8fb24a1","ts":"2026-04-25T21:24:38.552Z","severity":"info","message":"Native Anthropic web search active","source":"notify","read":false}
+{"id":"ebe4e770-c2f6-4f07-8380-f5d8491afd43","ts":"2026-04-25T23:34:40.978Z","severity":"success","message":"Added 999.1: \"list\"","source":"notify","read":false}
+{"id":"da5073ff-df8c-47c9-9777-776b648f80f3","ts":"2026-04-25T23:34:48.239Z","severity":"info","message":"Backlog:\n\n  ○ 999.1 — list (added 2026-04-25)\n\n1 pending, 0 promoted/done","source":"notify","read":false}
+{"id":"4eec1135-700b-458b-b491-be4d83d5aca7","ts":"2026-04-25T23:35:01.448Z","severity":"warning","message":"Usage: /gsd backlog remove <id>","source":"notify","read":false}
+{"id":"4ae822f9-c39d-43d6-bb1c-0a0972d05067","ts":"2026-04-25T23:35:05.978Z","severity":"success","message":"Removed 999.1: \"list\"","source":"notify","read":false}
+{"id":"8a96cec4-1030-4446-a007-3c89cca13411","ts":"2026-04-25T23:35:10.946Z","severity":"info","message":"Backlog is empty. Add items with /gsd backlog add <title>","source":"notify","read":false}
