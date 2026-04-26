@@ -109,7 +109,7 @@ impl SttService {
         let shutdown = self.shutdown.clone();
 
         let model_path = self.model_path.clone();
-        let initial_prompt = self.initial_prompt.clone();
+        let _initial_prompt = self.initial_prompt.clone();
 
         let handle = std::thread::spawn(move || {
             tracing::info!("STT thread started");

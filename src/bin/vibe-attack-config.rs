@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use std::sync::{
     atomic::{AtomicU32, Ordering},
     mpsc, Arc,
@@ -8,7 +7,7 @@ use eframe::egui;
 use vibe_attack::ui::config_app::{load_profiles, ConfigApp};
 use vibe_attack::ui::first_run::FirstRunState;
 use vibe_attack::ui::probe;
-use vibe_attack::ui::wizard::{show_wizard, PttCaptureState};
+use vibe_attack::ui::wizard::{show_wizard, ModelDownloadState, PttCaptureState};
 
 // ── Log channel ──────────────────────────────────────────────────────────────
 
@@ -154,20 +153,20 @@ struct VibeAttackConfigApp {
     first_run: FirstRunState,
     config: ConfigApp,
     ptt: PttCaptureState,
-    config_example_path: PathBuf,
+    dl: ModelDownloadState,
+    config_example_contents: &'static str,
+    hd2_profile_contents: &'static str,
     mic: MicLevelState,
     log_rx: mpsc::Receiver<String>,
-    last_log_count: usize,
     setup_just_completed: bool,
 }
 
 impl VibeAttackConfigApp {
     fn new(log_rx: mpsc::Receiver<String>) -> Self {
-        let config_example_path = std::env::current_exe()
-            .ok()
-            .and_then(|p| p.parent().map(|d| d.to_path_buf()))
-            .unwrap_or_else(|| PathBuf::from("."))
-            .join("config.example.yaml");
+        let config_example_contents =
+            include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/config.example.yaml"));
+        let hd2_profile_contents =
+            include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/profiles/hd2/pack.yaml"));
 
         let first_run = probe::run();
         let setup_complete = first_run.is_setup_complete();
@@ -191,10 +190,11 @@ impl VibeAttackConfigApp {
             first_run,
             config,
             ptt: PttCaptureState::new(),
-            config_example_path,
+            dl: ModelDownloadState::new(),
+            config_example_contents,
+            hd2_profile_contents,
             mic,
             log_rx,
-            last_log_count: 0,
             setup_just_completed: false,
         }
     }
@@ -212,6 +212,11 @@ impl eframe::App for VibeAttackConfigApp {
         // Repaint faster while PTT capture thread is listening.
         if self.ptt.listening {
             ctx.request_repaint_after(std::time::Duration::from_millis(50));
+        }
+
+        // Repaint while model download is in progress.
+        if self.dl.is_running() {
+            ctx.request_repaint_after(std::time::Duration::from_millis(250));
         }
 
         // Drain log channel.
@@ -240,7 +245,9 @@ impl eframe::App for VibeAttackConfigApp {
                 ui,
                 &mut self.first_run,
                 &mut self.ptt,
-                &self.config_example_path,
+                &mut self.dl,
+                self.config_example_contents,
+                self.hd2_profile_contents,
             );
             // Detect transition to complete
             if was_incomplete && self.first_run.is_setup_complete() {
@@ -276,7 +283,7 @@ fn show_main_config(ui: &mut egui::Ui, config: &ConfigApp) {
     } else {
         for name in &config.profiles {
             let is_active = config.active_profile.as_deref() == Some(name.as_str());
-            ui.selectable_label(is_active, name.as_str());
+            let _ = ui.selectable_label(is_active, name.as_str());
         }
     }
 

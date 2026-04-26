@@ -4681,6 +4681,7 @@ dependencies = [
  "tokio-util",
  "tracing",
  "tracing-subscriber",
+ "ureq 2.12.1",
  "whisper-rs",
  "xdg",
  "zip",

@@ -11,6 +11,7 @@ pub use inner::*;
 
 #[cfg(feature = "gui")]
 mod inner {
+    use std::io::Read;
     use std::path::PathBuf;
     use std::sync::{Arc, Mutex};
 
@@ -20,6 +21,48 @@ mod inner {
 
     use crate::ui::first_run::{FirstRunState, SetupStep};
     use crate::ui::probe;
+
+    const MODEL_URL: &str =
+        "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin";
+
+    // ── Download state ───────────────────────────────────────────────────────
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum DownloadStatus {
+        Idle,
+        Downloading { received: u64, total: Option<u64> },
+        Done,
+        Failed(String),
+    }
+
+    /// Shared state for the model download background thread.
+    pub struct ModelDownloadState {
+        pub status: Arc<Mutex<DownloadStatus>>,
+        pub handle: Option<std::thread::JoinHandle<()>>,
+    }
+
+    impl ModelDownloadState {
+        pub fn new() -> Self {
+            Self {
+                status: Arc::new(Mutex::new(DownloadStatus::Idle)),
+                handle: None,
+            }
+        }
+
+        pub fn current(&self) -> DownloadStatus {
+            self.status.lock().map(|g| g.clone()).unwrap_or(DownloadStatus::Idle)
+        }
+
+        pub fn is_running(&self) -> bool {
+            matches!(self.current(), DownloadStatus::Downloading { .. })
+        }
+    }
+
+    impl Default for ModelDownloadState {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
 
     // ── PTT capture state ────────────────────────────────────────────────────
 
@@ -68,7 +111,9 @@ mod inner {
         ui: &mut egui::Ui,
         state: &mut FirstRunState,
         ptt: &mut PttCaptureState,
-        config_example_path: &PathBuf,
+        dl: &mut ModelDownloadState,
+        config_example_contents: &str,
+        hd2_profile_contents: &str,
     ) {
         // Harvest PTT result from background thread if ready
         if ptt.listening && ptt.has_result() {
@@ -96,16 +141,28 @@ mod inner {
             }
         }
 
+        // Re-probe after download completes, then reap the handle.
+        if let Some(h) = &dl.handle {
+            if h.is_finished() {
+                if let Ok(DownloadStatus::Done) = dl.status.lock().map(|g| g.clone()) {
+                    *state = probe::run();
+                }
+                if let Some(handle) = dl.handle.take() {
+                    let _ = handle.join();
+                }
+            }
+        }
+
         match state.first_incomplete_step() {
             None => {
                 ui.heading("Setup complete");
                 ui.label("All prerequisites satisfied. Loading config app…");
             }
             Some(SetupStep::CreateConfig) => {
-                show_create_config(ui, state, config_example_path);
+                show_create_config(ui, state, config_example_contents, hd2_profile_contents);
             }
             Some(SetupStep::InstallModel) => {
-                show_install_model(ui, state);
+                show_install_model(ui, state, dl);
             }
             Some(SetupStep::SetupUinput) => {
                 show_setup_uinput(ui, state);
@@ -121,7 +178,8 @@ mod inner {
     fn show_create_config(
         ui: &mut egui::Ui,
         state: &mut FirstRunState,
-        config_example_path: &PathBuf,
+        config_example_contents: &str,
+        hd2_profile_contents: &str,
     ) {
         let target = crate::ui::probe::config_path_for_display();
         ui.heading("Step 1 of 4: Create config file");
@@ -130,17 +188,18 @@ mod inner {
         ui.add_space(12.0);
 
         if ui.button("Copy example config").clicked() {
-            match std::fs::create_dir_all(
-                PathBuf::from(&target).parent().unwrap_or(&PathBuf::from(".")),
-            )
-            .and_then(|_| std::fs::copy(config_example_path, &target).map(|_| ()))
+            let target_path = PathBuf::from(&target);
+            let parent = target_path.parent().unwrap_or(&target_path);
+            match std::fs::create_dir_all(parent)
+                .and_then(|_| std::fs::write(&target_path, config_example_contents))
             {
                 Ok(()) => {
                     info!(path = %target, "Config file created");
+                    install_default_profile(hd2_profile_contents);
                     *state = probe::run();
                 }
                 Err(e) => {
-                    error!(reason = %e, "Failed to copy config file");
+                    error!(reason = %e, "Failed to write config file");
                     ui.colored_label(egui::Color32::RED, format!("Error: {e}"));
                 }
             }
@@ -150,39 +209,197 @@ mod inner {
         ui.label("After copying, edit the file to set your audio device and PTT key.");
     }
 
+    /// Write the bundled hd2 profile to the XDG profiles directory if not already present.
+    fn install_default_profile(hd2_profile_contents: &str) {
+        let profiles_dir = xdg::BaseDirectories::with_prefix("vibe-attack")
+            .get_config_home()
+            .map(|p| p.join("profiles"));
+
+        let Some(dir) = profiles_dir else {
+            error!("Could not resolve XDG config path for profiles");
+            return;
+        };
+
+        let dest = dir.join("hd2.yaml");
+        if dest.exists() {
+            info!(path = %dest.display(), "hd2 profile already present — skipping");
+            return;
+        }
+
+        if let Err(e) = std::fs::create_dir_all(&dir) {
+            error!(reason = %e, "Failed to create profiles directory");
+            return;
+        }
+
+        match std::fs::write(&dest, hd2_profile_contents) {
+            Ok(()) => info!(path = %dest.display(), "Default hd2 profile installed"),
+            Err(e) => error!(reason = %e, path = %dest.display(), "Failed to write hd2 profile"),
+        }
+    }
+
     // ── Step: InstallModel ───────────────────────────────────────────────────
 
-    fn show_install_model(ui: &mut egui::Ui, state: &mut FirstRunState) {
+    fn show_install_model(
+        ui: &mut egui::Ui,
+        state: &mut FirstRunState,
+        dl: &mut ModelDownloadState,
+    ) {
         let model_path = crate::ui::probe::model_path_for_display();
-        let curl_cmd = format!(
-            "mkdir -p \"{}\"\ncurl -L -o \"{}\" \\\n  {}",
-            PathBuf::from(&model_path)
-                .parent()
-                .map(|p| p.display().to_string())
-                .unwrap_or_default(),
-            model_path,
-            "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin",
-        );
 
         ui.heading("Step 2 of 4: Install whisper model");
         ui.add_space(8.0);
         ui.label(format!("Target: {model_path}"));
-        ui.add_space(8.0);
-        ui.label("Run this command in your terminal:");
-        ui.add_space(4.0);
-
-        egui::ScrollArea::horizontal().show(ui, |ui| {
-            ui.add(
-                egui::TextEdit::multiline(&mut curl_cmd.as_str())
-                    .font(egui::TextStyle::Monospace)
-                    .desired_width(f32::INFINITY)
-                    .interactive(false),
-            );
-        });
-
         ui.add_space(12.0);
-        if ui.button("Re-check").clicked() {
-            *state = probe::run();
+
+        match dl.current() {
+            DownloadStatus::Idle => {
+                ui.label("~75 MB download from HuggingFace.");
+                ui.add_space(8.0);
+                if ui.button("Download model").clicked() {
+                    let status = Arc::clone(&dl.status);
+                    let dest = model_path.clone();
+                    let handle = std::thread::spawn(move || {
+                        download_model(status, &dest);
+                    });
+                    dl.handle = Some(handle);
+                    // Immediately set to downloading so next frame shows progress
+                    if let Ok(mut g) = dl.status.lock() {
+                        *g = DownloadStatus::Downloading { received: 0, total: None };
+                    }
+                }
+            }
+            DownloadStatus::Downloading { received, total } => {
+                ui.spinner();
+                match total {
+                    Some(total) if total > 0 => {
+                        let frac = received as f32 / total as f32;
+                        ui.add(
+                            egui::ProgressBar::new(frac)
+                                .desired_width(300.0)
+                                .text(format!(
+                                    "{:.1} / {:.1} MB",
+                                    received as f64 / 1_048_576.0,
+                                    total as f64 / 1_048_576.0
+                                )),
+                        );
+                    }
+                    _ => {
+                        ui.label(format!(
+                            "Downloading… {:.1} MB received",
+                            received as f64 / 1_048_576.0
+                        ));
+                    }
+                }
+                // Fast repaint while downloading
+                ui.ctx().request_repaint_after(std::time::Duration::from_millis(250));
+            }
+            DownloadStatus::Done => {
+                ui.colored_label(egui::Color32::GREEN, "Download complete.");
+                ui.add_space(4.0);
+                if ui.button("Re-check").clicked() {
+                    *state = probe::run();
+                }
+            }
+            DownloadStatus::Failed(msg) => {
+                ui.colored_label(egui::Color32::RED, format!("Download failed: {msg}"));
+                ui.add_space(8.0);
+                if ui.button("Retry").clicked() {
+                    if let Ok(mut g) = dl.status.lock() {
+                        *g = DownloadStatus::Idle;
+                    }
+                }
+            }
+        }
+    }
+
+    /// Download the model file to `dest`, streaming progress into `status`.
+    fn download_model(status: Arc<Mutex<DownloadStatus>>, dest: &str) {
+        info!(url = MODEL_URL, dest, "starting model download");
+
+        let dest_path = PathBuf::from(dest);
+        if let Some(parent) = dest_path.parent() {
+            if let Err(e) = std::fs::create_dir_all(parent) {
+                error!(reason = %e, "failed to create model directory");
+                if let Ok(mut g) = status.lock() {
+                    *g = DownloadStatus::Failed(format!("mkdir failed: {e}"));
+                }
+                return;
+            }
+        }
+
+        let response = match ureq::get(MODEL_URL).call() {
+            Ok(r) => r,
+            Err(e) => {
+                error!(reason = %e, "model download request failed");
+                if let Ok(mut g) = status.lock() {
+                    *g = DownloadStatus::Failed(e.to_string());
+                }
+                return;
+            }
+        };
+
+        let total = response
+            .header("content-length")
+            .and_then(|v| v.parse::<u64>().ok());
+
+        // Write to a temp file alongside the destination, then rename atomically.
+        let tmp_path = dest_path.with_extension("tmp");
+        let mut file = match std::fs::File::create(&tmp_path) {
+            Ok(f) => f,
+            Err(e) => {
+                error!(reason = %e, "failed to create temp file");
+                if let Ok(mut g) = status.lock() {
+                    *g = DownloadStatus::Failed(format!("file create failed: {e}"));
+                }
+                return;
+            }
+        };
+
+        let mut reader = response.into_reader();
+        let mut buf = vec![0u8; 65536];
+        let mut received: u64 = 0;
+
+        loop {
+            match reader.read(&mut buf) {
+                Ok(0) => break,
+                Ok(n) => {
+                    use std::io::Write;
+                    if let Err(e) = file.write_all(&buf[..n]) {
+                        error!(reason = %e, "write error during download");
+                        let _ = std::fs::remove_file(&tmp_path);
+                        if let Ok(mut g) = status.lock() {
+                            *g = DownloadStatus::Failed(format!("write error: {e}"));
+                        }
+                        return;
+                    }
+                    received += n as u64;
+                    if let Ok(mut g) = status.lock() {
+                        *g = DownloadStatus::Downloading { received, total };
+                    }
+                }
+                Err(e) => {
+                    error!(reason = %e, "read error during download");
+                    let _ = std::fs::remove_file(&tmp_path);
+                    if let Ok(mut g) = status.lock() {
+                        *g = DownloadStatus::Failed(format!("read error: {e}"));
+                    }
+                    return;
+                }
+            }
+        }
+
+        if let Err(e) = std::fs::rename(&tmp_path, &dest_path) {
+            error!(reason = %e, "failed to rename tmp file");
+            let _ = std::fs::remove_file(&tmp_path);
+            if let Ok(mut g) = status.lock() {
+                *g = DownloadStatus::Failed(format!("rename failed: {e}"));
+            }
+            return;
+        }
+
+        info!(dest, bytes = received, "model download complete");
+        if let Ok(mut g) = status.lock() {
+            *g = DownloadStatus::Done;
         }
     }
 
@@ -195,37 +412,20 @@ mod inner {
         ui.add_space(8.0);
 
         ui.label("1. Load the uinput kernel module:");
-        egui::Frame::NONE
-            .fill(egui::Color32::from_gray(30))
-            .inner_margin(egui::Margin::same(6))
-            .show(ui, |ui| {
-                ui.monospace("sudo modprobe uinput");
-            });
+        copy_command_row(ui, "sudo modprobe uinput");
         ui.add_space(4.0);
         ui.label("Optional — persist across reboots:");
-        egui::Frame::NONE
-            .fill(egui::Color32::from_gray(30))
-            .inner_margin(egui::Margin::same(6))
-            .show(ui, |ui| {
-                ui.monospace("echo \"uinput\" | sudo tee /etc/modules-load.d/uinput.conf");
-            });
+        copy_command_row(
+            ui,
+            "echo \"uinput\" | sudo tee /etc/modules-load.d/uinput.conf",
+        );
         ui.add_space(8.0);
 
         ui.label("2. Add yourself to the input group:");
-        egui::Frame::NONE
-            .fill(egui::Color32::from_gray(30))
-            .inner_margin(egui::Margin::same(6))
-            .show(ui, |ui| {
-                ui.monospace("sudo usermod -aG input $USER");
-            });
+        copy_command_row(ui, "sudo usermod -aG input $USER");
         ui.add_space(4.0);
         ui.label("3. Apply without logging out:");
-        egui::Frame::NONE
-            .fill(egui::Color32::from_gray(30))
-            .inner_margin(egui::Margin::same(6))
-            .show(ui, |ui| {
-                ui.monospace("newgrp input");
-            });
+        copy_command_row(ui, "newgrp input");
         ui.add_space(8.0);
 
         ui.colored_label(
@@ -237,6 +437,26 @@ mod inner {
         if ui.button("Re-check").clicked() {
             *state = probe::run();
         }
+    }
+
+    /// Render a dark code block with a "Copy" button on the right.
+    fn copy_command_row(ui: &mut egui::Ui, cmd: &str) {
+        ui.horizontal(|ui| {
+            egui::Frame::NONE
+                .fill(egui::Color32::from_gray(30))
+                .inner_margin(egui::Margin::same(6))
+                .show(ui, |ui| {
+                    ui.add(
+                        egui::TextEdit::singleline(&mut cmd.to_string().as_str())
+                            .font(egui::TextStyle::Monospace)
+                            .desired_width(f32::INFINITY)
+                            .interactive(false),
+                    );
+                });
+            if ui.small_button("Copy").clicked() {
+                ui.ctx().copy_text(cmd.to_string());
+            }
+        });
     }
 
     // ── Step: ConfigurePtt ───────────────────────────────────────────────────
