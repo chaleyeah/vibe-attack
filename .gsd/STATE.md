@@ -8,7 +8,7 @@
 ## Milestone Registry
 - ✅ **M001:** Migration
 - 🔄 **M002:** Rebrand to vibe-attack
-- ⬜ **M003:** First-Run GUI Wizard + Setup Script
+- ✅ **M003:** First-Run GUI Wizard + Setup Script
 
 ## Recent Decisions
 - None recorded

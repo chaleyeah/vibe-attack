@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-26T00:24:10.351Z",
+  "exported_at": "2026-04-26T00:25:47.945Z",
   "milestones": [
     {
       "id": "M001",
@@ -96,10 +96,10 @@
     {
       "id": "M003",
       "title": "First-Run GUI Wizard + Setup Script",
-      "status": "active",
+      "status": "complete",
       "depends_on": [],
       "created_at": "2026-04-26T00:07:06.900Z",
-      "completed_at": null,
+      "completed_at": "2026-04-26T00:25:47.939Z",
       "vision": "Replace the manual copy-paste setup process with a guided experience: a bash setup script for CLI/headless users, and an egui wizard that walks GUI users through every prerequisite — config file, whisper model, uinput access, and PTT key — before handing off to the live config app.",
       "success_criteria": [
         "A new user can run `scripts/setup.sh` on a fresh machine and reach a working vibe-attack config without consulting the docs",
