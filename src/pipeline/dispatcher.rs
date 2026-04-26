@@ -82,6 +82,10 @@ impl Dispatcher {
         tracing::info!("Registry updated with {} macros", macros.len());
     }
 
+    pub fn macro_count(&self) -> usize {
+        self.macros.read().unwrap().len()
+    }
+
     fn check_condition(&self, if_flag: &Option<String>) -> bool {
         match if_flag {
             None => true,

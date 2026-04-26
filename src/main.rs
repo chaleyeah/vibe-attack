@@ -207,6 +207,7 @@ async fn main() -> anyhow::Result<()> {
 
     // === 6. Shared state ===
     let ptt_active = Arc::new(AtomicBool::new(false));
+    let muted = Arc::new(AtomicBool::new(false));
     let shutdown = CancellationToken::new();
 
     // === 7. Spawn injection thread (std::thread, D-07) ===
@@ -249,6 +250,7 @@ async fn main() -> anyhow::Result<()> {
         audio_consumer,
         config.clone(),
         Arc::clone(&ptt_active),
+        Arc::clone(&muted),
         macro_tx.clone(),
         shutdown.clone(),
     )
@@ -260,7 +262,24 @@ async fn main() -> anyhow::Result<()> {
     })?;
 
     // === 10b. Spawn UDS control listener (Phase 4) ===
-    vibe_attack::control::spawn_control_listener(pipeline_handles.dispatcher.clone()).await.map_err(|e| {
+    use vibe_attack::control::DaemonHandle;
+    let daemon_handle = DaemonHandle::new(pipeline_handles.dispatcher.clone());
+    // Share muted flag with the pipeline (already passed above).
+    // Replace the handle's default Arc with the one the pipeline is watching.
+    let daemon_handle = DaemonHandle {
+        muted: Arc::clone(&muted),
+        ..daemon_handle
+    };
+
+    // Seed active_profile from ProfileManager so status reflects current profile on startup.
+    {
+        use vibe_attack::pack::manager::ProfileManager;
+        if let Ok(mgr) = ProfileManager::load() {
+            *daemon_handle.active_profile.write().unwrap() = mgr.active_profile;
+        }
+    }
+
+    vibe_attack::control::spawn_control_listener(daemon_handle).await.map_err(|e| {
         tracing::error!("Failed to start control listener: {e:#}");
         e
     })?;

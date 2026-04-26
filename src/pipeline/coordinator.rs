@@ -47,6 +47,7 @@ pub fn spawn_pipeline(
     audio_consumer: HeapCons<f32>,
     config: Config,
     ptt_active: Arc<AtomicBool>,
+    muted: Arc<AtomicBool>,
     macro_tx: std::sync::mpsc::Sender<crate::input::inject::MacroCmd>,
     shutdown: CancellationToken,
 ) -> Result<PipelineHandles> {
@@ -347,6 +348,18 @@ pub fn spawn_pipeline(
                 let now = Instant::now();
                 let ptt = ptt_active.load(Ordering::Relaxed);
                 let listening = listening_until.map(|t| now < t).unwrap_or(false);
+
+                // Mute gate: drop frame and reset any in-progress state.
+                if muted.load(Ordering::Relaxed) {
+                    if prev_ptt { prev_ptt = false; }
+                    if listening_until.is_some() {
+                        listening_until = None;
+                        listening_started_at = None;
+                        wake_preroll_len = 0;
+                        seg = VadSegmenter::new(seg_cfg.clone());
+                    }
+                    continue;
+                }
 
                 // PTT pressed: start or continue recording directly into ptt_audio.
                 if ptt {
