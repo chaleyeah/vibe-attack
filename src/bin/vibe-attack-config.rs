@@ -1,16 +1,16 @@
 use eframe::egui;
 use vibe_attack::ui::config_app::ConfigApp;
-use vibe_attack::ui::first_run::FirstRunState;
+use vibe_attack::ui::probe;
 
 struct VibeAttackConfigApp {
-    first_run: FirstRunState,
+    first_run: vibe_attack::ui::first_run::FirstRunState,
     config: ConfigApp,
 }
 
 impl VibeAttackConfigApp {
     fn new() -> Self {
         Self {
-            first_run: FirstRunState::from_checks(false, false, false, false),
+            first_run: probe::run(),
             config: ConfigApp::new(),
         }
     }
