@@ -195,7 +195,7 @@ mod inner {
         ui.add_space(8.0);
 
         ui.label("1. Load the uinput kernel module:");
-        egui::Frame::none()
+        egui::Frame::NONE
             .fill(egui::Color32::from_gray(30))
             .inner_margin(egui::Margin::same(6))
             .show(ui, |ui| {
@@ -203,7 +203,7 @@ mod inner {
             });
         ui.add_space(4.0);
         ui.label("Optional — persist across reboots:");
-        egui::Frame::none()
+        egui::Frame::NONE
             .fill(egui::Color32::from_gray(30))
             .inner_margin(egui::Margin::same(6))
             .show(ui, |ui| {
@@ -212,7 +212,7 @@ mod inner {
         ui.add_space(8.0);
 
         ui.label("2. Add yourself to the input group:");
-        egui::Frame::none()
+        egui::Frame::NONE
             .fill(egui::Color32::from_gray(30))
             .inner_margin(egui::Margin::same(6))
             .show(ui, |ui| {
@@ -220,7 +220,7 @@ mod inner {
             });
         ui.add_space(4.0);
         ui.label("3. Apply without logging out:");
-        egui::Frame::none()
+        egui::Frame::NONE
             .fill(egui::Color32::from_gray(30))
             .inner_margin(egui::Margin::same(6))
             .show(ui, |ui| {

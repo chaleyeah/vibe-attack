@@ -65,86 +65,85 @@ impl MicLevelState {
 }
 
 fn spawn_mic_level_thread() -> MicLevelState {
-    use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-
     let level = Arc::new(AtomicU32::new(0u32));
-
-    let host = cpal::default_host();
-    let device = match host.default_input_device() {
-        Some(d) => d,
-        None => {
-            tracing::warn!("Mic level: no default input device found");
-            return MicLevelState {
-                level,
-                no_device: true,
-                _handle: None,
-            };
-        }
-    };
-
-    let config = match device.default_input_config() {
-        Ok(c) => c,
-        Err(e) => {
-            tracing::error!(reason = %e, "Mic level: failed to get default input config");
-            return MicLevelState {
-                level,
-                no_device: true,
-                _handle: None,
-            };
-        }
-    };
-
-    tracing::info!(
-        device = device.name().unwrap_or_default(),
-        sample_rate = config.sample_rate().0,
-        channels = config.channels(),
-        "Mic level thread: using device"
-    );
-
     let level_clone = Arc::clone(&level);
-    let err_level = Arc::clone(&level);
 
-    let stream_result = device.build_input_stream(
-        &config.into(),
-        move |data: &[f32], _| {
-            if data.is_empty() {
+    // no_device is signalled back from the thread via a one-shot channel.
+    let (tx, rx) = std::sync::mpsc::sync_channel::<bool>(1);
+
+    // Build and play the stream inside the thread so the !Send stream never
+    // crosses a thread boundary.
+    let handle = std::thread::spawn(move || {
+        use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
+
+        let host = cpal::default_host();
+        let device = match host.default_input_device() {
+            Some(d) => d,
+            None => {
+                tracing::warn!("Mic level: no default input device found");
+                let _ = tx.send(true);
                 return;
             }
-            let rms = (data.iter().map(|s| s * s).sum::<f32>() / data.len() as f32).sqrt();
-            level_clone.store(rms.to_bits(), Ordering::Relaxed);
-        },
-        move |e| {
-            tracing::error!(reason = %e, "Mic level: stream error");
-            err_level.store(0u32, Ordering::Relaxed);
-        },
-        None,
-    );
+        };
 
-    let stream = match stream_result {
-        Ok(s) => s,
-        Err(e) => {
-            tracing::error!(reason = %e, "Mic level: failed to build input stream");
-            return MicLevelState {
-                level,
-                no_device: true,
-                _handle: None,
-            };
-        }
-    };
+        let config = match device.default_input_config() {
+            Ok(c) => c,
+            Err(e) => {
+                tracing::error!(reason = %e, "Mic level: failed to get default input config");
+                let _ = tx.send(true);
+                return;
+            }
+        };
 
-    // Play the stream on a dedicated thread so it doesn't block the UI.
-    // CRITICAL: the stream must be kept alive on the same thread that starts it.
-    let handle = std::thread::spawn(move || {
+        tracing::info!(
+            device = device.name().unwrap_or_default(),
+            sample_rate = config.sample_rate().0,
+            channels = config.channels(),
+            "Mic level thread: using device"
+        );
+
+        let err_level = Arc::clone(&level_clone);
+        let stream_result = device.build_input_stream(
+            &config.into(),
+            move |data: &[f32], _| {
+                if data.is_empty() {
+                    return;
+                }
+                let rms = (data.iter().map(|s| s * s).sum::<f32>() / data.len() as f32).sqrt();
+                level_clone.store(rms.to_bits(), Ordering::Relaxed);
+            },
+            move |e| {
+                tracing::error!(reason = %e, "Mic level: stream error");
+                err_level.store(0u32, Ordering::Relaxed);
+            },
+            None,
+        );
+
+        let stream = match stream_result {
+            Ok(s) => s,
+            Err(e) => {
+                tracing::error!(reason = %e, "Mic level: failed to build input stream");
+                let _ = tx.send(true);
+                return;
+            }
+        };
+
         if let Err(e) = stream.play() {
             tracing::error!(reason = %e, "Mic level: stream play failed");
+            let _ = tx.send(true);
+            return;
         }
-        // Thread parks here keeping the stream alive until the process exits.
+
+        let _ = tx.send(false);
+        // Park the thread to keep the stream alive until the process exits.
         std::thread::park();
     });
 
+    let no_device = rx.recv().unwrap_or(true);
+
     MicLevelState {
         level,
-        no_device: false,
+        no_device,
         _handle: Some(handle),
     }
 }
@@ -202,7 +201,9 @@ impl VibeAttackConfigApp {
 }
 
 impl eframe::App for VibeAttackConfigApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        let ctx = ui.ctx().clone();
+
         // Repaint at ~10Hz for mic level updates when in main config view.
         if self.first_run.is_setup_complete() {
             ctx.request_repaint_after(std::time::Duration::from_millis(100));
@@ -229,27 +230,25 @@ impl eframe::App for VibeAttackConfigApp {
             self.mic = spawn_mic_level_thread();
         }
 
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Vibe Attack");
-            ui.separator();
+        ui.heading("Vibe Attack");
+        ui.separator();
 
-            let was_incomplete = !self.first_run.is_setup_complete();
+        let was_incomplete = !self.first_run.is_setup_complete();
 
-            if !self.first_run.is_setup_complete() {
-                show_wizard(
-                    ui,
-                    &mut self.first_run,
-                    &mut self.ptt,
-                    &self.config_example_path,
-                );
-                // Detect transition to complete
-                if was_incomplete && self.first_run.is_setup_complete() {
-                    self.setup_just_completed = true;
-                }
-            } else {
-                show_main_config(ui, &self.config);
+        if !self.first_run.is_setup_complete() {
+            show_wizard(
+                ui,
+                &mut self.first_run,
+                &mut self.ptt,
+                &self.config_example_path,
+            );
+            // Detect transition to complete
+            if was_incomplete && self.first_run.is_setup_complete() {
+                self.setup_just_completed = true;
             }
-        });
+        } else {
+            show_main_config(ui, &self.config);
+        }
     }
 }
 
