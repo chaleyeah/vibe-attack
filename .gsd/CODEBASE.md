@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-26T00:01:04Z | Files: 116 | Described: 0/116
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-26T00:01:04Z","fingerprint":"8da0c93b03051155edae7c1387f69899c4d0d15e","fileCount":116,"truncated":false} -->
+Generated: 2026-04-26T18:34:43Z | Files: 120 | Described: 0/120
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-26T18:34:43Z","fingerprint":"dd6d28fb60098eddd7ec5732e4aa998d1873cb55","fileCount":120,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -107,6 +107,9 @@ Generated: 2026-04-26T00:01:04Z | Files: 116 | Described: 0/116
 ### profiles/hd2/
 - `profiles/hd2/pack.yaml`
 
+### scripts/
+- `scripts/setup.sh`
+
 ### src/
 - `src/config.rs`
 - `src/error.rs`
@@ -154,6 +157,8 @@ Generated: 2026-04-26T00:01:04Z | Files: 116 | Described: 0/116
 - `src/ui/config_app.rs`
 - `src/ui/first_run.rs`
 - `src/ui/mod.rs`
+- `src/ui/probe.rs`
+- `src/ui/wizard.rs`
 
 ### src/vad/
 - `src/vad/mod.rs`
@@ -164,6 +169,7 @@ Generated: 2026-04-26T00:01:04Z | Files: 116 | Described: 0/116
 ### tests/
 - `tests/concurrency_stress.rs`
 - `tests/config_parse.rs`
+- `tests/control_protocol.rs`
 - `tests/daemon_headless.rs`
 - `tests/dispatcher_logic.rs`
 - `tests/documentation.rs`

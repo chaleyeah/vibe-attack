@@ -1,0 +1,968 @@
+chadmin@CHADMIN-BS:~/Github/hd-linux-voice$ cargo clean && cargo build --release --features gui
+     Removed 20795 files, 10.3GiB total
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.185
+   Compiling find-msvc-tools v0.1.9
+   Compiling shlex v1.3.0
+   Compiling pkg-config v0.3.33
+   Compiling bitflags v2.11.1
+   Compiling log v0.4.29
+   Compiling version_check v0.9.5
+   Compiling smallvec v1.15.1
+   Compiling once_cell v1.21.4
+   Compiling rustix v1.1.4
+   Compiling linux-raw-sys v0.12.1
+   Compiling crc32fast v1.5.0
+   Compiling icu_properties_data v2.2.0
+   Compiling autocfg v1.5.0
+   Compiling icu_normalizer_data v2.2.0
+   Compiling zeroize v1.8.2
+   Compiling stable_deref_trait v1.2.1
+   Compiling cfg_aliases v0.2.1
+   Compiling parking_lot_core v0.9.12
+   Compiling scopeguard v1.2.0
+   Compiling pin-project-lite v0.2.17
+   Compiling libloading v0.8.9
+   Compiling memchr v2.8.0
+   Compiling thiserror v2.0.18
+   Compiling scoped-tls v1.0.1
+   Compiling vcpkg v0.2.15
+   Compiling downcast-rs v1.2.1
+   Compiling percent-encoding v2.3.2
+   Compiling lock_api v0.4.14
+   Compiling rustls-pki-types v1.14.0
+   Compiling litemap v0.8.2
+   Compiling typenum v1.20.0
+   Compiling tracing-core v0.1.36
+   Compiling wayland-client v0.31.14
+   Compiling base64 v0.22.1
+   Compiling simd-adler32 v0.3.9
+   Compiling adler2 v2.0.1
+   Compiling dlib v0.5.3
+   Compiling writeable v0.6.3
+   Compiling utf8_iter v1.0.4
+   Compiling equivalent v1.0.2
+   Compiling generic-array v0.14.7
+   Compiling miniz_oxide v0.8.9
+   Compiling heck v0.5.0
+   Compiling rustversion v1.0.22
+   Compiling openssl v0.10.78
+   Compiling khronos_api v3.1.0
+   Compiling num-traits v0.2.19
+   Compiling httparse v1.10.1
+   Compiling foreign-types-shared v0.1.1
+   Compiling itoa v1.0.18
+   Compiling slab v0.4.12
+   Compiling foreign-types v0.3.2
+   Compiling native-tls v0.2.18
+   Compiling base64ct v1.8.3
+   Compiling ident_case v1.0.1
+   Compiling bytes v1.11.1
+   Compiling allocator-api2 v0.2.21
+   Compiling strsim v0.11.1
+   Compiling foldhash v0.2.0
+   Compiling rustix v0.38.44
+   Compiling untrusted v0.9.0
+   Compiling zerocopy v0.8.48
+   Compiling wayland-sys v0.31.11
+   Compiling ahash v0.8.12
+   Compiling ttf-parser v0.25.1
+   Compiling quick-xml v0.39.2
+   Compiling subtle v2.6.1
+   Compiling cursor-icon v1.2.0
+   Compiling static_assertions v1.1.0
+   Compiling pem-rfc7468 v1.0.0
+   Compiling lazy_static v1.5.0
+   Compiling serde_core v1.0.228
+   Compiling openssl-probe v0.2.1
+   Compiling byteorder v1.5.0
+   Compiling thiserror v1.0.69
+   Compiling flate2 v1.1.9
+   Compiling linux-raw-sys v0.4.15
+   Compiling xkeysym v0.2.1
+   Compiling xml-rs v0.8.28
+   Compiling either v1.15.0
+   Compiling rustls v0.23.38
+   Compiling ryu v1.0.23
+   Compiling signal-hook v0.3.18
+   Compiling hashbrown v0.16.1
+   Compiling der v0.8.0
+   Compiling syn v2.0.117
+   Compiling itertools v0.14.0
+   Compiling webpki-roots v1.0.7
+   Compiling webpki-root-certs v1.0.7
+   Compiling form_urlencoded v1.2.2
+   Compiling utf8-zero v0.8.1
+   Compiling cpufeatures v0.2.17
+   Compiling ab_glyph_rasterizer v0.1.10
+   Compiling unicode-width v0.2.2
+   Compiling powerfmt v0.2.0
+   Compiling http v1.4.0
+   Compiling indoc v2.0.7
+   Compiling unicode-segmentation v1.13.2
+   Compiling instability v0.3.12
+   Compiling castaway v0.2.4
+   Compiling webpki-roots v0.26.11
+   Compiling compact_str v0.9.0
+   Compiling jobserver v0.1.34
+   Compiling filetime v0.2.27
+   Compiling getrandom v0.2.17
+   Compiling socks v0.3.4
+   Compiling deranged v0.5.8
+   Compiling gl_generator v0.14.0
+   Compiling fdeflate v0.3.7
+   Compiling alsa-sys v0.3.1
+   Compiling matrixmultiply v0.3.10
+   Compiling cc v1.2.60
+   Compiling wayland-scanner v0.31.10
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling convert_case v0.10.0
+   Compiling winit v0.30.13
+   Compiling serde v1.0.228
+   Compiling nohash-hasher v0.2.0
+   Compiling arrayvec v0.7.6
+   Compiling xcursor v0.3.10
+   Compiling bitflags v1.3.2
+   Compiling num_threads v0.1.7
+   Compiling digest v0.10.7
+   Compiling lru v0.16.4
+   Compiling num-conv v0.2.1
+   Compiling raw-window-handle v0.6.2
+   Compiling profiling v1.0.17
+   Compiling epaint_default_fonts v0.31.1
+   Compiling time-core v0.1.8
+   Compiling pxfm v0.1.29
+   Compiling smithay-client-toolkit v0.20.0
+   Compiling litrs v1.0.0
+   Compiling png v0.18.1
+   Compiling ureq-proto v0.6.0
+   Compiling xkbcommon-dl v0.4.2
+   Compiling memoffset v0.9.1
+   Compiling sha2 v0.10.9
+   Compiling glutin v0.32.3
+   Compiling encoding_rs v0.8.35
+   Compiling glutin_egl_sys v0.7.1
+   Compiling radium v0.7.0
+   Compiling smol_str v0.2.2
+   Compiling dpi v0.1.2
+   Compiling errno v0.3.14
+   Compiling mio v1.2.0
+   Compiling memmap2 v0.9.10
+   Compiling signal-hook-registry v1.4.8
+   Compiling rawpointer v0.2.1
+   Compiling x11rb-protocol v0.13.2
+   Compiling xattr v1.6.1
+   Compiling parking_lot v0.12.5
+   Compiling zstd-safe v5.0.2+zstd.1.5.2
+   Compiling document-features v0.2.12
+   Compiling tar v0.4.45
+   Compiling utf8parse v0.2.2
+   Compiling crossbeam-utils v0.8.21
+   Compiling zmij v1.0.21
+   Compiling byteorder-lite v0.1.0
+   Compiling anstyle-parse v1.0.0
+   Compiling signal-hook-mio v0.2.5
+   Compiling time v0.3.47
+   Compiling inout v0.1.4
+   Compiling num-complex v0.4.6
+   Compiling num-integer v0.1.46
+   Compiling line-clipping v0.3.7
+   Compiling nix v0.29.0
+   Compiling glutin-winit v0.5.0
+   Compiling tap v1.0.1
+   Compiling unicode-truncate v2.0.1
+   Compiling rand_core v0.6.4
+   Compiling anstyle-query v1.1.5
+   Compiling anstyle v1.0.14
+   Compiling serde_json v1.0.149
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling colorchoice v1.0.5
+   Compiling tinyvec_macros v0.1.1
+   Compiling cpal v0.15.3
+   Compiling regex-syntax v0.8.10
+   Compiling anyhow v1.0.102
+   Compiling tinyvec v1.11.0
+   Compiling alsa v0.9.1
+   Compiling wyz v0.5.1
+   Compiling cipher v0.4.4
+   Compiling anstream v1.0.0
+   Compiling ogg v0.8.0
+   Compiling wayland-backend v0.3.15
+   Compiling openssl-sys v0.9.114
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling ring v0.17.14
+   Compiling owned_ttf_parser v0.25.1
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling password-hash v0.4.2
+   Compiling ab_glyph v0.2.32
+   Compiling socket2 v0.6.3
+   Compiling hmac v0.12.1
+   Compiling web-time v1.1.0
+   Compiling hashbrown v0.17.0
+   Compiling glow v0.16.0
+   Compiling smallvec v2.0.0-alpha.10
+   Compiling funty v2.0.0
+   Compiling dasp_sample v0.11.0
+   Compiling clap_lex v1.1.0
+   Compiling hound v3.5.1
+   Compiling pbkdf2 v0.11.0
+   Compiling ndarray v0.16.1
+   Compiling clap_builder v4.6.0
+   Compiling indexmap v2.14.0
+   Compiling bitvec v1.0.1
+   Compiling bzip2 v0.4.4
+   Compiling regex-automata v0.4.14
+   Compiling lewton v0.10.2
+   Compiling synstructure v0.13.2
+   Compiling darling_core v0.23.0
+   Compiling moxcms v0.8.1
+   Compiling aes v0.8.4
+   Compiling sha1 v0.10.6
+   Compiling sharded-slab v0.1.7
+   Compiling tracing-log v0.2.0
+   Compiling thread_local v1.1.9
+   Compiling claxon v0.4.3
+   Compiling futures-core v0.3.32
+   Compiling unsafe-libyaml v0.2.11
+   Compiling constant_time_eq v0.1.5
+   Compiling futures-sink v0.3.32
+   Compiling nu-ansi-term v0.50.3
+   Compiling crossterm v0.28.1
+   Compiling crossbeam-channel v0.5.15
+   Compiling ringbuf v0.4.8
+   Compiling xdg v3.0.0
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling zerovec-derive v0.11.3
+   Compiling displaydoc v0.2.5
+   Compiling bytemuck_derive v1.10.2
+   Compiling thiserror-impl v2.0.18
+   Compiling tracing-attributes v0.1.31
+   Compiling polling v3.11.0
+   Compiling openssl-macros v0.1.1
+   Compiling thiserror-impl v1.0.69
+   Compiling strum_macros v0.27.2
+   Compiling serde_derive v1.0.228
+   Compiling darling_macro v0.23.0
+   Compiling derive_more-impl v2.1.1
+   Compiling gethostname v1.1.0
+   Compiling x11rb v0.13.2
+   Compiling tokio-macros v2.7.0
+   Compiling zerofrom v0.1.7
+   Compiling darling v0.23.0
+   Compiling yoke v0.8.2
+   Compiling matchers v0.2.0
+   Compiling clap_derive v4.6.1
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling bytemuck v1.25.0
+   Compiling emath v0.31.1
+   Compiling kasuari v0.4.12
+   Compiling symphonia-core v0.5.5
+   Compiling wayland-csd-frame v0.3.0
+   Compiling tracing v0.1.44
+   Compiling derive_more v2.1.1
+   Compiling tokio v1.52.1
+   Compiling calloop v0.13.0
+   Compiling crossterm v0.29.0
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling calloop v0.14.4
+   Compiling icu_locale_core v2.2.0
+   Compiling icu_collections v2.2.0
+   Compiling ecolor v0.31.1
+   Compiling tracing-subscriber v0.3.23
+   Compiling epaint v0.31.1
+   Compiling image v0.25.10
+error: The platform you're compiling for is not supported by winit
+  --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/platform_impl/mod.rs:78:1
+   |
+78 | compile_error!("The platform you're compiling for is not supported by winit");
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling strum v0.27.2
+error[E0432]: unresolved import `self::platform`
+  --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/platform_impl/mod.rs:34:15
+   |
+34 | pub use self::platform::*;
+   |               ^^^^^^^^ could not find `platform` in `self`
+
+error[E0432]: unresolved imports `crate::platform_impl::PlatformCustomCursor`, `crate::platform_impl::PlatformCustomCursorSource`
+ --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/cursor.rs:8:28
+  |
+8 | use crate::platform_impl::{PlatformCustomCursor, PlatformCustomCursorSource};
+  |                            ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^ no `PlatformCustomCursorSource` in `platform_impl`
+  |                            |
+  |                            no `PlatformCustomCursor` in `platform_impl`
+
+error[E0432]: unresolved import `crate::platform_impl::PlatformIcon`
+ --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/icon.rs:1:5
+  |
+1 | use crate::platform_impl::PlatformIcon;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `PlatformIcon` in `platform_impl`
+
+error[E0432]: unresolved import `crate::platform_impl::PlatformSpecificWindowAttributes`
+ --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:7:34
+  |
+7 | use crate::platform_impl::{self, PlatformSpecificWindowAttributes};
+  |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `PlatformSpecificWindowAttributes` in `platform_impl`
+
+   Compiling ratatui-core v0.1.0
+   Compiling symphonia-metadata v0.5.5
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1601:41
+     |
+1601 |         self.window.maybe_wait_on_main(|w| {
+     |                                         ^
+1602 |             w.available_monitors().into_iter().map(|inner| MonitorHandle { inner })
+     |             - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1601 |         self.window.maybe_wait_on_main(|w: /* Type */| {
+     |                                          ++++++++++++
+
+   Compiling icu_provider v2.2.0
+error[E0282]: type annotations needed
+  --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:50:41
+   |
+50 |         self.window.maybe_wait_on_main(|w| {
+   |                                         ^
+...
+55 |             if let Some(Fullscreen::Exclusive(_)) = w.fullscreen().map(|f| f.into()) {
+   |                                                     - type must be known at this point
+   |
+help: consider giving this closure parameter an explicit type
+   |
+50 |         self.window.maybe_wait_on_main(|w: /* Type */| {
+   |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+  --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:55:73
+   |
+55 |             if let Some(Fullscreen::Exclusive(_)) = w.fullscreen().map(|f| f.into()) {
+   |                                                                         ^  - type must be known at this point
+   |
+help: consider giving this closure parameter an explicit type
+   |
+55 |             if let Some(Fullscreen::Exclusive(_)) = w.fullscreen().map(|f: /* Type */| f.into()) {
+   |                                                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:498:41
+    |
+498 |         self.window.maybe_wait_on_main(|w| WindowId(w.id()))
+    |                                         ^           - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+498 |         self.window.maybe_wait_on_main(|w: /* Type */| WindowId(w.id()))
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:566:41
+    |
+566 |         self.window.maybe_wait_on_main(|w| w.scale_factor())
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+566 |         self.window.maybe_wait_on_main(|w: /* Type */| w.scale_factor())
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:600:42
+    |
+600 |         self.window.maybe_queue_on_main(|w| w.request_redraw())
+    |                                          ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+600 |         self.window.maybe_queue_on_main(|w: /* Type */| w.request_redraw())
+    |                                           ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:639:42
+    |
+639 |         self.window.maybe_queue_on_main(|w| w.pre_present_notify());
+    |                                          ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+639 |         self.window.maybe_queue_on_main(|w: /* Type */| w.pre_present_notify());
+    |                                           ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:657:42
+    |
+657 |         self.window.maybe_queue_on_main(|w| w.reset_dead_keys())
+    |                                          ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+657 |         self.window.maybe_queue_on_main(|w: /* Type */| w.reset_dead_keys())
+    |                                           ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:681:41
+    |
+681 |         self.window.maybe_wait_on_main(|w| w.inner_position())
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+681 |         self.window.maybe_wait_on_main(|w: /* Type */| w.inner_position())
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:704:41
+    |
+704 |         self.window.maybe_wait_on_main(|w| w.outer_position())
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+704 |         self.window.maybe_wait_on_main(|w: /* Type */| w.outer_position())
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:742:47
+    |
+742 |         self.window.maybe_queue_on_main(move |w| w.set_outer_position(position))
+    |                                               ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+742 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_outer_position(position))
+    |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:761:41
+    |
+761 |         self.window.maybe_wait_on_main(|w| w.inner_size())
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+761 |         self.window.maybe_wait_on_main(|w: /* Type */| w.inner_size())
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:807:41
+    |
+807 |         self.window.maybe_wait_on_main(|w| w.request_inner_size(size))
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+807 |         self.window.maybe_wait_on_main(|w: /* Type */| w.request_inner_size(size))
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:824:41
+    |
+824 |         self.window.maybe_wait_on_main(|w| w.outer_size())
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+824 |         self.window.maybe_wait_on_main(|w: /* Type */| w.outer_size())
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:852:47
+    |
+852 |         self.window.maybe_queue_on_main(move |w| w.set_min_inner_size(min_size))
+    |                                               ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+852 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_min_inner_size(min_size))
+    |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:880:47
+    |
+880 |         self.window.maybe_queue_on_main(move |w| w.set_max_inner_size(max_size))
+    |                                               ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+880 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_max_inner_size(max_size))
+    |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:891:41
+    |
+891 |         self.window.maybe_wait_on_main(|w| w.resize_increments())
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+891 |         self.window.maybe_wait_on_main(|w: /* Type */| w.resize_increments())
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:912:47
+    |
+912 |         self.window.maybe_queue_on_main(move |w| w.set_resize_increments(increments))
+    |                                               ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+912 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_resize_increments(increments))
+    |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:926:41
+    |
+926 |         self.window.maybe_wait_on_main(|w| w.set_title(title))
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+926 |         self.window.maybe_wait_on_main(|w: /* Type */| w.set_title(title))
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:947:47
+    |
+947 |         self.window.maybe_queue_on_main(move |w| w.set_transparent(transparent))
+    |                                               ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+947 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_transparent(transparent))
+    |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:961:47
+    |
+961 |         self.window.maybe_queue_on_main(move |w| w.set_blur(blur))
+    |                                               ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+961 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_blur(blur))
+    |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:975:47
+    |
+975 |         self.window.maybe_queue_on_main(move |w| w.set_visible(visible))
+    |                                               ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+975 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_visible(visible))
+    |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+   --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:990:41
+    |
+990 |         self.window.maybe_wait_on_main(|w| w.is_visible())
+    |                                         ^  - type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+990 |         self.window.maybe_wait_on_main(|w: /* Type */| w.is_visible())
+    |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1011:47
+     |
+1011 |         self.window.maybe_queue_on_main(move |w| w.set_resizable(resizable))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1011 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_resizable(resizable))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1023:41
+     |
+1023 |         self.window.maybe_wait_on_main(|w| w.is_resizable())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1023 |         self.window.maybe_wait_on_main(|w: /* Type */| w.is_resizable())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1038:47
+     |
+1038 |         self.window.maybe_queue_on_main(move |w| w.set_enabled_buttons(buttons))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1038 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_enabled_buttons(buttons))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1049:41
+     |
+1049 |         self.window.maybe_wait_on_main(|w| w.enabled_buttons())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1049 |         self.window.maybe_wait_on_main(|w: /* Type */| w.enabled_buttons())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1061:47
+     |
+1061 |         self.window.maybe_queue_on_main(move |w| w.set_minimized(minimized))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1061 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_minimized(minimized))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1079:41
+     |
+1079 |         self.window.maybe_wait_on_main(|w| w.is_minimized())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1079 |         self.window.maybe_wait_on_main(|w: /* Type */| w.is_minimized())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1090:47
+     |
+1090 |         self.window.maybe_queue_on_main(move |w| w.set_maximized(maximized))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1090 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_maximized(maximized))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1101:41
+     |
+1101 |         self.window.maybe_wait_on_main(|w| w.is_maximized())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1101 |         self.window.maybe_wait_on_main(|w: /* Type */| w.is_maximized())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1133:47
+     |
+1133 |         self.window.maybe_queue_on_main(move |w| w.set_fullscreen(fullscreen.map(|f| f.into())))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1133 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_fullscreen(fullscreen.map(|f| f.into())))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1147:41
+     |
+1147 |         self.window.maybe_wait_on_main(|w| w.fullscreen().map(|f| f.into()))
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1147 |         self.window.maybe_wait_on_main(|w: /* Type */| w.fullscreen().map(|f| f.into()))
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1147:64
+     |
+1147 |         self.window.maybe_wait_on_main(|w| w.fullscreen().map(|f| f.into()))
+     |                                                                ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1147 |         self.window.maybe_wait_on_main(|w| w.fullscreen().map(|f: /* Type */| f.into()))
+     |                                                                 ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1162:47
+     |
+1162 |         self.window.maybe_queue_on_main(move |w| w.set_decorations(decorations))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1162 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_decorations(decorations))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1176:41
+     |
+1176 |         self.window.maybe_wait_on_main(|w| w.is_decorated())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1176 |         self.window.maybe_wait_on_main(|w: /* Type */| w.is_decorated())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1190:47
+     |
+1190 |         self.window.maybe_queue_on_main(move |w| w.set_window_level(level))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1190 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_window_level(level))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1210:47
+     |
+1210 |         self.window.maybe_queue_on_main(move |w| w.set_window_icon(window_icon))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1210 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_window_icon(window_icon))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1257:47
+     |
+1257 |         self.window.maybe_queue_on_main(move |w| w.set_ime_cursor_area(position, size))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1257 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_ime_cursor_area(position, size))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1285:47
+     |
+1285 |         self.window.maybe_queue_on_main(move |w| w.set_ime_allowed(allowed))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1285 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_ime_allowed(allowed))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1300:47
+     |
+1300 |         self.window.maybe_queue_on_main(move |w| w.set_ime_purpose(purpose))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1300 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_ime_purpose(purpose))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1316:42
+     |
+1316 |         self.window.maybe_queue_on_main(|w| w.focus_window())
+     |                                          ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1316 |         self.window.maybe_queue_on_main(|w: /* Type */| w.focus_window())
+     |                                           ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1327:41
+     |
+1327 |         self.window.maybe_wait_on_main(|w| w.has_focus())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1327 |         self.window.maybe_wait_on_main(|w: /* Type */| w.has_focus())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1350:47
+     |
+1350 |         self.window.maybe_queue_on_main(move |w| w.request_user_attention(request_type))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1350 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.request_user_attention(request_type))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1371:47
+     |
+1371 |         self.window.maybe_queue_on_main(move |w| w.set_theme(theme))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1371 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_theme(theme))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1385:41
+     |
+1385 |         self.window.maybe_wait_on_main(|w| w.theme())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1385 |         self.window.maybe_wait_on_main(|w: /* Type */| w.theme())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1400:47
+     |
+1400 |         self.window.maybe_queue_on_main(move |w| w.set_content_protected(protected))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1400 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_content_protected(protected))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1411:41
+     |
+1411 |         self.window.maybe_wait_on_main(|w| w.title())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1411 |         self.window.maybe_wait_on_main(|w: /* Type */| w.title())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1428:47
+     |
+1428 |         self.window.maybe_queue_on_main(move |w| w.set_cursor(cursor))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1428 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_cursor(cursor))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1464:41
+     |
+1464 |         self.window.maybe_wait_on_main(|w| w.set_cursor_position(position))
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1464 |         self.window.maybe_wait_on_main(|w: /* Type */| w.set_cursor_position(position))
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1489:41
+     |
+1489 |         self.window.maybe_wait_on_main(|w| w.set_cursor_grab(mode))
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1489 |         self.window.maybe_wait_on_main(|w: /* Type */| w.set_cursor_grab(mode))
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1507:47
+     |
+1507 |         self.window.maybe_queue_on_main(move |w| w.set_cursor_visible(visible))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1507 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.set_cursor_visible(visible))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1524:41
+     |
+1524 |         self.window.maybe_wait_on_main(|w| w.drag_window())
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1524 |         self.window.maybe_wait_on_main(|w: /* Type */| w.drag_window())
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1543:41
+     |
+1543 |         self.window.maybe_wait_on_main(|w| w.drag_resize_window(direction))
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1543 |         self.window.maybe_wait_on_main(|w: /* Type */| w.drag_resize_window(direction))
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1562:47
+     |
+1562 |         self.window.maybe_queue_on_main(move |w| w.show_window_menu(position))
+     |                                               ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1562 |         self.window.maybe_queue_on_main(move |w: /* Type */| w.show_window_menu(position))
+     |                                                ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1577:41
+     |
+1577 |         self.window.maybe_wait_on_main(|w| w.set_cursor_hittest(hittest))
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1577 |         self.window.maybe_wait_on_main(|w: /* Type */| w.set_cursor_hittest(hittest))
+     |                                          ++++++++++++
+
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1589:41
+     |
+1589 |         self.window.maybe_wait_on_main(|w| w.current_monitor().map(|inner| MonitorHandle { inner }))
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1589 |         self.window.maybe_wait_on_main(|w: /* Type */| w.current_monitor().map(|inner| MonitorHandle { inner }))
+     |                                          ++++++++++++
+
+   Compiling wayland-protocols v0.32.12
+error[E0282]: type annotations needed
+    --> /home/chadmin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winit-0.30.13/src/window.rs:1620:41
+     |
+1620 |         self.window.maybe_wait_on_main(|w| w.primary_monitor().map(|inner| MonitorHandle { inner }))
+     |                                         ^  - type must be known at this point
+     |
+help: consider giving this closure parameter an explicit type
+     |
+1620 |         self.window.maybe_wait_on_main(|w: /* Type */| w.primary_monitor().map(|inner| MonitorHandle { inner }))
+     |                                          ++++++++++++
+
+   Compiling rustls-webpki v0.103.13
+   Compiling icu_normalizer v2.2.0
+   Compiling icu_properties v2.2.0
+Some errors have detailed explanations: E0282, E0432.
+For more information about an error, try `rustc --explain E0282`.
+   Compiling calloop-wayland-source v0.4.1
+error: could not compile `winit` (lib) due to 63 previous errors
+warning: build failed, waiting for other jobs to finish...
