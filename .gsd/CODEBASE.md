@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-27T11:26:06Z | Files: 130 | Described: 0/130
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-27T11:26:06Z","fingerprint":"e1c5db162a384372b82e0d03fde66b4146deb96c","fileCount":130,"truncated":false} -->
+Generated: 2026-04-27T11:35:03Z | Files: 131 | Described: 0/131
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-27T11:35:03Z","fingerprint":"24b1175b9016227dce272314ff818550d1cdb6e6","fileCount":131,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -191,6 +191,7 @@ Generated: 2026-04-27T11:26:06Z | Files: 130 | Described: 0/130
 - `tests/macro_inject.rs`
 - `tests/pack_hd2_bundle.rs`
 - `tests/packaging.rs`
+- `tests/profile_listing.rs`
 - `tests/stt_smoke.rs`
 - `tests/ui_distribution.rs`
 - `tests/uinput_smoke.rs`
