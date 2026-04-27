@@ -21,7 +21,7 @@ External documentation surface aligned with current code. No runtime boundaries 
 
 ## Tasks
 
-- [ ] **T01: Verify README.md accuracy** `est:45m`
+- [x] **T01: Verify README.md accuracy** `est:45m`
   Read README.md line-by-line. Verify: (a) project name is vibe-attack throughout, (b) the architecture description matches src/lib.rs //! crate doc from S03, (c) build/run instructions work against current Cargo.toml (cargo build, cargo build --features gui, cargo run --bin vibe-attack), (d) configuration section references the actual fields in src/config.rs, (e) feature flags described match what's in Cargo.toml [features]. Update any drift.
   - Files: `README.md`
   - Verify: Manual review confirms README matches current code; running the documented build/run commands actually works

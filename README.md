@@ -8,7 +8,18 @@ vibe-attack is an open-source voice-macro daemon for Helldivers 2 on Linux. Hold
 - **Profile Management**: Import and export macro profiles using a simple `.hdpack` zip format.
 - **Built-in Editor**: Interactive TUI to create and edit macros without touching YAML files.
 - **Sound System**: Integrated audio feedback using `rodio`, supporting custom sounds per macro.
-- **Fail-Safe Design**: Built-in delays and double-tap detection to prevent accidental activations.
+- **Configurable Timing**: Per-key dwell and gap overrides prevent accidental activations by controlling how long each key is held and the gap between key events.
+
+## Feature Flags
+
+vibe-attack is built with Cargo feature flags. The default build includes the daemon, TUI editor, and uinput injection — but **not** speech-to-text (STT). Enable the features you need at build time:
+
+| Feature | What it adds |
+|---------|-------------|
+| _(default)_ | Daemon + TUI editor; no STT (useful for testing key injection without a model) |
+| `stt` | Whisper-based speech-to-text via `whisper-rs`/`whisper.cpp` |
+| `stt-vulkan` | Same as `stt`, with Vulkan GPU acceleration |
+| `gui` | First-run wizard, graphical config app (`vibe-attack-config`), and system tray icon |
 
 ## Installation
 
@@ -46,17 +57,28 @@ The daemon injects keypresses via `/dev/uinput`. See [docs/uinput-setup.md](docs
 
 ### Whisper Model
 
-Speech-to-text requires a Whisper model file. Models are **not** downloaded automatically — you must place the `.gguf` file yourself and point to it in `config.yaml` under `stt.model_path`.
+Speech-to-text requires the `stt` feature flag **and** a Whisper GGML model file. Models are **not** downloaded automatically — you must place the `.gguf` file yourself and point to it in `config.yaml` under `stt.model_path`.
 
 ### Clone and Build
 
 ```bash
 git clone https://github.com/chaleyeah/vibe-attack.git
 cd vibe-attack
+
+# Default build (no STT — daemon + TUI only):
 cargo build --release
+
+# With speech-to-text (whisper.cpp):
+cargo build --release --features stt
+
+# With STT + Vulkan GPU acceleration:
+cargo build --release --features stt-vulkan
+
+# With optional GUI tools (config app + system tray):
+cargo build --release --features stt,gui
 ```
 
-The binary will be at `./target/release/vibe-attack`.
+The main daemon binary is at `./target/release/vibe-attack`. The GUI config app (`--features gui`) also produces `./target/release/vibe-attack-config`.
 
 ## Usage
 
@@ -73,9 +95,9 @@ Running with no subcommand starts the daemon:
 
 | Flag | Description |
 |------|-------------|
-| `-v` | Enable DEBUG logging |
+| `-v` / `--verbose` | Enable DEBUG logging |
 | `-vv` | Enable TRACE logging |
-| `--config FILE` | Use a specific config file (default: `$XDG_CONFIG_HOME/vibe-attack/config.yaml`) |
+| `-c` / `--config FILE` | Use a specific config file (default: `$XDG_CONFIG_HOME/vibe-attack/config.yaml`) |
 | `--list-devices` | Print available audio input devices and exit |
 
 ### Subcommands

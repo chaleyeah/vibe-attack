@@ -24,10 +24,10 @@
 - [x] **S03: S03** `risk:medium` `depends:[]`
   > After this: cargo test passes; cargo clippy -D warnings clean; the Python undocumented-pub-item audit script from M007-RESEARCH.md reports 0 undocumented public items in src/; src/lib.rs has a //! crate-level doc comment describing the audio → VAD → wake → STT → pipeline → input architecture; spot-check of 10 random pub items shows doc comments explain why the item exists, not just restate the name
 
-- [ ] **S04: S04** `risk:low` `depends:[]`
+- [x] **S04: S04** `risk:low` `depends:[]`
   > After this: cargo test passes; cargo clippy -D warnings clean; src/config.rs and src/error.rs have full doc coverage on every public item; the duplicate default_config_path doc is gone (already done in S02 — verify); DaemonError variant docs explain what each variant represents and where it originates
 
-- [ ] **S05: README, CONTRIBUTING, and docs/ accuracy pass** `risk:low` `depends:[S04]`
+- [ ] **S05: S05** `risk:low` `depends:[]`
   > After this: README.md describes vibe-attack accurately, including the audio → keypress pipeline, build/run/configure steps, and the feature flags (default vs gui); CONTRIBUTING.md reflects the current dev setup; docs/configuration.md fields match the current Config struct; docs/troubleshooting.md references current binary names and uinput group conventions; docs/uinput-setup.md references the correct group name and udev rule; cargo test passes; cargo clippy -D warnings clean
 
 ## Boundary Map
