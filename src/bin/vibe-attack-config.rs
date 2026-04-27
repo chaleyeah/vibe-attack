@@ -210,7 +210,7 @@ impl eframe::App for VibeAttackConfigApp {
         let ctx = ui.ctx().clone();
 
         // Honour "Open Config" requests from the tray.
-        if self.tray.as_ref().map_or(false, |t| t.take_open_request()) {
+        if self.tray.as_ref().is_some_and(|t| t.take_open_request()) {
             ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
         }
 
