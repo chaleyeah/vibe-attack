@@ -54,7 +54,7 @@ fn concurrency_stress_pipeline_topology() {
                 let _ = vibe_attack::vad::try_send_drop_oldest(&job_tx, &job_rx_for_drop, seq);
 
                 // Tight loop but yield periodically to reduce busy-spin in the test harness.
-                if seq % 64 == 0 {
+                if seq.is_multiple_of(64) {
                     std::thread::yield_now();
                 }
             }

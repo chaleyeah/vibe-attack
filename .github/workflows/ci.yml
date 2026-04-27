@@ -24,12 +24,23 @@ jobs:
       - name: Cache Rust build artifacts
         uses: Swatinem/rust-cache@v2
 
+      - name: Cache sherpa-onnx prebuilt libs
+        id: sherpa-cache
+        uses: actions/cache@v4
+        with:
+          path: target/sherpa-onnx-prebuilt
+          key: sherpa-onnx-1.12.39-linux-x64
+
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             libasound2-dev \
             libclang-dev
+
+      - name: Rebuild sherpa-onnx-sys if prebuilt cache missed
+        if: steps.sherpa-cache.outputs.cache-hit != 'true'
+        run: cargo build -p sherpa-onnx-sys
 
       - name: Build (default features)
         run: cargo build --all-targets
@@ -68,12 +79,23 @@ jobs:
       - name: Cache Rust build artifacts
         uses: Swatinem/rust-cache@v2
 
+      - name: Cache sherpa-onnx prebuilt libs
+        id: sherpa-cache
+        uses: actions/cache@v4
+        with:
+          path: target/sherpa-onnx-prebuilt
+          key: sherpa-onnx-1.12.39-linux-x64
+
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             libasound2-dev \
             libclang-dev
+
+      - name: Rebuild sherpa-onnx-sys if prebuilt cache missed
+        if: steps.sherpa-cache.outputs.cache-hit != 'true'
+        run: cargo build -p sherpa-onnx-sys
 
       - name: Clippy (default features)
         run: cargo clippy --all-targets -- -D warnings
