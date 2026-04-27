@@ -6,10 +6,15 @@ pub const MAX_LOG_LINES: usize = 100;
 
 /// Pure-logic state for the configuration application window.
 pub struct ConfigApp {
+    /// Available profile names loaded from the XDG profiles directory.
     pub profiles: Vec<String>,
+    /// Name of the currently active profile, or `None` when no profile is loaded.
     pub active_profile: Option<String>,
+    /// Recent log lines displayed in the UI; capped at [`MAX_LOG_LINES`].
     pub log_lines: Vec<String>,
+    /// Current microphone input level (0.0–1.0), updated by the audio thread.
     pub mic_level: f32,
+    /// True when no audio input device is available (shows a warning in the UI).
     pub mic_no_device: bool,
 }
 

@@ -41,7 +41,7 @@ No integration boundaries touched.
   - Files: `src/tui/app.rs`, `src/tui/editor.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/tui/; cargo doc renders cleanly
 
-- [ ] **T05: Document src/ui/ and src/input/ and src/pack/ public items** `est:1h`
+- [x] **T05: Document src/ui/ and src/input/ and src/pack/ public items** `est:1h`
   Add /// doc comments to remaining undocumented pub items in src/ui/ (config_app.rs MAX_LOG_LINES + ConfigApp fields, first_run.rs SetupStep variants, wizard.rs feature-gated inner types if reasonable to document), src/input/ (KeyStep::from_config, MacroCmd enum), src/pack/ (get_profiles_dir).
   - Files: `src/ui/config_app.rs`, `src/ui/first_run.rs`, `src/ui/wizard.rs`, `src/input/inject.rs`, `src/pack/mod.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/ui/, src/input/, src/pack/; cargo doc renders cleanly

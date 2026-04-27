@@ -1,3 +1,4 @@
+/// Profile manager — tracks the active profile and persists selection to `manager.yaml`.
 pub mod manager;
 
 use serde::{Deserialize, Serialize};
@@ -8,15 +9,20 @@ use crate::config::MacroConfig;
 /// A macro pack (profile) consisting of categorized macros.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Pack {
+    /// Display name of the pack, also used as the profiles directory entry name.
     pub name: String,
+    /// Optional author attribution stored in `pack.yaml`.
     pub author: Option<String>,
+    /// Ordered list of macro categories; macros are flattened for matching.
     pub categories: Vec<Category>,
 }
 
 /// A named grouping of macros.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Category {
+    /// Display name for this category (e.g. `"Stratagems"`).
     pub name: String,
+    /// Macros belonging to this category.
     pub macros: Vec<MacroConfig>,
 }
 
@@ -149,6 +155,7 @@ impl Pack {
     }
 }
 
+/// Return the XDG profiles directory (`$XDG_CONFIG_HOME/vibe-attack/profiles`), creating it if absent.
 pub fn get_profiles_dir() -> Result<PathBuf> {
     let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
     let config_home = xdg.get_config_home()

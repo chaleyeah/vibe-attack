@@ -28,6 +28,7 @@ struct TrayState {
     profiles: Vec<String>,
 }
 
+/// Handle returned by [`TrayHandle::spawn`]; keeps the tray alive for the process lifetime.
 pub struct TrayHandle {
     /// Set to true by the tray "Open Config" action; cleared by the eframe loop.
     pub open_window: Arc<AtomicBool>,

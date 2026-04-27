@@ -84,6 +84,7 @@ pub enum MacroCmd {
 
 /// One step in a macro sequence.
 pub struct KeyStep {
+    /// evdev key name to press (e.g. `"KEY_UP"`); parsed by `ptt::parse_key_code` at inject time.
     pub key_name: String,
     /// Per-key dwell override (milliseconds). None = use global default.
     pub dwell_ms: Option<u64>,
@@ -92,6 +93,7 @@ pub struct KeyStep {
 }
 
 impl KeyStep {
+    /// Convert a [`crate::config::KeyAction`] from the YAML config into a `KeyStep`.
     pub fn from_config(action: &crate::config::KeyAction) -> Self {
         KeyStep {
             key_name: action.key.clone(),

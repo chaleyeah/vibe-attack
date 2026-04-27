@@ -6,6 +6,7 @@
 //!
 //! All panels are feature-gated to `gui` — only compiled when eframe is present.
 
+/// Re-export all wizard types and the `show_wizard` entry point when the `gui` feature is enabled.
 #[cfg(feature = "gui")]
 pub use inner::*;
 
@@ -27,21 +28,29 @@ mod inner {
 
     // ── Download state ───────────────────────────────────────────────────────
 
+    /// Progress state of the background model download.
     #[derive(Debug, Clone, PartialEq)]
     pub enum DownloadStatus {
+        /// No download in progress.
         Idle,
+        /// Download underway; `total` is `None` when the server omits Content-Length.
         Downloading { received: u64, total: Option<u64> },
+        /// Download finished and the file has been moved into place.
         Done,
+        /// Download failed; the inner string is a human-readable error message.
         Failed(String),
     }
 
     /// Shared state for the model download background thread.
     pub struct ModelDownloadState {
+        /// Current download progress, shared with the download thread via `Arc<Mutex<_>>`.
         pub status: Arc<Mutex<DownloadStatus>>,
+        /// Join handle for the download thread; `None` when no download is running.
         pub handle: Option<std::thread::JoinHandle<()>>,
     }
 
     impl ModelDownloadState {
+        /// Construct initial state with `Idle` status and no thread handle.
         pub fn new() -> Self {
             Self {
                 status: Arc::new(Mutex::new(DownloadStatus::Idle)),
@@ -49,10 +58,12 @@ mod inner {
             }
         }
 
+        /// Return a clone of the current download status without blocking on failure.
         pub fn current(&self) -> DownloadStatus {
             self.status.lock().map(|g| g.clone()).unwrap_or(DownloadStatus::Idle)
         }
 
+        /// True while the download thread is actively transferring bytes.
         pub fn is_running(&self) -> bool {
             matches!(self.current(), DownloadStatus::Downloading { .. })
         }
@@ -66,23 +77,33 @@ mod inner {
 
     // ── Uinput setup state ───────────────────────────────────────────────────
 
+    /// Lifecycle state of a single privileged uinput setup action (modprobe or usermod).
     #[derive(Debug, Clone, PartialEq)]
     pub enum SetupActionStatus {
+        /// Action has not been initiated yet.
         Idle,
+        /// pkexec subprocess is running; poll the thread handle to detect completion.
         Running,
+        /// Action completed successfully.
         Done,
+        /// Action failed; the inner string is a human-readable error message.
         Failed(String),
     }
 
     /// Per-action status for the two privileged uinput setup steps.
     pub struct UinputSetupState {
+        /// Status of the `modprobe uinput` step.
         pub modprobe: SetupActionStatus,
+        /// Status of the `usermod -aG input` step.
         pub usermod: SetupActionStatus,
+        /// Join handle for the modprobe pkexec thread; `None` when not running.
         pub modprobe_handle: Option<std::thread::JoinHandle<Result<(), String>>>,
+        /// Join handle for the usermod pkexec thread; `None` when not running.
         pub usermod_handle: Option<std::thread::JoinHandle<Result<(), String>>>,
     }
 
     impl UinputSetupState {
+        /// Construct with all actions in `Idle` state and no thread handles.
         pub fn new() -> Self {
             Self {
                 modprobe: SetupActionStatus::Idle,
@@ -103,13 +124,18 @@ mod inner {
 
     /// Shared state for the PTT key capture background thread.
     pub struct PttCaptureState {
+        /// True while the capture thread is waiting for a keypress.
         pub listening: bool,
+        /// Receives the evdev key name from the capture thread when a key is pressed.
         pub captured_key: Arc<Mutex<Option<String>>>,
+        /// Join handle for the capture thread; `None` when not running.
         pub handle: Option<std::thread::JoinHandle<()>>,
+        /// Last capture error message, shown in the wizard UI.
         pub error: Option<String>,
     }
 
     impl PttCaptureState {
+        /// Construct with `listening = false` and no captured key or thread.
         pub fn new() -> Self {
             Self {
                 listening: false,

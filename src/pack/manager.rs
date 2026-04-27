@@ -6,6 +6,7 @@ use super::{Pack, get_profiles_dir};
 /// Manages the active profile state.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProfileManager {
+    /// Name of the currently active profile, or `None` when no profile has been selected.
     pub active_profile: Option<String>,
 }
 
