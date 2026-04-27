@@ -133,6 +133,7 @@ triggers on noise, raise it.
 stt:
   enabled: false
   model_path: ~/.local/share/vibe-attack/models/whisper/ggml-tiny.en.bin
+  confidence_threshold: 0.80
   # initial_prompt: "reinforce, resupply, eagle airstrike"
 ```
 
@@ -140,6 +141,7 @@ stt:
 |-----|---------|-------------|
 | `enabled` | `false` | Set to `true` to activate Whisper transcription |
 | `model_path` | see below | Path to a local ggml Whisper model binary |
+| `confidence_threshold` | `0.80` | Minimum Whisper segment confidence (0–1) required to accept a transcription |
 | `initial_prompt` | unset | Comma-separated phrases to bias Whisper toward known vocabulary |
 
 Models are **not downloaded automatically**. See [docs/troubleshooting.md](troubleshooting.md#models)
@@ -181,22 +183,32 @@ All five model paths must point to a compatible BPE keyword-spotting bundle. Pla
 ```yaml
 macros:
   - name: test_sequence
+    phrase: "run test"        # optional: transcript phrase that triggers this macro
+    if_flag: mode_active      # optional: only fire when this flag is set
+    set_flag: mode_active     # optional: set this flag after the keys fire
+    # sound: /path/to/beep.wav  # optional: audio file to play on trigger
     keys:
       - key: KEY_UP
       - key: KEY_DOWN
       - key: KEY_LEFT
       - key: KEY_RIGHT
-        dwell_ms: 100   # per-key override
+        dwell_ms: 100   # per-key dwell override
+        gap_ms: 20      # per-key gap override
 ```
 
 Each macro entry has:
 
 | Key | Required | Description |
 |-----|----------|-------------|
-| `name` | yes | The phrase Whisper must recognise to trigger this macro |
-| `keys` | yes | Ordered list of evdev key names to inject |
+| `name` | yes | Unique identifier used in logs and as the flag namespace |
+| `phrase` | no | Transcript phrase Whisper must recognise to trigger this macro; absent means the macro can only be triggered programmatically |
+| `if_flag` | no | Gate condition: macro fires only when the named flag is currently set |
+| `set_flag` | no | Side effect: sets the named flag after the macro's key sequence completes |
+| `sound` | no | Path to an audio file (WAV/OGG/MP3) played via rodio when the macro fires |
+| `keys` | yes | Ordered list of evdev key events to inject |
 | `keys[].key` | yes | evdev key name (e.g. `KEY_UP`) |
 | `keys[].dwell_ms` | no | Per-key hold duration, overrides the global `timing.dwell_ms` |
+| `keys[].gap_ms` | no | Per-key gap after this event, overrides the global `timing.gap_ms` |
 
-Phrase matching is case-insensitive. If two macro names overlap (one is a prefix of
+Phrase matching is case-insensitive. If two macro phrases overlap (one is a prefix of
 another), the longer match takes precedence.

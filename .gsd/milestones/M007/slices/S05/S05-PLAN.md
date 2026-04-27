@@ -31,7 +31,7 @@ External documentation surface aligned with current code. No runtime boundaries 
   - Files: `CONTRIBUTING.md`
   - Verify: Manual review; running the documented dev setup steps works on a fresh clone
 
-- [ ] **T03: Verify docs/configuration.md accuracy** `est:45m`
+- [x] **T03: Verify docs/configuration.md accuracy** `est:45m`
   Read docs/configuration.md line-by-line. For every config field documented, confirm it exists in src/config.rs with the same name, type, and default value. Add documentation for any field present in code but missing from the doc; remove documentation for any field no longer in code. Confirm example YAML snippets parse against the current Config struct.
   - Files: `docs/configuration.md`
   - Verify: Every field in docs/configuration.md exists in src/config.rs; every pub field in src/config.rs is documented in docs/configuration.md; example YAML snippets are valid
