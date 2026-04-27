@@ -607,16 +607,14 @@ mod inner {
         if ptt.listening {
             ui.spinner();
             ui.label("Listening… press any key now.");
-        } else if !ptt.listening && ptt.handle.is_none() {
-            if ui.button("Listen for key").clicked() {
-                ptt.error = None;
-                let captured = Arc::clone(&ptt.captured_key);
-                let handle = std::thread::spawn(move || {
-                    capture_first_keypress(captured);
-                });
-                ptt.handle = Some(handle);
-                ptt.listening = true;
-            }
+        } else if !ptt.listening && ptt.handle.is_none() && ui.button("Listen for key").clicked() {
+            ptt.error = None;
+            let captured = Arc::clone(&ptt.captured_key);
+            let handle = std::thread::spawn(move || {
+                capture_first_keypress(captured);
+            });
+            ptt.handle = Some(handle);
+            ptt.listening = true;
         }
 
         if let Some(err) = &ptt.error {
@@ -692,7 +690,7 @@ mod inner {
         for (_path, device) in evdev::enumerate() {
             if device
                 .supported_keys()
-                .map_or(false, |keys| keys.contains(evdev::KeyCode::KEY_A))
+                .is_some_and(|keys| keys.contains(evdev::KeyCode::KEY_A))
             {
                 return Some(device);
             }
