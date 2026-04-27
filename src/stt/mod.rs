@@ -109,14 +109,14 @@ impl SttService {
         let shutdown = self.shutdown.clone();
 
         let model_path = self.model_path.clone();
-        let _initial_prompt = self.initial_prompt.clone();
+        let initial_prompt = self.initial_prompt.clone();
 
         let handle = std::thread::spawn(move || {
             tracing::info!("STT thread started");
 
             #[cfg(not(feature = "stt"))]
             {
-                let _ = model_path; // silence unused warning
+                let _ = (model_path, initial_prompt); // silence unused warnings
                 let _ = (&job_rx, &result_tx, &result_rx_for_drop, &shutdown);
                 tracing::error!("STT is enabled but binary was built without `--features stt`");
                 tracing::info!("STT thread stopped");

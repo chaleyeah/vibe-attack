@@ -13,10 +13,10 @@
 
 ## Slices
 
-- [ ] **S01: Control Socket — Daemon Status Query** `risk:medium` `depends:[]`
+- [x] **S01: Control Socket — Daemon Status Query** `risk:medium` `depends:[]`
   > After this: cargo test control:: passes; a CLI one-liner (echo STATUS | nc -U /run/...) returns a JSON status line from a running daemon
 
-- [ ] **S02: Tray Icon — Static Placeholder** `risk:medium` `depends:[S01]`
+- [x] **S02: Tray Icon — Static Placeholder** `risk:medium` `depends:[S01]`
   > After this: Run vibe-attack-config on X11 and Wayland; tray icon appears in system bar; Open Config brings the egui window to front; Quit exits cleanly
 
 - [ ] **S03: Live Daemon State in Tray** `risk:medium` `depends:[S01,S02]`

@@ -7,6 +7,7 @@ use eframe::egui;
 use vibe_attack::ui::config_app::{load_profiles, ConfigApp};
 use vibe_attack::ui::first_run::FirstRunState;
 use vibe_attack::ui::probe;
+use vibe_attack::ui::tray::TrayHandle;
 use vibe_attack::ui::wizard::{show_wizard, ModelDownloadState, PttCaptureState, UinputSetupState};
 
 // ── Log channel ──────────────────────────────────────────────────────────────
@@ -160,6 +161,7 @@ struct VibeAttackConfigApp {
     mic: MicLevelState,
     log_rx: mpsc::Receiver<String>,
     setup_just_completed: bool,
+    tray: Option<TrayHandle>,
 }
 
 impl VibeAttackConfigApp {
@@ -198,6 +200,7 @@ impl VibeAttackConfigApp {
             mic,
             log_rx,
             setup_just_completed: false,
+            tray: TrayHandle::spawn(),
         }
     }
 }
@@ -205,6 +208,11 @@ impl VibeAttackConfigApp {
 impl eframe::App for VibeAttackConfigApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         let ctx = ui.ctx().clone();
+
+        // Honour "Open Config" requests from the tray.
+        if self.tray.as_ref().map_or(false, |t| t.take_open_request()) {
+            ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+        }
 
         // Repaint at ~10Hz for mic level updates when in main config view.
         if self.first_run.is_setup_complete() {
