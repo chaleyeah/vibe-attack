@@ -7,18 +7,26 @@ use std::path::PathBuf;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
+    /// Push-to-talk key binding (required).
     pub ptt: PttConfig,
+    /// Global key dwell/gap timing defaults used by macros.
     pub timing: TimingConfig,
+    /// Audio capture device selection (optional; defaults to system default).
     #[serde(default)]
     pub audio: AudioConfig,
+    /// Pipeline-wide behavior and verbosity knobs.
     #[serde(default)]
     pub pipeline: PipelineConfig,
+    /// Silero VAD thresholds and windowing parameters.
     #[serde(default)]
     pub vad: VadConfig,
+    /// Whisper speech-to-text model and decode settings.
     #[serde(default)]
     pub stt: SttConfig,
+    /// Sherpa-ONNX wake word spotter model paths and toggle.
     #[serde(default)]
     pub wake: WakeConfig,
+    /// Ordered list of named macros the daemon can dispatch.
     #[serde(default)]
     pub macros: Vec<MacroConfig>,
 }
@@ -112,8 +120,10 @@ impl Default for TimingConfig {
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum PipelineVerbosity {
+    /// Emit one summary line per completed utterance (default).
     #[default]
     Summary,
+    /// Also emit timing events for each intermediate stage (VAD, wake, STT, match, dispatch).
     Stages,
 }
 
@@ -143,18 +153,25 @@ impl Default for PipelineConfig {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct VadConfig {
+    /// Probability threshold above which a frame is considered speech onset. Default: 0.60.
     #[serde(default = "default_vad_start_threshold")]
     pub start_threshold: f32,
+    /// Probability threshold below which a frame is considered silence (ends utterance). Default: 0.45.
     #[serde(default = "default_vad_stop_threshold")]
     pub stop_threshold: f32,
+    /// Minimum consecutive speech duration (ms) before an utterance is accepted. Default: 100.
     #[serde(default = "default_min_speech_ms")]
     pub min_speech_ms: u64,
+    /// Silence duration (ms) required after speech before the utterance is considered complete. Default: 200.
     #[serde(default = "default_end_silence_ms")]
     pub end_silence_ms: u64,
+    /// Audio pre-rolled (ms) before the speech onset frame to avoid clipping leading phonemes. Default: 150.
     #[serde(default = "default_preroll_ms")]
     pub preroll_ms: u64,
+    /// Audio appended (ms) after the end-silence threshold to avoid clipping trailing phonemes. Default: 150.
     #[serde(default = "default_tail_ms")]
     pub tail_ms: u64,
+    /// Hard cap on utterance length (seconds); audio beyond this is truncated and flushed. Default: 10.
     #[serde(default = "default_max_utterance_secs")]
     pub max_utterance_secs: u64,
 }
@@ -199,9 +216,12 @@ impl Default for VadConfig {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SttConfig {
+    /// Whether speech-to-text decoding is active. When false the pipeline skips whisper entirely.
     #[serde(default)]
     pub enabled: bool,
+    /// Path to a whisper.cpp GGML model file. Required when `enabled` is true.
     pub model_path: Option<PathBuf>,
+    /// Minimum whisper segment confidence (0–1) required to accept a transcription. Default: 0.80.
     #[serde(default = "default_stt_confidence_threshold")]
     pub confidence_threshold: f32,
     /// Optional prompt injected before each decode to bias whisper toward known vocabulary.
@@ -229,12 +249,19 @@ impl Default for SttConfig {
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct WakeConfig {
+    /// Whether the sherpa-onnx keyword spotter runs before STT. When false the pipeline listens
+    /// on PTT only and skips wake word detection entirely.
     #[serde(default)]
     pub enabled: bool,
+    /// Path to the sherpa-onnx encoder ONNX model file. Required when `enabled` is true.
     pub encoder: Option<PathBuf>,
+    /// Path to the sherpa-onnx decoder ONNX model file. Required when `enabled` is true.
     pub decoder: Option<PathBuf>,
+    /// Path to the sherpa-onnx joiner ONNX model file. Required when `enabled` is true.
     pub joiner: Option<PathBuf>,
+    /// Path to the BPE tokens file used by the spotter. Required when `enabled` is true.
     pub tokens: Option<PathBuf>,
+    /// Path to the keywords text file (one keyword per line). Required when `enabled` is true.
     pub keywords: Option<PathBuf>,
 }
 
@@ -242,11 +269,18 @@ pub struct WakeConfig {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct MacroConfig {
+    /// Unique identifier for this macro; used in logs and the `set_flag`/`if_flag` namespace.
     pub name: String,
+    /// Transcript phrase that triggers this macro (exact match after normalization).
+    /// When absent the macro can only be triggered programmatically.
     pub phrase: Option<String>,
+    /// Gate condition: macro fires only when the named flag is currently set.
     pub if_flag: Option<String>,
+    /// Side effect: sets the named flag after the macro's key sequence completes.
     pub set_flag: Option<String>,
+    /// Optional audio file to play (via rodio) when this macro fires.
     pub sound: Option<PathBuf>,
+    /// Ordered sequence of key events that form the macro body.
     pub keys: Vec<KeyAction>,
 }
 
