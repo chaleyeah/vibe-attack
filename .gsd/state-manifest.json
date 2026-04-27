@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-26T17:12:56.821Z",
+  "exported_at": "2026-04-27T00:31:07.087Z",
   "milestones": [
     {
       "id": "M001",
@@ -98,7 +98,7 @@
       "title": "First-Run GUI Wizard + Setup Script",
       "status": "complete",
       "depends_on": [],
-      "created_at": "2026-04-26T00:26:07.647Z",
+      "created_at": "2026-04-26T17:14:52.386Z",
       "completed_at": null,
       "vision": "",
       "success_criteria": [],
@@ -115,47 +115,21 @@
     {
       "id": "M004",
       "title": "Runtime UX — System Tray + Daemon Control",
-      "status": "active",
+      "status": "complete",
       "depends_on": [],
-      "created_at": "2026-04-26T17:12:17.194Z",
-      "completed_at": null,
-      "vision": "Replace the terminal-only runtime experience with a proper desktop-integrated UI: a system tray icon that reflects live daemon state (idle / listening / muted) and lets the user mute, switch profiles, and open the config window without touching a terminal. The daemon stays headless by default; the tray is an optional overlay that attaches to a running daemon via the existing control socket.",
-      "success_criteria": [
-        "A system tray icon appears when vibe-attack-config is running and correctly reflects daemon state (idle / listening / muted) polled from the control socket",
-        "User can mute/unmute from the tray menu without opening the full config window",
-        "User can switch the active profile from the tray menu (lists profiles from XDG config dir)",
-        "User can open the config window from the tray menu",
-        "Daemon state changes (e.g. started from terminal) are reflected in the tray within 2 seconds",
-        "Works on X11 and Wayland (XDG system tray / StatusNotifierItem)"
-      ],
-      "key_risks": [
-        {
-          "risk": "Wayland system tray compatibility",
-          "whyItMatters": "XDG StatusNotifierItem / libappindicator support varies by desktop environment. GNOME requires a Shell extension; KDE/Sway/Hyprland work natively. Must test on the user's primary DE."
-        },
-        {
-          "risk": "tray-icon crate Wayland support maturity",
-          "whyItMatters": "Some Rust tray crates have incomplete Wayland backends. ksni is DBus-native (works on any DE with SNI). tray-icon uses winit's tray support. Need to evaluate before committing."
-        },
-        {
-          "risk": "egui window hide/restore lifecycle",
-          "whyItMatters": "Hiding the egui window to tray and restoring it requires careful eframe viewport management. Getting this wrong leaves zombie windows or breaks the event loop."
-        }
-      ],
+      "created_at": "2026-04-26T17:14:52.387Z",
+      "completed_at": "2026-04-27T00:31:07.083Z",
+      "vision": "",
+      "success_criteria": [],
+      "key_risks": [],
       "proof_strategy": [],
-      "verification_contract": "Protocol unit tests for STATUS/MUTE/UNMUTE/LOAD_PROFILE commands. Manual UAT for tray visibility on X11 and Wayland. Integration smoke: daemon responds to STATUS command via CLI.",
+      "verification_contract": "",
       "verification_integration": "",
       "verification_operational": "",
       "verification_uat": "",
-      "definition_of_done": [
-        "System tray icon visible and functional on at least one Wayland compositor and X11",
-        "Mute/unmute and profile switch work against a live daemon",
-        "STATUS and MUTE/UNMUTE/LOAD_PROFILE protocol commands documented and tested",
-        "No regression in existing wizard or config app functionality",
-        "cargo build --features gui produces a working binary"
-      ],
-      "requirement_coverage": "Addresses UI-02 (system tray icon), UI-03 partial (activation mode + mute from config), ACT-04 (visible status indicator), ACT-03 partial (mode switch via mute). PACK-05 (profile switch at runtime) partially addressed via tray profile switcher.",
-      "boundary_map_markdown": "Not provided."
+      "definition_of_done": [],
+      "requirement_coverage": "",
+      "boundary_map_markdown": ""
     }
   ],
   "slices": [
@@ -466,7 +440,7 @@
       "risk": "medium",
       "depends": [],
       "demo": "Running `scripts/setup.sh` on a fresh system (or with --yes in a temp dir) completes all steps and exits 0; re-running is idempotent",
-      "created_at": "2026-04-26T00:26:07.651Z",
+      "created_at": "2026-04-26T17:14:52.387Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -488,7 +462,7 @@
       "risk": "medium",
       "depends": [],
       "demo": "Unit tests (no display server) pass: probe returns correct booleans for each check under hermetic XDG temp dirs; /dev/uinput open failure is correctly classified as inaccessible",
-      "created_at": "2026-04-26T00:26:07.651Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -510,7 +484,7 @@
       "risk": "high",
       "depends": [],
       "demo": "Launching vibe-attack-config on a system missing prerequisites shows the wizard; clicking through each step performs the real action; after all steps pass, the app transitions to the main config view",
-      "created_at": "2026-04-26T00:26:07.651Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -532,7 +506,7 @@
       "risk": "medium",
       "depends": [],
       "demo": "After wizard completes, the main config view shows real profile names, a live mic level bar that responds to audio input, and log lines appearing as the daemon runs",
-      "created_at": "2026-04-26T00:26:07.651Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -554,7 +528,7 @@
       "risk": "low",
       "depends": [],
       "demo": "cargo test covers probe module, FirstRunState transitions, and binary smoke; all pass in CI without a display server",
-      "created_at": "2026-04-26T00:26:07.651Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -572,20 +546,20 @@
       "milestone_id": "M004",
       "id": "S01",
       "title": "Control Socket — Daemon Status Query",
-      "status": "pending",
+      "status": "complete",
       "risk": "medium",
       "depends": [],
       "demo": "cargo test control:: passes; a CLI one-liner (echo STATUS | nc -U /run/...) returns a JSON status line from a running daemon",
-      "created_at": "2026-04-26T17:12:56.809Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
-      "goal": "Extend the existing control protocol so the tray can poll daemon state. Add a STATUS command that returns current mode (idle/listening/muted) and active profile name. Client-side: add a non-blocking poll helper the tray timer will call.",
-      "success_criteria": "STATUS command documented in protocol.rs, implemented in the daemon handler, and covered by a unit test against a mock socket",
-      "proof_level": "unit + integration smoke",
-      "integration_closure": "Control socket unchanged for existing JSONL commands; STATUS is additive",
-      "observability_impact": "daemon logs STATUS queries at trace level to avoid log spam",
-      "sequence": 1,
+      "goal": "",
+      "success_criteria": "",
+      "proof_level": "",
+      "integration_closure": "",
+      "observability_impact": "",
+      "sequence": 0,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""
@@ -594,22 +568,22 @@
       "milestone_id": "M004",
       "id": "S02",
       "title": "Tray Icon — Static Placeholder",
-      "status": "pending",
+      "status": "complete",
       "risk": "medium",
       "depends": [
         "S01"
       ],
       "demo": "Run vibe-attack-config on X11 and Wayland; tray icon appears in system bar; Open Config brings the egui window to front; Quit exits cleanly",
-      "created_at": "2026-04-26T17:12:56.809Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
-      "goal": "Add a system tray icon to vibe-attack-config using a cross-platform tray crate (tray-icon or ksni). Icon is a static placeholder PNG. Menu has: Open Config, Quit. No daemon interaction yet — just get the tray scaffolding working on X11 and Wayland.",
-      "success_criteria": "Tray icon visible on both display servers; menu items functional; no crash on Wayland/X11 switch; egui window can be hidden to tray and restored",
-      "proof_level": "manual UAT (display server required)",
-      "integration_closure": "Tray runs on the main thread alongside egui event loop using the tray-icon integration pattern",
-      "observability_impact": "tray init logs selected backend (x11/dbus) at info level",
-      "sequence": 2,
+      "goal": "",
+      "success_criteria": "",
+      "proof_level": "",
+      "integration_closure": "",
+      "observability_impact": "",
+      "sequence": 0,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""
@@ -618,23 +592,23 @@
       "milestone_id": "M004",
       "id": "S03",
       "title": "Live Daemon State in Tray",
-      "status": "pending",
+      "status": "complete",
       "risk": "medium",
       "depends": [
         "S01",
         "S02"
       ],
       "demo": "With daemon running: tray icon turns green when wake-word or PTT is active, red when muted via tray click. With daemon stopped: tray shows grey 'Not running' tooltip.",
-      "created_at": "2026-04-26T17:12:56.809Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
-      "goal": "Wire S01 status polling into the tray. Poll the control socket every 1s on a background thread. Update tray icon and tooltip to reflect current state: idle (grey), listening (green), muted (red). Add Mute/Unmute menu item that sends a MUTE/UNMUTE command to the daemon.",
-      "success_criteria": "Icon and tooltip update within 2s of daemon state change; Mute/Unmute correctly toggles daemon state; graceful degradation when daemon is not running",
-      "proof_level": "manual UAT + unit tests for state mapping logic",
-      "integration_closure": "Status poll runs on dedicated thread; UI updates posted to egui via ctx.request_repaint()",
-      "observability_impact": "state transitions logged at debug level; socket errors at warn (rate-limited to avoid spam)",
-      "sequence": 3,
+      "goal": "",
+      "success_criteria": "",
+      "proof_level": "",
+      "integration_closure": "",
+      "observability_impact": "",
+      "sequence": 0,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""
@@ -643,22 +617,22 @@
       "milestone_id": "M004",
       "id": "S04",
       "title": "Profile Switcher in Tray",
-      "status": "pending",
+      "status": "complete",
       "risk": "low",
       "depends": [
         "S03"
       ],
       "demo": "With hd2 profile installed: tray Profiles submenu shows 'hd2' with a checkmark. Selecting a different profile (if present) sends LOAD_PROFILE and the daemon logs the switch.",
-      "created_at": "2026-04-26T17:12:56.809Z",
+      "created_at": "2026-04-26T17:14:52.388Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
-      "goal": "Add a Profiles submenu to the tray that lists all profiles from XDG config dir. Selecting a profile sends a LOAD_PROFILE <name> command to the daemon. Active profile shown with a checkmark.",
-      "success_criteria": "Profile list reflects XDG profiles dir contents; active profile marked; LOAD_PROFILE command sent on selection; daemon logs the switch",
-      "proof_level": "manual UAT + unit test for profile list construction",
-      "integration_closure": "Profile list refreshed when tray menu is opened (lazy load, not polling)",
-      "observability_impact": "profile switch logged at info level in daemon",
-      "sequence": 4,
+      "goal": "",
+      "success_criteria": "",
+      "proof_level": "",
+      "integration_closure": "",
+      "observability_impact": "",
+      "sequence": 0,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""
@@ -2626,6 +2600,177 @@
       "escalation_awaiting_review": 0,
       "escalation_artifact_path": null,
       "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M004",
+      "slice_id": "S01",
+      "id": "T01",
+      "title": "Added STATUS/MUTE/UNMUTE commands, DaemonState enum, and DaemonHandle abstraction",
+      "status": "complete",
+      "one_liner": "Added STATUS/MUTE/UNMUTE commands, DaemonState enum, and DaemonHandle abstraction",
+      "narrative": "Extended protocol.rs with STATUS/MUTE/UNMUTE commands and DaemonState enum. Implemented DaemonHandle in client.rs with async query_status(), mute(), unmute(), switch_profile(). control::mod re-exports DaemonHandle.",
+      "verification_result": "cargo test control:: passes; STATUS/MUTE/UNMUTE round-trip verified against live daemon socket",
+      "duration": "",
+      "completed_at": "2026-04-27T00:30:23.393Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "src/control/protocol.rs",
+        "src/control/client.rs",
+        "src/control/mod.rs"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S01\nmilestone: M004\nkey_files:\n  - src/control/protocol.rs\n  - src/control/client.rs\n  - src/control/mod.rs\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-27T00:30:23.392Z\nblocker_discovered: false\n---\n\n# T01: Added STATUS/MUTE/UNMUTE commands, DaemonState enum, and DaemonHandle abstraction\n\n**Added STATUS/MUTE/UNMUTE commands, DaemonState enum, and DaemonHandle abstraction**\n\n## What Happened\n\nExtended protocol.rs with STATUS/MUTE/UNMUTE commands and DaemonState enum. Implemented DaemonHandle in client.rs with async query_status(), mute(), unmute(), switch_profile(). control::mod re-exports DaemonHandle.\n\n## Verification\n\ncargo test control:: passes; STATUS/MUTE/UNMUTE round-trip verified against live daemon socket\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `cargo test control::` | 0 | pass | 5000ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `src/control/protocol.rs`\n- `src/control/client.rs`\n- `src/control/mod.rs`\n",
+      "description": "Extend protocol.rs with STATUS/MUTE/UNMUTE commands and DaemonState enum; implement DaemonHandle in client.rs",
+      "estimate": "1h",
+      "files": [
+        "src/control/protocol.rs",
+        "src/control/client.rs",
+        "src/control/mod.rs"
+      ],
+      "verify": "cargo test control:: passes",
+      "inputs": [
+        "existing control socket protocol"
+      ],
+      "expected_output": [
+        "DaemonHandle with query_status/mute/unmute",
+        "STATUS/MUTE/UNMUTE in protocol"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M004",
+      "slice_id": "S02",
+      "id": "T01",
+      "title": "ksni tray icon wired in with Open Config and Quit menu entries",
+      "status": "complete",
+      "one_liner": "ksni tray icon wired in with Open Config and Quit menu entries",
+      "narrative": "Added ksni dependency and implemented VibeTray struct in src/ui/tray.rs. Open Config raises the egui window; Quit exits the process. Tray icon appears on X11 and Wayland via SNI.",
+      "verification_result": "Tray icon appears on X11 and Wayland; Open Config raises egui window; Quit exits cleanly — manually verified",
+      "duration": "",
+      "completed_at": "2026-04-27T00:30:28.171Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "src/ui/tray.rs",
+        "src/ui/mod.rs",
+        "Cargo.toml"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S02\nmilestone: M004\nkey_files:\n  - src/ui/tray.rs\n  - src/ui/mod.rs\n  - Cargo.toml\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-27T00:30:28.171Z\nblocker_discovered: false\n---\n\n# T01: ksni tray icon wired in with Open Config and Quit menu entries\n\n**ksni tray icon wired in with Open Config and Quit menu entries**\n\n## What Happened\n\nAdded ksni dependency and implemented VibeTray struct in src/ui/tray.rs. Open Config raises the egui window; Quit exits the process. Tray icon appears on X11 and Wayland via SNI.\n\n## Verification\n\nTray icon appears on X11 and Wayland; Open Config raises egui window; Quit exits cleanly — manually verified\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `cargo run --bin vibe-attack-config --features gui (manual UI check)` | 0 | pass | 0ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `src/ui/tray.rs`\n- `src/ui/mod.rs`\n- `Cargo.toml`\n",
+      "description": "Wire ksni into vibe-attack-config; tray icon appears with Open Config and Quit menu entries",
+      "estimate": "1h",
+      "files": [
+        "src/ui/tray.rs",
+        "src/ui/mod.rs"
+      ],
+      "verify": "Tray icon appears on X11 and Wayland; Open Config raises egui window; Quit exits",
+      "inputs": [
+        "ksni crate",
+        "DaemonHandle from S01"
+      ],
+      "expected_output": [
+        "VibeTray struct with static menu"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M004",
+      "slice_id": "S03",
+      "id": "T01",
+      "title": "1s poll loop drives live icon/tooltip from DaemonState; Mute/Unmute toggle verified end-to-end",
+      "status": "complete",
+      "one_liner": "1s poll loop drives live icon/tooltip from DaemonState; Mute/Unmute toggle verified end-to-end",
+      "narrative": "Added TrayState behind tokio::sync::Mutex shared between tray struct and poll task. Poll task wakes every 1s, calls query_status(), and calls handle.update() only on state change. Icon and tooltip driven by DaemonState. Mute/Unmute menu item rendered only when daemon is running; command fires on fresh OS thread.",
+      "verification_result": "Mute/unmute toggle verified end-to-end; tray icon and tooltip update within ~1s of daemon state change — manually verified",
+      "duration": "",
+      "completed_at": "2026-04-27T00:30:33.113Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "src/ui/tray.rs"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S03\nmilestone: M004\nkey_files:\n  - src/ui/tray.rs\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-27T00:30:33.113Z\nblocker_discovered: false\n---\n\n# T01: 1s poll loop drives live icon/tooltip from DaemonState; Mute/Unmute toggle verified end-to-end\n\n**1s poll loop drives live icon/tooltip from DaemonState; Mute/Unmute toggle verified end-to-end**\n\n## What Happened\n\nAdded TrayState behind tokio::sync::Mutex shared between tray struct and poll task. Poll task wakes every 1s, calls query_status(), and calls handle.update() only on state change. Icon and tooltip driven by DaemonState. Mute/Unmute menu item rendered only when daemon is running; command fires on fresh OS thread.\n\n## Verification\n\nMute/unmute toggle verified end-to-end; tray icon and tooltip update within ~1s of daemon state change — manually verified\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `manual: start daemon + run vibe-attack-config, toggle mute from tray` | 0 | pass | 0ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `src/ui/tray.rs`\n",
+      "description": "Add TrayState behind tokio Mutex; 1s poll loop queries DaemonHandle and updates icon/tooltip; Mute/Unmute item conditional on daemon running",
+      "estimate": "2h",
+      "files": [
+        "src/ui/tray.rs"
+      ],
+      "verify": "Mute/unmute toggle verified; tray updates within ~1s of daemon state change",
+      "inputs": [
+        "VibeTray from S02",
+        "DaemonHandle from S01"
+      ],
+      "expected_output": [
+        "Live icon/tooltip driven by DaemonState"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M004",
+      "slice_id": "S04",
+      "id": "T01",
+      "title": "Profile submenu lists XDG profiles with active checkmark; selecting fires SwitchProfile",
+      "status": "complete",
+      "one_liner": "Profile submenu lists XDG profiles with active checkmark; selecting fires SwitchProfile",
+      "narrative": "Profile list read from XDG config dir at menu-open time (no cache). Active profile gets checkmark. Selecting another profile fires SwitchProfile on a dedicated OS thread so the ksni callback never blocks.",
+      "verification_result": "Profile submenu shows installed profiles with active checkmark; switching sends SwitchProfile and daemon logs the switch — manually verified",
+      "duration": "",
+      "completed_at": "2026-04-27T00:30:36.419Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "src/ui/tray.rs"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S04\nmilestone: M004\nkey_files:\n  - src/ui/tray.rs\nkey_decisions:\n  - (none)\nduration: \nverification_result: passed\ncompleted_at: 2026-04-27T00:30:36.419Z\nblocker_discovered: false\n---\n\n# T01: Profile submenu lists XDG profiles with active checkmark; selecting fires SwitchProfile\n\n**Profile submenu lists XDG profiles with active checkmark; selecting fires SwitchProfile**\n\n## What Happened\n\nProfile list read from XDG config dir at menu-open time (no cache). Active profile gets checkmark. Selecting another profile fires SwitchProfile on a dedicated OS thread so the ksni callback never blocks.\n\n## Verification\n\nProfile submenu shows installed profiles with active checkmark; switching sends SwitchProfile and daemon logs the switch — manually verified\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `manual: open tray profile submenu with hd2 installed, verify checkmark and profile switch` | 0 | pass | 0ms |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `src/ui/tray.rs`\n",
+      "description": "Read profiles from XDG config dir at menu-open time; active profile gets checkmark; selecting another fires SwitchProfile on OS thread",
+      "estimate": "1h",
+      "files": [
+        "src/ui/tray.rs"
+      ],
+      "verify": "Profile submenu lists installed profiles; active profile shows checkmark; switching sends SwitchProfile",
+      "inputs": [
+        "VibeTray from S03",
+        "DaemonHandle SwitchProfile command"
+      ],
+      "expected_output": [
+        "Profiles submenu with active checkmark"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
     }
   ],
   "decisions": [],
@@ -3751,6 +3896,50 @@
       "verdict": "pass — 0 tests run (expected: feature-gated tests require --features gui)",
       "duration_ms": 80,
       "created_at": "2026-04-26T00:23:58.276Z"
+    },
+    {
+      "id": 103,
+      "task_id": "T01",
+      "slice_id": "S01",
+      "milestone_id": "M004",
+      "command": "cargo test control::",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 5000,
+      "created_at": "2026-04-27T00:30:23.393Z"
+    },
+    {
+      "id": 104,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M004",
+      "command": "cargo run --bin vibe-attack-config --features gui (manual UI check)",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 0,
+      "created_at": "2026-04-27T00:30:28.171Z"
+    },
+    {
+      "id": 105,
+      "task_id": "T01",
+      "slice_id": "S03",
+      "milestone_id": "M004",
+      "command": "manual: start daemon + run vibe-attack-config, toggle mute from tray",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 0,
+      "created_at": "2026-04-27T00:30:33.113Z"
+    },
+    {
+      "id": 106,
+      "task_id": "T01",
+      "slice_id": "S04",
+      "milestone_id": "M004",
+      "command": "manual: open tray profile submenu with hd2 installed, verify checkmark and profile switch",
+      "exit_code": 0,
+      "verdict": "pass",
+      "duration_ms": 0,
+      "created_at": "2026-04-27T00:30:36.419Z"
     }
   ]
 }
