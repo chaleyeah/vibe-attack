@@ -26,7 +26,7 @@ No integration boundaries touched.
   - Files: `src/pipeline/dispatcher.rs`
   - Verify: grep -B1 'unsafe impl' src/pipeline/dispatcher.rs shows a // SAFETY: line immediately preceding each unsafe impl; cargo clippy --all-targets -- -D warnings clean
 
-- [ ] **T02: Annotate the SegCfg alias and #[allow] annotations** `est:30m`
+- [x] **T02: Annotate the SegCfg alias and #[allow] annotations** `est:30m`
   In src/pipeline/coordinator.rs, add a comment explaining why VadConfig is aliased as SegCfg (likely historical naming or to avoid conflict with another type — read git blame or the surrounding code to confirm; if the alias has no real reason, remove it instead). In src/pipeline/jsonl.rs, add a one-line comment above `#[allow(clippy::too_many_arguments)]` justifying why the function legitimately needs that many arguments. Audit `grep -rn '#\[allow(' src/` for any other unjustified allows and add justification comments to each.
   - Files: `src/pipeline/coordinator.rs`, `src/pipeline/jsonl.rs`
   - Verify: grep -B1 '#\[allow(' src/ shows a justifying comment above each allow; cargo clippy -D warnings clean

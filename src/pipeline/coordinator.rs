@@ -21,6 +21,7 @@ use crate::config::{Config, PipelineVerbosity};
 use crate::pipeline::dispatcher::DispatchOutcome;
 use crate::pipeline::jsonl::{JsonlVerbosity, JsonlWriter};
 use crate::stt::{SttResult, SttService};
+// Alias for readability: this module builds segmentation configs, not generic VAD configs.
 use crate::vad::{VadConfig as SegCfg, VadSegmenter, FRAME_SAMPLES};
 use crate::wake::WakeWord;
 

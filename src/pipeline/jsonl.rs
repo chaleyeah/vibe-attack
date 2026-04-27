@@ -102,6 +102,7 @@ impl<W: Write> JsonlWriter<W> {
         self.verbosity
     }
 
+    // Each argument maps to a distinct top-level field in the JSONL event schema; no meaningful grouping reduces them.
     #[allow(clippy::too_many_arguments)]
     pub fn write_utterance(
         &mut self,
