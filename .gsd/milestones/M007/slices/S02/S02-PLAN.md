@@ -41,7 +41,7 @@ No integration boundaries touched.
   - Files: `src/config.rs`
   - Verify: grep -A1 'fn default_config_path' src/config.rs shows a single coherent /// doc block; cargo check passes
 
-- [ ] **T05: Run full verification — test, clippy, audit grep** `est:10m`
+- [x] **T05: Run full verification — test, clippy, audit grep** `est:10m`
   Run cargo test, cargo test --features gui, cargo clippy --all-targets -- -D warnings, cargo clippy --all-targets --features gui -- -D warnings, and `grep -rn '#\[allow(\|unsafe impl\|unsafe fn' src/` to confirm every match has an adjacent justifying comment. All cargo invocations must exit 0.
   - Verify: All four cargo invocations exit 0; manual review of grep output confirms each unsafe/allow has a comment
 
