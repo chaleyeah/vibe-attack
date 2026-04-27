@@ -36,7 +36,7 @@ No integration boundaries touched.
   - Files: `src/control/mod.rs`, `src/control/client.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/control/; cargo doc renders cleanly
 
-- [ ] **T04: Document src/tui/ public items** `est:30m`
+- [x] **T04: Document src/tui/ public items** `est:30m`
   Add /// doc comments to every undocumented pub item in src/tui/: app.rs (App, AppMode, App::new/draw/handle_key), editor.rs (MacroEditor + methods).
   - Files: `src/tui/app.rs`, `src/tui/editor.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/tui/; cargo doc renders cleanly

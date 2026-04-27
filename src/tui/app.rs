@@ -4,20 +4,33 @@ use ratatui::widgets::*;
 use crate::pack::Pack;
 use crossterm::event::KeyCode;
 
+/// Top-level TUI application state, holding the loaded pack and the current
+/// UI selection and mode.
 pub struct App {
+    /// The macro pack loaded from the first profile directory found on disk,
+    /// or `None` if no profiles exist.
     pub pack: Option<Pack>,
+    /// Index of the currently highlighted category in the browser view.
     pub selected_category: usize,
+    /// Index of the currently highlighted macro within the selected category.
     pub selected_macro: usize,
+    /// Whether the app is browsing macros or editing one.
     pub mode: AppMode,
 }
 
+/// The two top-level UI modes: browsing the macro list vs. editing a single macro.
 #[derive(Debug, PartialEq)]
 pub enum AppMode {
+    /// Macro browser — arrow keys navigate categories and macros.
     Browser,
+    /// Macro editor — focused on a single macro's phrase, condition, and key sequence.
     Editor,
 }
 
 impl App {
+    /// Create a new `App`, loading the first pack found under the profiles directory.
+    ///
+    /// Returns `Ok` with `pack: None` when no profile directories exist yet.
     pub fn new() -> Result<Self> {
         // Load first profile found
         let profiles_dir = crate::pack::get_profiles_dir()?;
@@ -39,6 +52,7 @@ impl App {
         })
     }
 
+    /// Render the full TUI layout into `f`: header bar, categories/macros panes, and footer hints.
     pub fn draw(&mut self, f: &mut Frame) {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
@@ -79,6 +93,11 @@ impl App {
         f.render_widget(footer, chunks[2]);
     }
 
+    /// Dispatch a key press to the appropriate mode handler.
+    ///
+    /// In [`AppMode::Browser`] the arrow keys scroll the macro list and `Enter`
+    /// switches to [`AppMode::Editor`].  In [`AppMode::Editor`] `Esc` returns to
+    /// the browser.
     pub fn handle_key(&mut self, code: KeyCode) {
         match self.mode {
             AppMode::Browser => {

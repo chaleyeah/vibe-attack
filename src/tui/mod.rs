@@ -8,7 +8,9 @@ use crossterm::{
 use ratatui::prelude::*;
 use crate::tui::app::App;
 
+/// Top-level TUI application state and rendering (`App`, `AppMode`).
 pub mod app;
+/// Macro detail editor widget (`MacroEditor`).
 pub mod editor;
 
 /// Run the TUI editor.

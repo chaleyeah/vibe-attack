@@ -2,12 +2,17 @@ use ratatui::prelude::*;
 use ratatui::widgets::*;
 use crate::config::MacroConfig;
 
+/// A read-only preview widget that renders a single macro's phrase, condition,
+/// and ordered key sequence inside a bordered pane.
 pub struct MacroEditor {
+    /// The macro configuration being displayed (phrase, condition flag, key list).
     pub macro_config: MacroConfig,
+    /// Cursor position for future edit interactions; currently unused in rendering.
     pub cursor: usize,
 }
 
 impl MacroEditor {
+    /// Wrap a [`MacroConfig`] in a new `MacroEditor` with cursor at position 0.
     pub fn new(config: MacroConfig) -> Self {
         Self {
             macro_config: config,
@@ -15,6 +20,8 @@ impl MacroEditor {
         }
     }
 
+    /// Render the macro detail view into `area`: shows phrase, condition flag, and
+    /// the numbered key-sequence list.
     pub fn draw(&self, f: &mut Frame, area: Rect) {
         let block = Block::default()
             .title(format!(" Editing: {} ", self.macro_config.name))
