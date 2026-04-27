@@ -31,7 +31,7 @@ No integration boundaries touched.
   - Files: `src/error.rs`
   - Verify: S03 audit script reports 0 undocumented pub items in src/error.rs; each DaemonError variant doc explains origin and recovery hint
 
-- [ ] **T03: Run final verification — test, clippy, doc, audit script** `est:10m`
+- [x] **T03: Run final verification — test, clippy, doc, audit script** `est:10m`
   Run cargo test, cargo test --features gui, cargo clippy --all-targets -- -D warnings, cargo clippy --all-targets --features gui -- -D warnings, cargo doc --no-deps, and the S03 audit script. All must pass and audit must report 0 undocumented public items in src/.
   - Verify: All cargo invocations exit 0; audit script reports 0
 

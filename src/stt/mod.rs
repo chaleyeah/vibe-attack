@@ -51,6 +51,7 @@ pub struct SttService {
     job_tx: Sender<SttMsg>,
     job_rx: Receiver<SttMsg>,
     result_tx: Sender<SttResult>,
+    /// Receive end of the bounded result channel; clone via [`SttService::result_receiver`].
     pub result_rx: Receiver<SttResult>,
     shutdown: CancellationToken,
     handle: Option<std::thread::JoinHandle<()>>,

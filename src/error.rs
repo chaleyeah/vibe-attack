@@ -2,7 +2,7 @@
 
 /// Catastrophic daemon errors that cause process exit with an actionable stderr message.
 ///
-/// Every variant carries a human-readable [`Display`] message (via [`thiserror`]) that
+/// Every variant carries a human-readable [`std::fmt::Display`] message (via [`thiserror`]) that
 /// tells the user exactly what went wrong and how to fix it. Callers should propagate
 /// these to `main` and print them; do not swallow them silently.
 #[derive(Debug, thiserror::Error)]
