@@ -4,6 +4,19 @@ use std::sync::{
 };
 
 use ksni::{menu::StandardItem, MenuItem, Tray, TrayMethods};
+use tokio::sync::Mutex;
+
+use crate::control::{
+    client::{query_status, send_command},
+    protocol::{ControlRequest, DaemonState},
+};
+
+/// Shared state polled from the daemon; updated by the background poll task.
+#[derive(Clone, Default)]
+struct TrayState {
+    /// None = daemon not running.
+    daemon_state: Option<DaemonState>,
+}
 
 pub struct TrayHandle {
     /// Set to true by the tray "Open Config" action; cleared by the eframe loop.
@@ -18,7 +31,6 @@ impl TrayHandle {
         let open_window = Arc::new(AtomicBool::new(false));
         let open_window_clone = Arc::clone(&open_window);
 
-        // Channel so we can detect spawn failure before returning.
         let (tx, rx) = std::sync::mpsc::channel::<Result<(), String>>();
 
         let thread = std::thread::Builder::new()
@@ -38,11 +50,41 @@ impl TrayHandle {
                 rt.block_on(async move {
                     let tray = VibeTray {
                         open_window: Arc::clone(&open_window_clone),
+                        state: Arc::new(Mutex::new(TrayState::default())),
                     };
+                    let state_ref = Arc::clone(&tray.state);
+
                     match tray.spawn().await {
-                        Ok(_handle) => {
+                        Ok(handle) => {
                             let _ = tx.send(Ok(()));
-                            // Run forever — tray lives until process exits.
+
+                            // Spawn the poll loop inside the same tokio runtime.
+                            let poll_handle = handle.clone();
+                            tokio::spawn(async move {
+                                loop {
+                                    tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+
+                                    let new_daemon_state = query_status()
+                                        .map(|s| s.state);
+
+                                    // Only push an update when the visible state actually changed.
+                                    let changed = {
+                                        let s = state_ref.lock().await;
+                                        s.daemon_state != new_daemon_state
+                                    };
+
+                                    if changed {
+                                        poll_handle
+                                            .update(|tray: &mut VibeTray| {
+                                                tray.state.try_lock()
+                                                    .map(|mut s| s.daemon_state = new_daemon_state.clone())
+                                                    .ok();
+                                            })
+                                            .await;
+                                    }
+                                }
+                            });
+
                             std::future::pending::<()>().await;
                         }
                         Err(e) => {
@@ -76,6 +118,16 @@ impl TrayHandle {
 
 struct VibeTray {
     open_window: Arc<AtomicBool>,
+    state: Arc<Mutex<TrayState>>,
+}
+
+impl VibeTray {
+    fn current_state(&self) -> TrayState {
+        self.state
+            .try_lock()
+            .map(|s| s.clone())
+            .unwrap_or_default()
+    }
 }
 
 impl Tray for VibeTray {
@@ -84,7 +136,11 @@ impl Tray for VibeTray {
     }
 
     fn icon_name(&self) -> String {
-        "audio-input-microphone".into()
+        match self.current_state().daemon_state {
+            None => "audio-input-microphone-muted".into(),
+            Some(DaemonState::Muted) => "audio-input-microphone-muted".into(),
+            Some(_) => "audio-input-microphone".into(),
+        }
     }
 
     fn title(&self) -> String {
@@ -92,16 +148,30 @@ impl Tray for VibeTray {
     }
 
     fn tool_tip(&self) -> ksni::ToolTip {
+        let description = match self.current_state().daemon_state {
+            None => "Not running".into(),
+            Some(DaemonState::Idle) => "Idle — listening for wake word".into(),
+            Some(DaemonState::Muted) => "Muted".into(),
+            Some(DaemonState::Listening) => "Listening…".into(),
+            Some(DaemonState::Recording) => "Recording…".into(),
+        };
         ksni::ToolTip {
             title: "Vibe Attack".into(),
-            description: "Voice macro daemon".into(),
+            description,
             ..Default::default()
         }
     }
 
     fn menu(&self) -> Vec<MenuItem<Self>> {
+        let state = self.current_state();
+        let is_muted = matches!(state.daemon_state, Some(DaemonState::Muted));
+        let daemon_running = state.daemon_state.is_some();
+
         let open_flag = Arc::clone(&self.open_window);
-        vec![
+
+        let mut items: Vec<MenuItem<Self>> = Vec::new();
+
+        items.push(
             StandardItem {
                 label: "Open Config".into(),
                 icon_name: "preferences-system".into(),
@@ -111,7 +181,40 @@ impl Tray for VibeTray {
                 ..Default::default()
             }
             .into(),
-            MenuItem::Separator,
+        );
+
+        items.push(MenuItem::Separator);
+
+        if daemon_running {
+            let mute_label = if is_muted { "Unmute" } else { "Mute" };
+            let mute_icon = if is_muted {
+                "audio-input-microphone"
+            } else {
+                "audio-input-microphone-muted"
+            };
+            items.push(
+                StandardItem {
+                    label: mute_label.into(),
+                    icon_name: mute_icon.into(),
+                    activate: Box::new(move |_this: &mut Self| {
+                        let cmd = if is_muted {
+                            ControlRequest::Unmute
+                        } else {
+                            ControlRequest::Mute
+                        };
+                        // Fire-and-forget on a fresh thread — ksni callbacks must not block.
+                        std::thread::spawn(move || {
+                            let _ = send_command(cmd);
+                        });
+                    }),
+                    ..Default::default()
+                }
+                .into(),
+            );
+            items.push(MenuItem::Separator);
+        }
+
+        items.push(
             StandardItem {
                 label: "Quit".into(),
                 icon_name: "application-exit".into(),
@@ -119,6 +222,8 @@ impl Tray for VibeTray {
                 ..Default::default()
             }
             .into(),
-        ]
+        );
+
+        items
     }
 }

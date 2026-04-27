@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-26T18:34:43Z | Files: 120 | Described: 0/120
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-26T18:34:43Z","fingerprint":"dd6d28fb60098eddd7ec5732e4aa998d1873cb55","fileCount":120,"truncated":false} -->
+Generated: 2026-04-27T00:18:37Z | Files: 122 | Described: 0/122
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-27T00:18:37Z","fingerprint":"853ec8673b3e8367a49ea064cf15ccbfb930008a","fileCount":122,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -158,6 +158,7 @@ Generated: 2026-04-26T18:34:43Z | Files: 120 | Described: 0/120
 - `src/ui/first_run.rs`
 - `src/ui/mod.rs`
 - `src/ui/probe.rs`
+- `src/ui/tray.rs`
 - `src/ui/wizard.rs`
 
 ### src/vad/
@@ -182,3 +183,6 @@ Generated: 2026-04-26T18:34:43Z | Files: 120 | Described: 0/120
 - `tests/ui_distribution.rs`
 - `tests/uinput_smoke.rs`
 - `tests/wake_word.rs`
+
+### uat/gui/
+- `uat/gui/builderror.txt`
