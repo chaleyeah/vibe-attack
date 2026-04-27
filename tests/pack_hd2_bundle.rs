@@ -1,9 +1,9 @@
-/// Integration tests proving the pack-system HD2 bundle works end-to-end.
-///
-/// Covers: Pack serialisation round-trip, flatten, export/import (ZIP), ProfileManager
-/// persistence, and a realistic Helldivers-2 stratagem macro-pack fixture that exercises
-/// every field of MacroConfig (phrase, if_flag, set_flag, sound, keys with dwell/gap
-/// overrides).  All tests are hermetic — no XDG writes, no network, no model files.
+// Integration tests for the pack-system HD2 bundle end-to-end.
+//
+// Covers: Pack serialisation round-trip, flatten, export/import (ZIP), ProfileManager
+// persistence, and a realistic Helldivers-2 stratagem macro-pack fixture that exercises
+// every field of MacroConfig (phrase, if_flag, set_flag, sound, keys with dwell/gap
+// overrides).  All tests are hermetic — no XDG writes, no network, no model files.
 
 use std::io::Write;
 
