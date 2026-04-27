@@ -1,8 +1,8 @@
-/// Static packaging artifact tests — no build tools required, no FUSE mount.
-///
-/// Verifies that build.sh and PKGBUILD contain the structural elements that
-/// make the AppImage work at runtime: ORT library bundling, AppRun LD_LIBRARY_PATH,
-/// and the onnxruntime runtime dependency declaration.
+// Static packaging artifact tests — no build tools required, no FUSE mount.
+//
+// Verifies that build.sh and PKGBUILD contain the structural elements that
+// make the AppImage work at runtime: ORT library bundling, AppRun LD_LIBRARY_PATH,
+// and the onnxruntime runtime dependency declaration.
 
 use std::fs;
 use std::path::Path;
