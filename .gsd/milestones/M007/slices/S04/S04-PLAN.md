@@ -26,7 +26,7 @@ No integration boundaries touched.
   - Files: `src/config.rs`
   - Verify: S03 audit script reports 0 undocumented pub items in src/config.rs; manual reading of the file gives a clear picture of the config schema and validation behavior
 
-- [ ] **T02: Audit and document all public items in src/error.rs** `est:30m`
+- [x] **T02: Audit and document all public items in src/error.rs** `est:30m`
   Read src/error.rs in full. For every variant of DaemonError (and any other public error types), ensure the /// doc comment explains: (a) what condition produces this variant, (b) where in the codebase it originates (which module/operation), (c) what a caller can do about it (recovery hint, retry, fail). Particular attention to DaemonError::Config(String) — clarify whether this means config parse failure, validation failure, or both. If error messages reference docs URLs (e.g. configuration.md), verify those URLs are correct.
   - Files: `src/error.rs`
   - Verify: S03 audit script reports 0 undocumented pub items in src/error.rs; each DaemonError variant doc explains origin and recovery hint
