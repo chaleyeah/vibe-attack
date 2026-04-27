@@ -36,7 +36,7 @@ External documentation surface aligned with current code. No runtime boundaries 
   - Files: `docs/configuration.md`
   - Verify: Every field in docs/configuration.md exists in src/config.rs; every pub field in src/config.rs is documented in docs/configuration.md; example YAML snippets are valid
 
-- [ ] **T04: Verify docs/troubleshooting.md and docs/uinput-setup.md accuracy** `est:45m`
+- [x] **T04: Verify docs/troubleshooting.md and docs/uinput-setup.md accuracy** `est:45m`
   Read both files line-by-line. Confirm: (a) binary names match (vibe-attack, vibe-attack-config), (b) uinput group name and udev rules match current install instructions and PKGBUILD/.spec/debian/, (c) command examples (e.g. journalctl filters, systemctl status) reference correct service names, (d) error messages quoted in troubleshooting.md still match current src/error.rs Display impls. Update any drift.
   - Files: `docs/troubleshooting.md`, `docs/uinput-setup.md`
   - Verify: Manual cross-reference confirms binary names, group names, error messages, and commands all match current state

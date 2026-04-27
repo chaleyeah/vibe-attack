@@ -32,7 +32,7 @@ echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
 > **systemd v258+ (Arch / CachyOS 2025+):** Use the `input` group, not `uinput`. The
 > `uinput` group was broken in systemd v258 because non-system groups are no longer
 > recognized by udev rules. See [docs/uinput-setup.md](uinput-setup.md) for the full
-> udev rule approach.
+> module-load and group setup steps.
 
 ---
 
@@ -129,10 +129,10 @@ though the daemon appears to be running.
 vibe-attack ping
 ```
 
-A healthy daemon prints `pong`. If the socket is stale, remove it and restart:
+A healthy daemon prints `Pong`. If the socket is stale, remove it and restart:
 ```bash
 rm -f /run/user/"$(id -u)"/vibe-attack.sock
-vibe-attack daemon &
+vibe-attack > /dev/null 2>&1 &
 ```
 
 ---
@@ -145,12 +145,12 @@ vibe-attack daemon &
 
 **Fix (Debian/Ubuntu):**
 ```bash
-sudo apt-get install libasound2-dev pkg-config cmake
+sudo apt-get install libasound2-dev pkg-config cmake libclang-dev
 ```
 
 **Fix (Arch/CachyOS):**
 ```bash
-sudo pacman -S alsa-lib pkgconf cmake
+sudo pacman -S alsa-lib pkgconf cmake clang
 ```
 
 `whisper-rs` builds the whisper.cpp C++ library via cmake — cmake must be on `PATH`.
