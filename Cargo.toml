@@ -55,5 +55,3 @@ ksni = { version = "0.3.4", optional = true, features = ["tokio"] }
 tempfile = "3"
 serial_test = "3"
 
-[patch.crates-io]
-whisper-rs = { path = "vendor/whisper-rs" }
