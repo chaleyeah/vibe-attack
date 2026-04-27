@@ -255,10 +255,8 @@ pub struct KeyAction {
     pub gap_ms: Option<u64>,
 }
 
-/// Return the XDG config file path (D-14).
-/// $XDG_CONFIG_HOME/vibe-attack/config.yaml, or ~/.config/vibe-attack/config.yaml.
 /// Return the XDG config file path (D-14), creating the config directory if needed.
-/// $XDG_CONFIG_HOME/vibe-attack/config.yaml, or ~/.config/vibe-attack/config.yaml.
+/// Resolves to $XDG_CONFIG_HOME/vibe-attack/config.yaml (default: ~/.config/vibe-attack/config.yaml).
 pub fn default_config_path() -> Result<PathBuf> {
     let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
     xdg.place_config_file("config.yaml")

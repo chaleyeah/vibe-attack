@@ -36,7 +36,7 @@ No integration boundaries touched.
   - Files: `src/control/mod.rs`, `src/control/client.rs`
   - Verify: grep -B3 'fn get_socket_path' src/control/ shows an explanatory comment in each location; cargo check passes
 
-- [ ] **T04: Collapse duplicate doc comment on default_config_path** `est:5m`
+- [x] **T04: Collapse duplicate doc comment on default_config_path** `est:5m`
   In src/config.rs around lines 258–260, two consecutive /// lines both say 'Return the XDG config file path'. Collapse into a single accurate doc comment. Verify against current line numbers (file may have shifted).
   - Files: `src/config.rs`
   - Verify: grep -A1 'fn default_config_path' src/config.rs shows a single coherent /// doc block; cargo check passes
