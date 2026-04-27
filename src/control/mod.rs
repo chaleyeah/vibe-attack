@@ -1,4 +1,6 @@
+/// Wire types for the Unix-socket control protocol: [`ControlRequest`], [`ControlResponse`], [`DaemonStatus`].
 pub mod protocol;
+/// Client-side helpers for sending commands to a running daemon from CLI subcommands.
 pub mod client;
 
 use std::path::PathBuf;

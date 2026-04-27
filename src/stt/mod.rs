@@ -14,23 +14,36 @@ use tokio_util::sync::CancellationToken;
 
 use crate::vad::{try_send_drop_oldest, UtteranceJob};
 
+/// Internal message type for the bounded STT job queue.
 #[derive(Debug)]
 pub enum SttMsg {
     Job(UtteranceJob),
     Shutdown,
 }
 
+/// Transcription result emitted by the STT thread for each completed utterance.
 #[derive(Debug, Clone)]
 pub struct SttResult {
+    /// Monotonically increasing utterance identifier assigned by the VAD segmenter.
     pub utterance_id: u64,
+    /// Transcribed text (trimmed; may be empty if Whisper produces no segments).
     pub text: String,
+    /// Duration of the audio buffer in milliseconds.
     pub audio_ms: u64,
+    /// Wall-clock time spent in Whisper inference (milliseconds).
     pub stt_ms: u64,
     pub timings: crate::pipeline::timing::UtteranceTimings,
+    /// VAD frame index at which this utterance started (for ordering).
     pub start_frame_idx: u64,
+    /// VAD frame index at which this utterance ended (for ordering).
     pub end_frame_idx: u64,
 }
 
+/// Owner of the Whisper model and the bounded STT job queue.
+///
+/// Call [`SttService::new`] to load the model, then [`SttService::spawn`] to start the
+/// inference thread. After spawning, interact via [`SttService::submitter`] and
+/// [`SttService::result_receiver`].
 #[derive(Debug)]
 pub struct SttService {
     model_path: PathBuf,
@@ -59,6 +72,7 @@ impl SttSubmitter {
 }
 
 impl SttService {
+    /// Return a cloneable [`SttSubmitter`] for sending utterance jobs to the STT thread.
     pub fn submitter(&self) -> SttSubmitter {
         SttSubmitter {
             job_tx: self.job_tx.clone(),
@@ -71,6 +85,7 @@ impl SttService {
         self.submitter().try_submit(job)
     }
 
+    /// Return a cloneable receiver for [`SttResult`] values produced by the STT thread.
     pub fn result_receiver(&self) -> Receiver<SttResult> {
         self.result_rx.clone()
     }
@@ -102,6 +117,9 @@ impl SttService {
         })
     }
 
+    /// Spawn the STT inference thread and return the updated `SttService` with the join handle.
+    ///
+    /// Must be called exactly once after [`SttService::new`]; panics if called twice.
     pub fn spawn(mut self) -> Result<Self> {
         let job_rx = self.job_rx.clone();
         let result_tx = self.result_tx.clone();
@@ -233,10 +251,12 @@ impl SttService {
         Ok(self)
     }
 
+    /// Send a shutdown message to the STT thread (non-blocking; ignores send errors).
     pub fn request_shutdown(&self) {
         let _ = self.job_tx.try_send(SttMsg::Shutdown);
     }
 
+    /// Wait up to `timeout` for the STT thread to stop, then detach if it hasn't finished.
     pub fn join_best_effort(&mut self, timeout: Duration) {
         if let Some(handle) = self.handle.take() {
             let joiner = std::thread::spawn(move || handle.join());

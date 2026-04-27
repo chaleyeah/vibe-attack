@@ -24,6 +24,10 @@ pub struct Config {
 }
 
 impl Config {
+    /// Validate that every model file path referenced in the config actually exists on disk.
+    ///
+    /// Called at daemon startup so the user gets an actionable error immediately rather than
+    /// a cryptic panic when the pipeline tries to load a missing file.
     pub fn validate_model_paths(&self) -> Result<()> {
         if self.stt.enabled {
             let model_path = self
@@ -101,6 +105,10 @@ impl Default for TimingConfig {
     }
 }
 
+/// Controls how much per-stage event detail the pipeline emits on stderr.
+///
+/// `Summary` (default) emits one line per utterance. `Stages` adds timing
+/// events for each intermediate stage (VAD, wake, STT, match, dispatch).
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum PipelineVerbosity {

@@ -46,7 +46,7 @@ No integration boundaries touched.
   - Files: `src/ui/config_app.rs`, `src/ui/first_run.rs`, `src/ui/wizard.rs`, `src/input/inject.rs`, `src/pack/mod.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/ui/, src/input/, src/pack/; cargo doc renders cleanly
 
-- [ ] **T06: Run audit script and quality spot-check** `est:30m`
+- [x] **T06: Run audit script and quality spot-check** `est:30m`
   Run the M007-RESEARCH.md Python audit script against src/ — must report 0 undocumented public items. Then randomly select 10 newly-documented pub items, read each /// comment, and confirm it explains the item's purpose (why) not just restates the name (what). If any are superficial, revise. Run cargo test, cargo test --features gui, cargo clippy --all-targets -- -D warnings, cargo clippy --all-targets --features gui -- -D warnings, cargo doc --no-deps. All must pass.
   - Verify: Audit script output is '0 undocumented public items'; spot-check log (10 items reviewed) is captured in slice summary; all cargo invocations exit 0
 

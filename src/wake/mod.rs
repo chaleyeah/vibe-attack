@@ -17,6 +17,10 @@ pub struct WakeWord {
 }
 
 impl WakeWord {
+    /// Build a `WakeWord` spotter from the model paths in `cfg`.
+    ///
+    /// Returns an error if `wake.enabled` is false or any required model file is missing.
+    /// BPE vocabulary (`bpe.model`) is detected automatically if present beside `encoder.onnx`.
     pub fn new(cfg: &WakeConfig) -> Result<Self> {
         if !cfg.enabled {
             return Err(anyhow!("wake is disabled"));
@@ -94,6 +98,7 @@ impl WakeWord {
         }
     }
 
+    /// Reset the spotter stream state so prior detections don't re-trigger on the next window.
     pub fn reset(&self) {
         self.kws.reset(&self.stream);
     }

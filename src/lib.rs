@@ -58,15 +58,27 @@
 //! | Add a new control-plane command | [`control::protocol`] → [`control`] server handler |
 //! | Understand the config file format | [`config`] — `Config` and its nested structs |
 
+/// CPAL input stream; writes f32 samples into a pre-allocated ring buffer without allocating in the RT callback.
 pub mod audio;
+/// Top-level `Config` struct (audio, VAD, wake, STT, pipeline, input settings) loaded from YAML.
 pub mod config;
+/// `DaemonError` — typed fatal errors (uinput access, model load, socket bind) with actionable stderr messages.
 pub mod error;
+/// PTT detection (`input::ptt`) and uinput keypress injection (`input::inject`).
 pub mod input;
+/// Coordinator, phrase matcher, dispatcher, and JSONL/timing helpers; routes transcribed text to macro actions.
 pub mod pipeline;
+/// whisper.cpp transcription; runs on a dedicated blocking thread, never on the Tokio runtime.
 pub mod stt;
+/// Silero VAD; segments the sample stream into speech utterances with hysteresis, preroll, and tail audio.
 pub mod vad;
+/// sherpa-onnx keyword spotter; gates STT so only post-wake audio is transcribed.
 pub mod wake;
+/// Unix-socket control plane; lets CLI subcommands (ping, switch, test, import, export) talk to the running daemon.
 pub mod control;
+/// `Pack` / `MacroPack` — loads and manages `{name}/pack.yaml` macro-pack files; `pack::manager` handles hot-swap.
 pub mod pack;
+/// Ratatui-based interactive TUI editor (`vibe-attack edit`) for browsing and editing macro packs.
 pub mod tui;
+/// GUI helpers: first-run wizard, config app, audio-device probe, and optional system-tray (`feature = "gui"`).
 pub mod ui;

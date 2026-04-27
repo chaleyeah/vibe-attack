@@ -17,8 +17,11 @@ use crossbeam_channel::{Receiver, Sender, TrySendError};
 use std::collections::VecDeque;
 use std::time::Instant;
 
+/// Required audio sample rate for all VAD and downstream processing (16 kHz).
 pub const SAMPLE_RATE_HZ: u32 = 16_000;
+/// Number of samples per VAD processing frame (320 = 20ms @ 16kHz, per D-01/D-09).
 pub const FRAME_SAMPLES: usize = 320; // 20ms @ 16kHz
+/// Sliding window size fed to the Silero model; advanced every [`FRAME_SAMPLES`].
 pub const SILERO_WINDOW_SAMPLES: usize = 512;
 
 /// Non-blocking bounded send with **drop-oldest** behavior (D-03).
@@ -40,14 +43,25 @@ pub fn try_send_drop_oldest<T>(tx: &Sender<T>, rx: &Receiver<T>, item: T) -> Res
     }
 }
 
+/// Hysteresis and segmentation parameters for [`VadSegmenter`].
+///
+/// All frame counts use 20ms frames (see [`FRAME_SAMPLES`]). The default values implement the
+/// locked decisions D-06 through D-12 and are tuned for push-to-talk gaming use.
 #[derive(Debug, Clone)]
 pub struct VadConfig {
+    /// Silero speech-probability threshold to begin an utterance (D-10).
     pub start_threshold: f32,
+    /// Silero speech-probability threshold to end an utterance; must be < `start_threshold` (D-10).
     pub stop_threshold: f32,
+    /// Minimum consecutive speech frames before the utterance is committed (D-12).
     pub min_speech_frames: usize,
+    /// Number of consecutive non-speech frames required to close an utterance (D-11).
     pub end_silence_frames: usize,
+    /// Frames of audio buffered before speech onset and prepended to every utterance (D-06).
     pub preroll_frames: usize,
+    /// Frames of post-speech audio appended to every utterance to capture trailing sounds (D-07).
     pub tail_frames: usize,
+    /// Hard cap on utterance length in frames; forces a cut when reached (D-08).
     pub max_utterance_frames: usize,
 }
 
@@ -70,16 +84,25 @@ impl Default for VadConfig {
     }
 }
 
+/// A complete speech utterance emitted by [`VadSegmenter`] and queued for wake/STT processing.
 #[derive(Debug, Clone)]
 pub struct UtteranceJob {
+    /// Monotonically increasing ID assigned by the segmenter; used for ordering and JSONL logging.
     pub utterance_id: u64,
     /// Audio buffer assembled on the VAD thread (never in CPAL callback).
     pub audio: Vec<f32>,
+    /// Stage timing markers set as the utterance progresses through the pipeline.
     pub timings: UtteranceTimings,
+    /// VAD frame index at which this utterance started (for ordering and gap detection).
     pub start_frame_idx: u64,
+    /// VAD frame index at which this utterance ended.
     pub end_frame_idx: u64,
 }
 
+/// Stateful voice-activity detector that converts a stream of 20ms audio frames into [`UtteranceJob`]s.
+///
+/// Feed frames via `push_frame` (from the VAD OS thread, never the CPAL RT callback). Each
+/// completed utterance is returned as an `Option<UtteranceJob>` from that call.
 #[derive(Debug)]
 pub struct VadSegmenter {
     cfg: VadConfig,
@@ -107,6 +130,7 @@ pub struct VadSegmenter {
 }
 
 impl VadSegmenter {
+    /// Create a new segmenter with the given VAD configuration.
     pub fn new(cfg: VadConfig) -> Self {
         let preroll_cap = cfg.preroll_frames * FRAME_SAMPLES;
         let pending_cap = cfg.end_silence_frames * FRAME_SAMPLES;

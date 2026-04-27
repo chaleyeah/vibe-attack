@@ -109,6 +109,7 @@ impl<W: Write> JsonlWriter<W> {
         self.verbosity
     }
 
+    /// Emit a completed-utterance JSONL event with full timing and STT metadata.
     // Each argument maps to a distinct top-level field in the JSONL event schema; no meaningful grouping reduces them.
     #[allow(clippy::too_many_arguments)]
     pub fn write_utterance(
