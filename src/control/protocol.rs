@@ -37,6 +37,7 @@ pub enum DaemonState {
 /// Full daemon status snapshot returned by the Status command.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DaemonStatus {
+    /// Current runtime state of the pipeline.
     pub state: DaemonState,
     /// Name of the currently loaded profile, if any.
     pub active_profile: Option<String>,

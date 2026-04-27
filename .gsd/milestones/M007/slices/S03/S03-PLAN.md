@@ -31,7 +31,7 @@ No integration boundaries touched.
   - Files: `src/pipeline/coordinator.rs`, `src/pipeline/dispatcher.rs`, `src/pipeline/matcher.rs`, `src/pipeline/sound.rs`, `src/pipeline/timing.rs`, `src/pipeline/jsonl.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/pipeline/; cargo doc renders cleanly; cargo clippy -D warnings passes
 
-- [ ] **T03: Document src/control/ public items** `est:30m`
+- [x] **T03: Document src/control/ public items** `est:30m`
   Add /// doc comments to every undocumented pub item in src/control/: mod.rs (DaemonHandle::new/state/status), client.rs (send_command/query_status/is_daemon_running). protocol.rs is already well-documented per research — verify and skip if so.
   - Files: `src/control/mod.rs`, `src/control/client.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/control/; cargo doc renders cleanly

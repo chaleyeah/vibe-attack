@@ -17,6 +17,7 @@ use crate::pipeline::dispatcher::Dispatcher;
 /// All fields are cheap to clone (Arc-wrapped).
 #[derive(Clone)]
 pub struct DaemonHandle {
+    /// Macro dispatcher shared with the pipeline; used to push profile updates.
     pub dispatcher: Arc<Dispatcher>,
     /// Set true to suppress audio processing. The pipeline thread checks this
     /// on each frame and skips wake/VAD/STT while muted.
@@ -30,6 +31,7 @@ pub struct DaemonHandle {
 }
 
 impl DaemonHandle {
+    /// Create a new handle wrapping the given dispatcher with all state flags initialised to false/None.
     pub fn new(dispatcher: Arc<Dispatcher>) -> Self {
         Self {
             dispatcher,
@@ -40,6 +42,7 @@ impl DaemonHandle {
         }
     }
 
+    /// Derive the current [`DaemonState`] from the atomic flags, in priority order: Muted > Recording > Listening > Idle.
     pub fn state(&self) -> DaemonState {
         if self.muted.load(Ordering::Relaxed) {
             DaemonState::Muted
@@ -52,6 +55,7 @@ impl DaemonHandle {
         }
     }
 
+    /// Build a full [`DaemonStatus`] snapshot (state + active profile + macro count) for Status queries.
     pub fn status(&self) -> DaemonStatus {
         let macro_count = self.dispatcher.macro_count();
         DaemonStatus {
