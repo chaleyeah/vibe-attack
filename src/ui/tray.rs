@@ -3,12 +3,18 @@ use std::sync::{
     Arc,
 };
 
-use ksni::{menu::StandardItem, MenuItem, Tray, TrayMethods};
+use ksni::{
+    menu::{CheckmarkItem, StandardItem, SubMenu},
+    MenuItem, Tray, TrayMethods,
+};
 use tokio::sync::Mutex;
 
-use crate::control::{
-    client::{query_status, send_command},
-    protocol::{ControlRequest, DaemonState},
+use crate::{
+    control::{
+        client::{query_status, send_command},
+        protocol::{ControlRequest, DaemonState},
+    },
+    ui::config_app::load_profiles,
 };
 
 /// Shared state polled from the daemon; updated by the background poll task.
@@ -16,6 +22,10 @@ use crate::control::{
 struct TrayState {
     /// None = daemon not running.
     daemon_state: Option<DaemonState>,
+    /// Active profile name reported by the daemon (None = none loaded or daemon stopped).
+    active_profile: Option<String>,
+    /// Profile names discovered from the XDG config directory.
+    profiles: Vec<String>,
 }
 
 pub struct TrayHandle {
@@ -64,21 +74,28 @@ impl TrayHandle {
                                 loop {
                                     tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
 
-                                    let new_daemon_state = query_status()
-                                        .map(|s| s.state);
+                                    let status = query_status();
+                                    let new_daemon_state = status.as_ref().map(|s| s.state.clone());
+                                    let new_active_profile = status.and_then(|s| s.active_profile);
+                                    // Read profile list from disk on each tick — cheap stat, no daemon needed.
+                                    let new_profiles = load_profiles();
 
-                                    // Only push an update when the visible state actually changed.
+                                    // Only push a D-Bus update when the visible state actually changed.
                                     let changed = {
                                         let s = state_ref.lock().await;
                                         s.daemon_state != new_daemon_state
+                                            || s.active_profile != new_active_profile
+                                            || s.profiles != new_profiles
                                     };
 
                                     if changed {
                                         poll_handle
                                             .update(|tray: &mut VibeTray| {
-                                                tray.state.try_lock()
-                                                    .map(|mut s| s.daemon_state = new_daemon_state.clone())
-                                                    .ok();
+                                                if let Ok(mut s) = tray.state.try_lock() {
+                                                    s.daemon_state = new_daemon_state.clone();
+                                                    s.active_profile = new_active_profile.clone();
+                                                    s.profiles = new_profiles.clone();
+                                                }
                                             })
                                             .await;
                                     }
@@ -213,6 +230,44 @@ impl Tray for VibeTray {
             );
             items.push(MenuItem::Separator);
         }
+
+        // Profile switcher submenu — always shown, disabled when daemon is not running.
+        let profile_submenu: Vec<MenuItem<Self>> = state
+            .profiles
+            .iter()
+            .map(|name| {
+                let is_active = state.active_profile.as_deref() == Some(name.as_str());
+                let name_clone = name.clone();
+                CheckmarkItem {
+                    label: name.clone(),
+                    checked: is_active,
+                    enabled: daemon_running,
+                    activate: Box::new(move |_this: &mut Self| {
+                        let req = ControlRequest::SwitchProfile {
+                            name: name_clone.clone(),
+                        };
+                        std::thread::spawn(move || {
+                            let _ = send_command(req);
+                        });
+                    }),
+                    ..Default::default()
+                }
+                .into()
+            })
+            .collect();
+
+        items.push(
+            SubMenu {
+                label: "Profiles".into(),
+                icon_name: "folder".into(),
+                enabled: !state.profiles.is_empty(),
+                submenu: profile_submenu,
+                ..Default::default()
+            }
+            .into(),
+        );
+
+        items.push(MenuItem::Separator);
 
         items.push(
             StandardItem {

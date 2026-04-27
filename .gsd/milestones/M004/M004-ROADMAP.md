@@ -19,10 +19,10 @@
 - [x] **S02: Tray Icon — Static Placeholder** `risk:medium` `depends:[S01]`
   > After this: Run vibe-attack-config on X11 and Wayland; tray icon appears in system bar; Open Config brings the egui window to front; Quit exits cleanly
 
-- [ ] **S03: Live Daemon State in Tray** `risk:medium` `depends:[S01,S02]`
+- [x] **S03: Live Daemon State in Tray** `risk:medium` `depends:[S01,S02]`
   > After this: With daemon running: tray icon turns green when wake-word or PTT is active, red when muted via tray click. With daemon stopped: tray shows grey 'Not running' tooltip.
 
-- [ ] **S04: Profile Switcher in Tray** `risk:low` `depends:[S03]`
+- [x] **S04: Profile Switcher in Tray** `risk:low` `depends:[S03]`
   > After this: With hd2 profile installed: tray Profiles submenu shows 'hd2' with a checkmark. Selecting a different profile (if present) sends LOAD_PROFILE and the daemon logs the switch.
 
 ## Boundary Map
