@@ -15,10 +15,10 @@
 
 ## Slices
 
-- [ ] **S01: S01** `risk:high` `depends:[]`
+- [x] **S01: S01** `risk:high` `depends:[]`
   > After this: cargo test passes; cargo clippy -D warnings clean; cargo check confirms no transitive breakage from sha2 removal; new integration test asserts load_profiles returns subdirectory-format profiles and ignores flat .yaml files; success-criteria grep returns zero hits in src/ except justified TODO in control/mod.rs
 
-- [ ] **S02: Internal consistency — safety comments, alias notes, lint annotations** `risk:low` `depends:[S01]`
+- [ ] **S02: S02** `risk:low` `depends:[]`
   > After this: cargo test passes; cargo clippy -D warnings clean; grep for `unsafe impl` in src/pipeline/dispatcher.rs shows a // SAFETY: comment immediately above each impl; the SegCfg alias in coordinator.rs has an explanatory comment; the dual get_socket_path functions in control/mod.rs and control/client.rs have a comment in each describing the intentional split; the duplicate doc comment on default_config_path in config.rs is collapsed; the #[allow(clippy::too_many_arguments)] on jsonl.rs has a justification comment
 
 - [ ] **S03: Public API documentation pass — every pub item documented** `risk:medium` `depends:[S02]`

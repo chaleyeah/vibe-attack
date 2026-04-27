@@ -21,7 +21,7 @@ No integration boundaries touched.
 
 ## Tasks
 
-- [ ] **T01: Add SAFETY comments to unsafe impl Send/Sync on Dispatcher** `est:15m`
+- [x] **T01: Add SAFETY comments to unsafe impl Send/Sync on Dispatcher** `est:15m`
   In src/pipeline/dispatcher.rs, add a `// SAFETY:` comment immediately above each `unsafe impl Send for Dispatcher {}` and `unsafe impl Sync for Dispatcher {}`. The comment must explain that rodio's OutputStream (held by SoundPlayer) is not Send, but Dispatcher only ever invokes SoundPlayer from its single owning thread, making the manual Send/Sync impls sound. Run cargo clippy -D warnings to verify.
   - Files: `src/pipeline/dispatcher.rs`
   - Verify: grep -B1 'unsafe impl' src/pipeline/dispatcher.rs shows a // SAFETY: line immediately preceding each unsafe impl; cargo clippy --all-targets -- -D warnings clean

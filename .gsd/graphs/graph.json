@@ -1,16 +1,16 @@
 {
   "nodes": [
     {
-      "id": "milestone:M002",
-      "label": "M002: Rebrand to vibe-attack",
+      "id": "milestone:M007",
+      "label": "M007: Codebase Cleanup & Documentation",
       "type": "milestone",
-      "description": "Active milestone: M002",
+      "description": "Active milestone: M007",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:planning",
-      "label": "Phase: planning",
+      "id": "concept:phase:evaluating-gates",
+      "label": "Phase: evaluating-gates",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -256,6 +256,13 @@
       "label": "T03: Update docs to remove ORT conflict warnings and document shared .so deployment",
       "type": "task",
       "confidence": "EXTRACTED"
+    },
+    {
+      "id": "milestone:M002",
+      "label": "M002: Rebrand to vibe-attack",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M002/M002-ROADMAP.md"
     },
     {
       "id": "milestone:M003",
@@ -554,6 +561,205 @@
     {
       "id": "task:M005:S06:T01",
       "label": "T01: Create .github/workflows/release.yml",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "milestone:M006",
+      "label": "M006: CI test pipeline",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M006/M006-ROADMAP.md"
+    },
+    {
+      "id": "slice:M006:S01",
+      "label": "S01: ci.yml — test + clippy on push/PR",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M006/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M006:S01:T01",
+      "label": "T01: Write and push ci.yml",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M007:S01",
+      "label": "S01: Dead code, dead deps, and the load_profiles bug fix",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M007:S01:T01",
+      "label": "T01: Remove sha2 dependency from Cargo.toml",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S01:T02",
+      "label": "T02: Narrow DispatcherState visibility from pub to pub(crate)",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S01:T03",
+      "label": "T03: Fix load_profiles to scan for {name}/pack.yaml subdirectories",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S01:T04",
+      "label": "T04: Add integration test for load_profiles canonical format",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S01:T05",
+      "label": "T05: Run full verification — test, clippy, success-criteria grep",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M007:S02",
+      "label": "S02: Internal consistency — safety comments, alias notes, lint annotations",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/slices/S02/S02-PLAN.md"
+    },
+    {
+      "id": "task:M007:S02:T01",
+      "label": "T01: Add SAFETY comments to unsafe impl Send/Sync on Dispatcher",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S02:T02",
+      "label": "T02: Annotate the SegCfg alias and #[allow] annotations",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S02:T03",
+      "label": "T03: Document the dual get_socket_path functions in control/",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S02:T04",
+      "label": "T04: Collapse duplicate doc comment on default_config_path",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S02:T05",
+      "label": "T05: Run full verification — test, clippy, audit grep",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M007:S03",
+      "label": "S03: Public API documentation pass — every pub item documented",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/slices/S03/S03-PLAN.md"
+    },
+    {
+      "id": "task:M007:S03:T01",
+      "label": "T01: Add crate-level //! doc comment to src/lib.rs",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S03:T02",
+      "label": "T02: Document src/pipeline/ public items",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S03:T03",
+      "label": "T03: Document src/control/ public items",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S03:T04",
+      "label": "T04: Document src/tui/ public items",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S03:T05",
+      "label": "T05: Document src/ui/ and src/input/ and src/pack/ public items",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S03:T06",
+      "label": "T06: Run audit script and quality spot-check",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M007:S04",
+      "label": "S04: Config and error type cleanup",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/slices/S04/S04-PLAN.md"
+    },
+    {
+      "id": "task:M007:S04:T01",
+      "label": "T01: Audit and document all public items in src/config.rs",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S04:T02",
+      "label": "T02: Audit and document all public items in src/error.rs",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S04:T03",
+      "label": "T03: Run final verification — test, clippy, doc, audit script",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M007:S05",
+      "label": "S05: README, CONTRIBUTING, and docs/ accuracy pass",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/slices/S05/S05-PLAN.md"
+    },
+    {
+      "id": "task:M007:S05:T01",
+      "label": "T01: Verify README.md accuracy",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S05:T02",
+      "label": "T02: Verify CONTRIBUTING.md accuracy",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S05:T03",
+      "label": "T03: Verify docs/configuration.md accuracy",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S05:T04",
+      "label": "T04: Verify docs/troubleshooting.md and docs/uinput-setup.md accuracy",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M007:S05:T05",
+      "label": "T05: Run final M007 milestone verification",
       "type": "task",
       "confidence": "EXTRACTED"
     },
@@ -1516,6 +1722,192 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "milestone:M006",
+      "to": "slice:M006:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M006:S01",
+      "to": "task:M006:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "slice:M007:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S01",
+      "to": "task:M007:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S01",
+      "to": "task:M007:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S01",
+      "to": "task:M007:S01:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S01",
+      "to": "task:M007:S01:T04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S01",
+      "to": "task:M007:S01:T05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "slice:M007:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S02",
+      "to": "task:M007:S02:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S02",
+      "to": "task:M007:S02:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S02",
+      "to": "task:M007:S02:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S02",
+      "to": "task:M007:S02:T04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S02",
+      "to": "task:M007:S02:T05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "slice:M007:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S03",
+      "to": "task:M007:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S03",
+      "to": "task:M007:S03:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S03",
+      "to": "task:M007:S03:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S03",
+      "to": "task:M007:S03:T04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S03",
+      "to": "task:M007:S03:T05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S03",
+      "to": "task:M007:S03:T06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "slice:M007:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S04",
+      "to": "task:M007:S04:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S04",
+      "to": "task:M007:S04:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S04",
+      "to": "task:M007:S04:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "slice:M007:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S05",
+      "to": "task:M007:S05:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S05",
+      "to": "task:M007:S05:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S05",
+      "to": "task:M007:S05:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S05",
+      "to": "task:M007:S05:T04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M007:S05",
+      "to": "task:M007:S05:T05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M001",
       "to": "decision:M001:1",
       "type": "relates_to",
@@ -1864,5 +2256,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-27T00:41:27.523Z"
+  "builtAt": "2026-04-27T11:39:26.782Z"
 }

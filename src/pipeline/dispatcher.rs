@@ -51,8 +51,12 @@ pub struct Dispatcher {
     default_gap_ms: u64,
 }
 
-// Dispatcher is safe to send between threads since all its fields are either Send or Arc-wrapped
+// SAFETY: rodio's OutputStream (held inside SoundPlayer) is !Send, but Dispatcher only ever
+// accesses sound_player from the single thread that owns it. No reference to sound_player is
+// shared across threads, so manual Send is sound.
 unsafe impl Send for Dispatcher {}
+// SAFETY: same invariant as Send — all access to sound_player is serialised through the single
+// owning thread; no concurrent access can occur across thread boundaries.
 unsafe impl Sync for Dispatcher {}
 
 impl Dispatcher {
