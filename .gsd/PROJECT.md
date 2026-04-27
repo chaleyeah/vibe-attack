@@ -8,7 +8,7 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 **During Helldivers 2 gameplay, the player can fire the right stratagem reliably by voice with minimal delay and without breaking flow** — wake word or push-to-talk, fully **local** speech processing, **Wayland-first** input delivery.
 
-## Current State (2026-04-25)
+## Current State (2026-04-27)
 
 **M001 Migration — complete ✅**
 
@@ -21,6 +21,16 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | S05: UI + Distribution | ✅ complete | Pure-logic UI state, feature-gated egui binary, PKGBUILD, AppImage scaffolding, 16 tests |
 | S06: Documentation | ✅ complete | README rewrite, CONTRIBUTING.md, troubleshooting, configuration docs, 11 structural tests |
 | S07: Wake Word ORT | ✅ complete | Shared ORT linking for sherpa-onnx, ORT_DYLIB_PATH auto-discovery, coexistence test |
+
+**M007 Codebase Cleanup & Documentation — complete ✅**
+
+| Slice | Status | Delivered |
+|-------|--------|-----------|
+| S01: Dead code & load_profiles fix | ✅ complete | sha2 removed, DispatcherState narrowed to pub(crate), load_profiles fixed to {name}/pack.yaml subdirectory format, hermetic integration test |
+| S02: Internal consistency comments | ✅ complete | // SAFETY: comments on all unsafe impls, justifications on all #[allow(...)], cross-reference comments on duplicate private fns |
+| S03: Public API documentation | ✅ complete | 191 pub items documented with ///, //! crate-level architecture doc in src/lib.rs with ASCII pipeline diagram, cargo doc 0 warnings |
+| S04: Config and error type cleanup | ✅ complete | Full doc coverage on src/config.rs and src/error.rs, intra-doc link fixed, audit script 0 gaps |
+| S05: README, CONTRIBUTING, docs/ accuracy | ✅ complete | 10 drift items corrected across 5 doc files; Feature Flags section added to README; all external docs accurate against current src/ |
 
 **Next milestone: TBD — system tray, full config window, AppImage build, AUR submission, runtime CI confirmation**
 
@@ -92,6 +102,9 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | Feature-gated GUI binary (required-features = ["gui"]) | Keeps daemon headless by default; no runtime cfg guards needed | Established in M001/S05 |
 | Stdout reserved for JSONL only | Composable with tooling; tracing/stderr for all instrumentation | Established in M001/S02 |
 | Dispatcher injected writer | Box<dyn Write + Send> makes dispatch testable without display server or stdout capture | Established in M001/S03 |
+| Profile loading canonical format: {name}/pack.yaml subdirectories | Aligns load_profiles UI with handle_switch_profile and Pack::load_from_dir; flat *.yaml profiles no longer recognized | Established in M007/S01 |
+| Every pub item in src/ requires a /// doc comment | Mechanically auditable floor for contributor comprehension; enforced by audit script + cargo doc | Established in M007 |
+| Every unsafe block and #[allow(...)] requires an adjacent justifying comment | Makes invariants discoverable without git blame; one // SAFETY: per impl block | Established in M007/S02 |
 
 ## Evolution
 
@@ -113,4 +126,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-25 — M001 (Migration) complete: 7 slices, 80+ tests, full pipeline from audio capture through phrase dispatch, pack system, UI scaffolding, documentation, and dual-ORT conflict resolution*
+*Last updated: 2026-04-27 — M007 (Codebase Cleanup & Documentation) complete: 5 slices, sha2 removed, load_profiles bug fixed, 191 pub items documented, external docs corrected for 10 drift items*

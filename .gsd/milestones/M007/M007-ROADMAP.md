@@ -27,7 +27,7 @@
 - [x] **S04: S04** `risk:low` `depends:[]`
   > After this: cargo test passes; cargo clippy -D warnings clean; src/config.rs and src/error.rs have full doc coverage on every public item; the duplicate default_config_path doc is gone (already done in S02 — verify); DaemonError variant docs explain what each variant represents and where it originates
 
-- [ ] **S05: S05** `risk:low` `depends:[]`
+- [x] **S05: S05** `risk:low` `depends:[]`
   > After this: README.md describes vibe-attack accurately, including the audio → keypress pipeline, build/run/configure steps, and the feature flags (default vs gui); CONTRIBUTING.md reflects the current dev setup; docs/configuration.md fields match the current Config struct; docs/troubleshooting.md references current binary names and uinput group conventions; docs/uinput-setup.md references the correct group name and udev rule; cargo test passes; cargo clippy -D warnings clean
 
 ## Boundary Map
