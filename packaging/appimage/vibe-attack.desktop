@@ -6,3 +6,4 @@ Icon=vibe-attack
 Comment=Voice macro daemon for Helldivers 2
 Categories=Game;Utility;
 Terminal=false
+StartupWMClass=vibe-attack

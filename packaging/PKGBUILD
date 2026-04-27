@@ -1,10 +1,10 @@
-# Maintainer: Your Name <your@email.com>
+# Maintainer: Chris Chale <chrischale@gmail.com>
 pkgname=vibe-attack
 pkgver=0.1.0
 pkgrel=1
 pkgdesc='Voice-macro daemon for Helldivers 2 on Linux'
 arch=('x86_64')
-url='https://github.com/yourusername/vibe-attack'
+url='https://github.com/chaleyeah/vibe-attack'
 license=('AGPL-3.0-only')
 depends=('alsa-lib' 'onnxruntime')
 makedepends=('rust' 'cargo')
@@ -14,14 +14,18 @@ sha256sums=('SKIP')
 build() {
     cd "$pkgname-$pkgver"
     cargo build --release --locked
+    cargo build --release --locked --features gui
 }
 
 package() {
     cd "$pkgname-$pkgver"
 
     install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+    install -Dm755 "target/release/${pkgname}-config" "$pkgdir/usr/bin/${pkgname}-config"
     install -Dm644 "packaging/appimage/vibe-attack.desktop" \
         "$pkgdir/usr/share/applications/vibe-attack.desktop"
+    install -Dm644 "assets/vibe-attack.svg" \
+        "$pkgdir/usr/share/icons/hicolor/scalable/apps/vibe-attack.svg"
     install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

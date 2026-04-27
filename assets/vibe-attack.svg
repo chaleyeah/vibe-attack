@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="#1a1a2e" stroke="#e94560" stroke-width="6"/>
+
+  <!-- Crosshair rings -->
+  <circle cx="128" cy="128" r="88" fill="none" stroke="#e94560" stroke-width="2" opacity="0.5"/>
+  <circle cx="128" cy="128" r="60" fill="none" stroke="#e94560" stroke-width="1.5" opacity="0.35"/>
+
+  <!-- Crosshair tick marks -->
+  <line x1="128" y1="40" x2="128" y2="58" stroke="#e94560" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="128" y1="198" x2="128" y2="216" stroke="#e94560" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="40" y1="128" x2="58" y2="128" stroke="#e94560" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="198" y1="128" x2="216" y2="128" stroke="#e94560" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Microphone body -->
+  <rect x="112" y="72" width="32" height="56" rx="16" ry="16" fill="#e94560"/>
+
+  <!-- Microphone stand arc -->
+  <path d="M96 136 Q96 164 128 164 Q160 164 160 136" fill="none" stroke="#e94560" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Microphone stand post -->
+  <line x1="128" y1="164" x2="128" y2="182" stroke="#e94560" stroke-width="5" stroke-linecap="round"/>
+  <line x1="110" y1="182" x2="146" y2="182" stroke="#e94560" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Sound wave left -->
+  <path d="M88 108 Q80 120 88 132" fill="none" stroke="#e94560" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <path d="M74 100 Q60 120 74 140" fill="none" stroke="#e94560" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Sound wave right -->
+  <path d="M168 108 Q176 120 168 132" fill="none" stroke="#e94560" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <path d="M182 100 Q196 120 182 140" fill="none" stroke="#e94560" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+</svg>

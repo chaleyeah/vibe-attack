@@ -1,0 +1,16 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: vibe-attack
+Upstream-Contact: Chris Chale <chrischale@gmail.com>
+Source: https://github.com/chaleyeah/vibe-attack
+
+Files: *
+Copyright: 2024-2026 Chris Chale <chrischale@gmail.com>
+License: AGPL-3.0-only
+
+License: AGPL-3.0-only
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, version 3.
+ .
+ On Debian systems, the complete text of the GNU Affero General Public
+ License version 3 can be found in "/usr/share/common-licenses/AGPL-3".

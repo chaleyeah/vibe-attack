@@ -1,0 +1,19 @@
+Source: vibe-attack
+Section: games
+Priority: optional
+Maintainer: Chris Chale <chrischale@gmail.com>
+Build-Depends: debhelper-compat (= 13), cargo, rustc, libclang-dev, libasound2-dev
+Standards-Version: 4.6.2
+Homepage: https://github.com/chaleyeah/vibe-attack
+Rules-Requires-Root: no
+
+Package: vibe-attack
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, libasound2
+Recommends: librsvg2-bin | inkscape
+Description: Voice macro daemon for Helldivers 2
+ Vibe Attack listens for voice commands and injects keyboard macros,
+ allowing hands-free execution of stratagems and other in-game actions
+ in Helldivers 2 on Linux.
+ .
+ Includes vibe-attack (daemon) and vibe-attack-config (GUI configuration tool).

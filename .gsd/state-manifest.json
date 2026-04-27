@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-27T00:31:07.087Z",
+  "exported_at": "2026-04-27T00:42:25.627Z",
   "milestones": [
     {
       "id": "M001",
@@ -98,7 +98,7 @@
       "title": "First-Run GUI Wizard + Setup Script",
       "status": "complete",
       "depends_on": [],
-      "created_at": "2026-04-26T17:14:52.386Z",
+      "created_at": "2026-04-27T00:32:05.347Z",
       "completed_at": null,
       "vision": "",
       "success_criteria": [],
@@ -117,8 +117,8 @@
       "title": "Runtime UX — System Tray + Daemon Control",
       "status": "complete",
       "depends_on": [],
-      "created_at": "2026-04-26T17:14:52.387Z",
-      "completed_at": "2026-04-27T00:31:07.083Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
+      "completed_at": null,
       "vision": "",
       "success_criteria": [],
       "key_risks": [],
@@ -130,6 +130,54 @@
       "definition_of_done": [],
       "requirement_coverage": "",
       "boundary_map_markdown": ""
+    },
+    {
+      "id": "M005",
+      "title": "Distribution Packaging",
+      "status": "complete",
+      "depends_on": [],
+      "created_at": "2026-04-27T00:35:48.603Z",
+      "completed_at": "2026-04-27T00:42:25.622Z",
+      "vision": "Ship vibe-attack as installable packages for all three target Linux distributions (Arch, Debian, Red Hat) and as a portable AppImage, with a GitHub Actions CI pipeline that builds and publishes the AppImage on every tagged release.",
+      "success_criteria": [
+        "AppImage runs on a clean Ubuntu/Debian machine without additional deps installed",
+        "PKGBUILD installs cleanly via makepkg on Arch",
+        "debian/ control file produces a .deb installable via dpkg -i",
+        "RPM .spec file produces an .rpm installable via rpm -i on Fedora",
+        "GitHub Actions workflow triggers on git tag push and uploads AppImage as a release asset",
+        "All packages install both vibe-attack and vibe-attack-config binaries",
+        "vibe-attack.svg icon is present and referenced correctly in all .desktop and packaging files"
+      ],
+      "key_risks": [
+        {
+          "risk": "AppImage runtime linker issues (libonnxruntime.so, libsherpa-onnx-c-api.so) may not be discoverable inside FUSE mount",
+          "whyItMatters": "Silent inference failure at runtime even though build succeeds — already documented in memory from S07"
+        },
+        {
+          "risk": "GitHub Actions build matrix for Rust + sherpa-onnx shared .so may be complex to cache correctly",
+          "whyItMatters": "Slow CI adds friction to every release"
+        },
+        {
+          "risk": "Debian packaging has strict policy around shared library versioning and .so bundling",
+          "whyItMatters": "dpkg may reject packages that bundle third-party .so files not in the distro archive"
+        }
+      ],
+      "proof_strategy": [],
+      "verification_contract": "",
+      "verification_integration": "",
+      "verification_operational": "",
+      "verification_uat": "",
+      "definition_of_done": [
+        "Icon SVG created and committed under assets/",
+        "AppImage build script runs end-to-end and produces a working AppImage",
+        "PKGBUILD passes namcap lint with no errors",
+        "debian/ directory produces installable .deb via dpkg-buildpackage or dpkg-deb",
+        "packaging/vibe-attack.spec produces installable .rpm via rpmbuild",
+        "GitHub Actions workflow file committed and passes a dry-run check",
+        "All packaging artifacts reference the correct binary names, icon, and GitHub URL"
+      ],
+      "requirement_coverage": "Not provided.",
+      "boundary_map_markdown": "Not provided."
     }
   ],
   "slices": [
@@ -440,7 +488,7 @@
       "risk": "medium",
       "depends": [],
       "demo": "Running `scripts/setup.sh` on a fresh system (or with --yes in a temp dir) completes all steps and exits 0; re-running is idempotent",
-      "created_at": "2026-04-26T17:14:52.387Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -462,7 +510,7 @@
       "risk": "medium",
       "depends": [],
       "demo": "Unit tests (no display server) pass: probe returns correct booleans for each check under hermetic XDG temp dirs; /dev/uinput open failure is correctly classified as inaccessible",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -484,7 +532,7 @@
       "risk": "high",
       "depends": [],
       "demo": "Launching vibe-attack-config on a system missing prerequisites shows the wizard; clicking through each step performs the real action; after all steps pass, the app transitions to the main config view",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -506,7 +554,7 @@
       "risk": "medium",
       "depends": [],
       "demo": "After wizard completes, the main config view shows real profile names, a live mic level bar that responds to audio input, and log lines appearing as the daemon runs",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -528,7 +576,7 @@
       "risk": "low",
       "depends": [],
       "demo": "cargo test covers probe module, FirstRunState transitions, and binary smoke; all pass in CI without a display server",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -545,12 +593,12 @@
     {
       "milestone_id": "M004",
       "id": "S01",
-      "title": "Control Socket — Daemon Status Query",
+      "title": "S01",
       "status": "complete",
       "risk": "medium",
       "depends": [],
       "demo": "cargo test control:: passes; a CLI one-liner (echo STATUS | nc -U /run/...) returns a JSON status line from a running daemon",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -567,14 +615,12 @@
     {
       "milestone_id": "M004",
       "id": "S02",
-      "title": "Tray Icon — Static Placeholder",
+      "title": "S02",
       "status": "complete",
       "risk": "medium",
-      "depends": [
-        "S01"
-      ],
+      "depends": [],
       "demo": "Run vibe-attack-config on X11 and Wayland; tray icon appears in system bar; Open Config brings the egui window to front; Quit exits cleanly",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -591,15 +637,12 @@
     {
       "milestone_id": "M004",
       "id": "S03",
-      "title": "Live Daemon State in Tray",
+      "title": "S03",
       "status": "complete",
       "risk": "medium",
-      "depends": [
-        "S01",
-        "S02"
-      ],
+      "depends": [],
       "demo": "With daemon running: tray icon turns green when wake-word or PTT is active, red when muted via tray click. With daemon stopped: tray shows grey 'Not running' tooltip.",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -616,14 +659,12 @@
     {
       "milestone_id": "M004",
       "id": "S04",
-      "title": "Profile Switcher in Tray",
+      "title": "S04",
       "status": "complete",
       "risk": "low",
-      "depends": [
-        "S03"
-      ],
+      "depends": [],
       "demo": "With hd2 profile installed: tray Profiles submenu shows 'hd2' with a checkmark. Selecting a different profile (if present) sends LOAD_PROFILE and the daemon logs the switch.",
-      "created_at": "2026-04-26T17:14:52.388Z",
+      "created_at": "2026-04-27T00:32:05.348Z",
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
@@ -633,6 +674,138 @@
       "integration_closure": "",
       "observability_impact": "",
       "sequence": 0,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M005",
+      "id": "S01",
+      "title": "S01",
+      "status": "complete",
+      "risk": "low",
+      "depends": [],
+      "demo": "assets/vibe-attack.svg exists; build.sh copies it into AppDir without errors",
+      "created_at": "2026-04-27T00:36:24.080Z",
+      "completed_at": "2026-04-27T00:38:06.561Z",
+      "full_summary_md": "---\nid: S01\nparent: M005\nmilestone: M005\nprovides:\n  - (none)\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - (none)\npatterns_established:\n  - (none)\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-27T00:38:06.562Z\nblocker_discovered: false\n---\n\n# S01: Icon and shared assets\n\n**SVG icon created; build.sh updated to bundle both binaries and both .so files; .desktop file cleaned up**\n\n## What Happened\n\nCreated assets/vibe-attack.svg (256x256 dark navy + red crosshair/mic design). Updated build.sh to: build with --features gui, copy both vibe-attack and vibe-attack-config, convert SVG to PNG via rsvg-convert/inkscape/ImageMagick, and bundle libsherpa-onnx-c-api.so alongside libonnxruntime.so. Added StartupWMClass to .desktop file.\n\n## Verification\n\nassets/vibe-attack.svg exists; build.sh references both .so files and both binaries; .desktop has StartupWMClass\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `assets/vibe-attack.svg` — New SVG icon\n- `packaging/appimage/build.sh` — Both binaries, SVG→PNG conversion, sherpa .so bundling\n- `packaging/appimage/vibe-attack.desktop` — Added StartupWMClass\n",
+      "full_uat_md": "# S01: Icon and shared assets — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-27T00:38:06.562Z\n\n# S01 UAT — Icon and shared assets\\n\\n- [ ] `assets/vibe-attack.svg` exists and renders correctly in an SVG viewer\\n- [ ] `packaging/appimage/build.sh` contains `vibe-attack-config` copy step\\n- [ ] `packaging/appimage/build.sh` contains `libsherpa-onnx-c-api.so` bundling\\n- [ ] `packaging/appimage/vibe-attack.desktop` has `StartupWMClass=vibe-attack`\n",
+      "goal": "Create the vibe-attack SVG icon and wire it into .desktop and build.sh",
+      "success_criteria": "Not provided.",
+      "proof_level": "Not provided.",
+      "integration_closure": "Not provided.",
+      "observability_impact": "Not provided.",
+      "sequence": 1,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M005",
+      "id": "S02",
+      "title": "S02",
+      "status": "complete",
+      "risk": "medium",
+      "depends": [],
+      "demo": "./packaging/appimage/build.sh exits 0; produced AppImage passes --appimage-extract sanity check showing both binaries and .so files",
+      "created_at": "2026-04-27T00:36:24.080Z",
+      "completed_at": "2026-04-27T00:40:51.544Z",
+      "full_summary_md": "---\nid: S02\nparent: M005\nmilestone: M005\nprovides:\n  - (none)\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - (none)\npatterns_established:\n  - (none)\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-27T00:40:51.545Z\nblocker_discovered: false\n---\n\n# S02: AppImage complete build\n\n**build.sh produces complete AppDir with both binaries, both .so files, icon conversion, and working AppRun**\n\n## What Happened\n\nUpdated packaging/appimage/build.sh to fully support the shared-ORT architecture: builds with --features gui to get vibe-attack-config, bundles both libonnxruntime.so and libsherpa-onnx-c-api.so via a find_so() helper (target/release → ldconfig → /usr search), converts SVG icon to PNG via rsvg-convert/inkscape/ImageMagick, copies both binaries, and sets LD_LIBRARY_PATH in AppRun for both .so files.\n\n## Verification\n\nbuild.sh contains both binary copies, find_so() for both .so files, SVG→PNG conversion logic, and AppRun LD_LIBRARY_PATH\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/appimage/build.sh` — Both binaries, sherpa .so, SVG→PNG, find_so() helper\n",
+      "full_uat_md": "# S02: AppImage complete build — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-27T00:40:51.545Z\n\n# S02 UAT — AppImage complete build\\n\\n- [ ] `bash packaging/appimage/build.sh` exits 0 on a machine with cargo, rsvg-convert, linuxdeploy, appimagetool\\n- [ ] AppDir/usr/bin/ contains both vibe-attack and vibe-attack-config\\n- [ ] AppDir/usr/lib/ contains libonnxruntime.so and libsherpa-onnx-c-api.so\\n- [ ] AppRun contains LD_LIBRARY_PATH export covering usr/lib\\n- [ ] Produced AppImage passes `--appimage-extract` sanity check\n",
+      "goal": "AppImage build script complete: both binaries, both .so deps, icon, working AppDir",
+      "success_criteria": "Not provided.",
+      "proof_level": "Not provided.",
+      "integration_closure": "Not provided.",
+      "observability_impact": "Not provided.",
+      "sequence": 2,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M005",
+      "id": "S03",
+      "title": "S03",
+      "status": "complete",
+      "risk": "medium",
+      "depends": [],
+      "demo": "dpkg-deb or dpkg-buildpackage produces vibe-attack_0.1.0_amd64.deb; dpkg --info shows correct metadata",
+      "created_at": "2026-04-27T00:36:24.080Z",
+      "completed_at": "2026-04-27T00:40:58.953Z",
+      "full_summary_md": "---\nid: S03\nparent: M005\nmilestone: M005\nprovides:\n  - (none)\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - (none)\npatterns_established:\n  - (none)\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-27T00:40:58.954Z\nblocker_discovered: false\n---\n\n# S03: Debian package\n\n**packaging/debian/ directory created and ready for dpkg-buildpackage**\n\n## What Happened\n\nCreated packaging/debian/ with all five required files: control (Depends: libasound2, Section: games), rules (executable, two cargo build steps, installs both binaries + SVG icon + .desktop + README), changelog (0.1.0-1), compat (13), copyright (AGPL-3.0-only).\n\n## Verification\n\ndebian/control has libasound2 dependency; rules is executable; both binaries and SVG icon in install section\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/debian/control` — Package metadata, Depends, BuildDepends\n- `packaging/debian/rules` — Build and install rules, executable\n- `packaging/debian/changelog` — Debian changelog\n- `packaging/debian/compat` — Debhelper compat level 13\n- `packaging/debian/copyright` — AGPL-3.0-only copyright\n",
+      "full_uat_md": "# S03: Debian package — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-27T00:40:58.954Z\n\n# S03 UAT — Debian package\\n\\n- [ ] `dpkg-buildpackage -us -uc -b` in project root produces vibe-attack_0.1.0-1_amd64.deb\\n- [ ] `dpkg --info vibe-attack_0.1.0-1_amd64.deb` shows correct Depends, Architecture: amd64\\n- [ ] `dpkg -i vibe-attack_0.1.0-1_amd64.deb` installs both binaries to /usr/bin/\\n- [ ] Icon present at /usr/share/icons/hicolor/scalable/apps/vibe-attack.svg after install\n",
+      "goal": "Debian package directory with control, rules, changelog, compat, copyright",
+      "success_criteria": "Not provided.",
+      "proof_level": "Not provided.",
+      "integration_closure": "Not provided.",
+      "observability_impact": "Not provided.",
+      "sequence": 3,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M005",
+      "id": "S04",
+      "title": "S04",
+      "status": "complete",
+      "risk": "low",
+      "depends": [],
+      "demo": "namcap packaging/PKGBUILD outputs no errors or warnings beyond expected AUR-only advisory",
+      "created_at": "2026-04-27T00:36:24.080Z",
+      "completed_at": "2026-04-27T00:41:10.637Z",
+      "full_summary_md": "---\nid: S04\nparent: M005\nmilestone: M005\nprovides:\n  - (none)\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - (none)\npatterns_established:\n  - (none)\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-27T00:41:10.638Z\nblocker_discovered: false\n---\n\n# S04: Arch PKGBUILD complete\n\n**PKGBUILD updated with real URL, maintainer, both binaries, and icon — AUR-ready**\n\n## What Happened\n\nUpdated packaging/PKGBUILD: real maintainer and url set to github.com/chaleyeah/vibe-attack, two cargo build steps to build both daemon and GUI binary, package() installs both binaries and the SVG icon to hicolor/scalable/apps/.\n\n## Verification\n\nPKGBUILD url= and source= reference chaleyeah/vibe-attack; both vibe-attack and vibe-attack-config in package(); SVG icon installed\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/PKGBUILD` — Real URL/maintainer, both binaries, SVG icon\n",
+      "full_uat_md": "# S04: Arch PKGBUILD complete — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-27T00:41:10.638Z\n\n# S04 UAT — Arch PKGBUILD\\n\\n- [ ] `namcap packaging/PKGBUILD` reports no errors (AUR advisory warnings acceptable)\\n- [ ] `makepkg -si` in a clean Arch chroot installs both binaries to /usr/bin/\\n- [ ] Icon present at /usr/share/icons/hicolor/scalable/apps/vibe-attack.svg after install\n",
+      "goal": "PKGBUILD complete: real URL, both binaries, icon installed, AUR-ready",
+      "success_criteria": "Not provided.",
+      "proof_level": "Not provided.",
+      "integration_closure": "Not provided.",
+      "observability_impact": "Not provided.",
+      "sequence": 4,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M005",
+      "id": "S05",
+      "title": "S05",
+      "status": "complete",
+      "risk": "low",
+      "depends": [],
+      "demo": "rpmbuild -bs vibe-attack.spec produces a .src.rpm without error (source RPM proves spec is syntactically valid)",
+      "created_at": "2026-04-27T00:36:24.080Z",
+      "completed_at": "2026-04-27T00:41:16.453Z",
+      "full_summary_md": "---\nid: S05\nparent: M005\nmilestone: M005\nprovides:\n  - (none)\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - (none)\npatterns_established:\n  - (none)\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-27T00:41:16.453Z\nblocker_discovered: false\n---\n\n# S05: RPM spec file\n\n**packaging/vibe-attack.spec created for Fedora/RHEL — both binaries, icon, correct metadata**\n\n## What Happened\n\nCreated packaging/vibe-attack.spec. All RPM macros correct (%{_bindir}, %{_datadir}, %{_docdir}). Two cargo build steps. %files covers both binaries, icon, .desktop, README, and LICENSE. %check explains audio hardware skip. %changelog entry present.\n\n## Verification\n\nspec file Name/Version/License/URL all correct; both binaries in %files; icon and .desktop present\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/vibe-attack.spec` — Fedora/RHEL RPM spec file\n",
+      "full_uat_md": "# S05: RPM spec file — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-27T00:41:16.453Z\n\n# S05 UAT — RPM spec file\\n\\n- [ ] `rpmbuild -bs packaging/vibe-attack.spec` produces a .src.rpm without error\\n- [ ] `rpmbuild -bb packaging/vibe-attack.spec` (with sources) produces .rpm with both binaries\\n- [ ] `rpm -qpl vibe-attack-0.1.0-1.x86_64.rpm` lists /usr/bin/vibe-attack and /usr/bin/vibe-attack-config\n",
+      "goal": "RPM spec file for Fedora/RHEL with correct metadata and both binaries",
+      "success_criteria": "Not provided.",
+      "proof_level": "Not provided.",
+      "integration_closure": "Not provided.",
+      "observability_impact": "Not provided.",
+      "sequence": 5,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M005",
+      "id": "S06",
+      "title": "S06",
+      "status": "complete",
+      "risk": "medium",
+      "depends": [],
+      "demo": ".github/workflows/release.yml committed; workflow passes act dry-run or manual inspection shows correct job/step structure",
+      "created_at": "2026-04-27T00:36:24.080Z",
+      "completed_at": "2026-04-27T00:41:27.515Z",
+      "full_summary_md": "---\nid: S06\nparent: M005\nmilestone: M005\nprovides:\n  - (none)\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - (none)\nkey_decisions:\n  - (none)\npatterns_established:\n  - (none)\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  []\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-27T00:41:27.515Z\nblocker_discovered: false\n---\n\n# S06: GitHub Actions CI release pipeline\n\n**.github/workflows/release.yml: on v* tag push, builds AppImage and uploads as release asset**\n\n## What Happened\n\nCreated .github/workflows/release.yml. Trigger on push to tags v*. ubuntu-22.04 runner. Steps: checkout, dtolnay/rust-toolchain@stable, Swatinem/rust-cache@v2, apt-get (libasound2-dev, libclang-dev, librsvg2-bin, libfuse2, wget), download linuxdeploy + appimagetool AppImages and install to /usr/local/bin, run build.sh with APPIMAGE_EXTRACT_AND_RUN=1 (required when running AppImage tools inside GitHub Actions FUSE environment), rename artifact to include tag, upload via softprops/action-gh-release@v2. YAML validated with python3.\n\n## Verification\n\npython3 yaml.safe_load passes; workflow has trigger on v* tags, rust-cache, build.sh invocation, APPIMAGE_EXTRACT_AND_RUN env var, and softprops upload\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Operational Readiness\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `.github/workflows/release.yml` — GitHub Actions release pipeline\n",
+      "full_uat_md": "# S06: GitHub Actions CI release pipeline — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-27T00:41:27.515Z\n\n# S06 UAT — GitHub Actions CI release pipeline\\n\\n- [ ] Push tag `v0.1.0` triggers the Release workflow in GitHub Actions\\n- [ ] Workflow completes without error on ubuntu-22.04\\n- [ ] `vibe-attack-v0.1.0-x86_64.AppImage` appears as a release asset on the GitHub release page\\n- [ ] AppImage downloaded from release runs on a clean Ubuntu machine\n",
+      "goal": "GitHub Actions workflow: on tag push build AppImage and upload as release asset",
+      "success_criteria": "Not provided.",
+      "proof_level": "Not provided.",
+      "integration_closure": "Not provided.",
+      "observability_impact": "Not provided.",
+      "sequence": 6,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""
@@ -2762,6 +2935,330 @@
       ],
       "expected_output": [
         "Profiles submenu with active checkmark"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S01",
+      "id": "T01",
+      "title": "Created assets/vibe-attack.svg — dark circle with crosshair, mic body, sound waves in red/navy palette",
+      "status": "complete",
+      "one_liner": "Created assets/vibe-attack.svg — dark circle with crosshair, mic body, sound waves in red/navy palette",
+      "narrative": "Designed a 256x256 SVG: dark navy (#1a1a2e) background circle with red (#e94560) stroke, crosshair tick marks and rings evoking a targeting reticle, a centered microphone with stand, and bilateral sound wave arcs. Fits the game/voice theme without requiring external tooling to render.",
+      "verification_result": "File exists at assets/vibe-attack.svg with valid SVG markup and correct viewBox",
+      "duration": "",
+      "completed_at": "2026-04-27T00:37:46.034Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "assets/vibe-attack.svg"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S01\nmilestone: M005\nkey_files:\n  - assets/vibe-attack.svg\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:37:46.033Z\nblocker_discovered: false\n---\n\n# T01: Created assets/vibe-attack.svg — dark circle with crosshair, mic body, sound waves in red/navy palette\n\n**Created assets/vibe-attack.svg — dark circle with crosshair, mic body, sound waves in red/navy palette**\n\n## What Happened\n\nDesigned a 256x256 SVG: dark navy (#1a1a2e) background circle with red (#e94560) stroke, crosshair tick marks and rings evoking a targeting reticle, a centered microphone with stand, and bilateral sound wave arcs. Fits the game/voice theme without requiring external tooling to render.\n\n## Verification\n\nFile exists at assets/vibe-attack.svg with valid SVG markup and correct viewBox\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `assets/vibe-attack.svg`\n",
+      "description": "Design and write the SVG icon file",
+      "estimate": "15m",
+      "files": [
+        "assets/vibe-attack.svg"
+      ],
+      "verify": "File exists with valid SVG markup",
+      "inputs": [],
+      "expected_output": [
+        "assets/vibe-attack.svg"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S01",
+      "id": "T02",
+      "title": "Updated build.sh: SVG→PNG conversion via rsvg-convert/inkscape/convert, both binaries copied, libsherpa-onnx-c-api.so bundled",
+      "status": "complete",
+      "one_liner": "Updated build.sh: SVG→PNG conversion via rsvg-convert/inkscape/convert, both binaries copied, libsherpa-onnx-c-api.so bundled",
+      "narrative": "Rewrote build.sh with: (1) cargo build --release --features gui to get vibe-attack-config, (2) find_so() helper that checks target/release then ldconfig then /usr for both ORT and sherpa .so files, (3) SVG→PNG conversion trying rsvg-convert then inkscape then ImageMagick convert with clear error on no converter, (4) vibe-attack-config copied alongside vibe-attack, (5) libsherpa-onnx-c-api.so bundled with a warning (not fatal) if not found.",
+      "verification_result": "build.sh references assets/vibe-attack.svg, copies both binaries, bundles both .so files via find_so helper",
+      "duration": "",
+      "completed_at": "2026-04-27T00:37:50.336Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "packaging/appimage/build.sh"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T02\nparent: S01\nmilestone: M005\nkey_files:\n  - packaging/appimage/build.sh\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:37:50.336Z\nblocker_discovered: false\n---\n\n# T02: Updated build.sh: SVG→PNG conversion via rsvg-convert/inkscape/convert, both binaries copied, libsherpa-onnx-c-api.so bundled\n\n**Updated build.sh: SVG→PNG conversion via rsvg-convert/inkscape/convert, both binaries copied, libsherpa-onnx-c-api.so bundled**\n\n## What Happened\n\nRewrote build.sh with: (1) cargo build --release --features gui to get vibe-attack-config, (2) find_so() helper that checks target/release then ldconfig then /usr for both ORT and sherpa .so files, (3) SVG→PNG conversion trying rsvg-convert then inkscape then ImageMagick convert with clear error on no converter, (4) vibe-attack-config copied alongside vibe-attack, (5) libsherpa-onnx-c-api.so bundled with a warning (not fatal) if not found.\n\n## Verification\n\nbuild.sh references assets/vibe-attack.svg, copies both binaries, bundles both .so files via find_so helper\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/appimage/build.sh`\n",
+      "description": "Add SVG-to-PNG conversion step and vibe-attack-config binary copy",
+      "estimate": "15m",
+      "files": [
+        "packaging/appimage/build.sh"
+      ],
+      "verify": "build.sh references assets/vibe-attack.svg and copies vibe-attack-config",
+      "inputs": [
+        "assets/vibe-attack.svg"
+      ],
+      "expected_output": [
+        "Updated packaging/appimage/build.sh"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S01",
+      "id": "T03",
+      "title": "Added StartupWMClass to .desktop file",
+      "status": "complete",
+      "one_liner": "Added StartupWMClass to .desktop file",
+      "narrative": "Added StartupWMClass=vibe-attack to vibe-attack.desktop so window managers correctly associate the tray window with the launcher entry.",
+      "verification_result": "vibe-attack.desktop contains StartupWMClass=vibe-attack",
+      "duration": "",
+      "completed_at": "2026-04-27T00:37:57.086Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "packaging/appimage/vibe-attack.desktop"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T03\nparent: S01\nmilestone: M005\nkey_files:\n  - packaging/appimage/vibe-attack.desktop\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:37:57.086Z\nblocker_discovered: false\n---\n\n# T03: Added StartupWMClass to .desktop file\n\n**Added StartupWMClass to .desktop file**\n\n## What Happened\n\nAdded StartupWMClass=vibe-attack to vibe-attack.desktop so window managers correctly associate the tray window with the launcher entry.\n\n## Verification\n\nvibe-attack.desktop contains StartupWMClass=vibe-attack\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/appimage/vibe-attack.desktop`\n",
+      "description": "Add StartupWMClass to .desktop file",
+      "estimate": "5m",
+      "files": [
+        "packaging/appimage/vibe-attack.desktop"
+      ],
+      "verify": ".desktop file has StartupWMClass=vibe-attack",
+      "inputs": [],
+      "expected_output": [
+        "Updated vibe-attack.desktop"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S02",
+      "id": "T01",
+      "title": "build.sh updated: both binaries, SVG→PNG conversion, libsherpa-onnx-c-api.so bundled, AppRun sets LD_LIBRARY_PATH for both .so files",
+      "status": "complete",
+      "one_liner": "build.sh updated: both binaries, SVG→PNG conversion, libsherpa-onnx-c-api.so bundled, AppRun sets LD_LIBRARY_PATH for both .so files",
+      "narrative": "Rewrote packaging/appimage/build.sh to build with --features gui (for vibe-attack-config), extract both binaries, convert SVG icon to PNG via rsvg-convert/inkscape/ImageMagick with graceful fallback, and bundle both libonnxruntime.so and libsherpa-onnx-c-api.so via a find_so() helper. AppRun sets LD_LIBRARY_PATH to the AppDir usr/lib so both .so files are found at runtime inside the FUSE mount.",
+      "verification_result": "YAML valid; build.sh references both binaries and both .so files; find_so() helper checks target/release then ldconfig then /usr",
+      "duration": "",
+      "completed_at": "2026-04-27T00:40:08.483Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "packaging/appimage/build.sh"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S02\nmilestone: M005\nkey_files:\n  - packaging/appimage/build.sh\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:40:08.482Z\nblocker_discovered: false\n---\n\n# T01: build.sh updated: both binaries, SVG→PNG conversion, libsherpa-onnx-c-api.so bundled, AppRun sets LD_LIBRARY_PATH for both .so files\n\n**build.sh updated: both binaries, SVG→PNG conversion, libsherpa-onnx-c-api.so bundled, AppRun sets LD_LIBRARY_PATH for both .so files**\n\n## What Happened\n\nRewrote packaging/appimage/build.sh to build with --features gui (for vibe-attack-config), extract both binaries, convert SVG icon to PNG via rsvg-convert/inkscape/ImageMagick with graceful fallback, and bundle both libonnxruntime.so and libsherpa-onnx-c-api.so via a find_so() helper. AppRun sets LD_LIBRARY_PATH to the AppDir usr/lib so both .so files are found at runtime inside the FUSE mount.\n\n## Verification\n\nYAML valid; build.sh references both binaries and both .so files; find_so() helper checks target/release then ldconfig then /usr\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/appimage/build.sh`\n",
+      "description": "Both binaries, SVG→PNG, libsherpa-onnx-c-api.so bundling, AppRun LD_LIBRARY_PATH",
+      "estimate": "20m",
+      "files": [
+        "packaging/appimage/build.sh"
+      ],
+      "verify": "build.sh exits 0 on machine with cargo + rsvg-convert",
+      "inputs": [
+        "assets/vibe-attack.svg"
+      ],
+      "expected_output": [
+        "Updated packaging/appimage/build.sh"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S03",
+      "id": "T01",
+      "title": "packaging/debian/ created with control, rules, changelog, compat, copyright",
+      "status": "complete",
+      "one_liner": "packaging/debian/ created with control, rules, changelog, compat, copyright",
+      "narrative": "Created all five required Debian packaging files. control: Section=games, Depends on libasound2, BuildDepends includes libasound2-dev and libclang-dev. rules: two cargo build steps (daemon + --features gui), installs both binaries and SVG icon. changelog, compat (13), copyright (AGPL-3.0-only) all present. rules is executable (0775).",
+      "verification_result": "packaging/debian/control has Depends: libasound2; rules is executable; both binaries in override_dh_auto_install",
+      "duration": "",
+      "completed_at": "2026-04-27T00:40:13.632Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "packaging/debian/control",
+        "packaging/debian/rules",
+        "packaging/debian/changelog",
+        "packaging/debian/compat",
+        "packaging/debian/copyright"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S03\nmilestone: M005\nkey_files:\n  - packaging/debian/control\n  - packaging/debian/rules\n  - packaging/debian/changelog\n  - packaging/debian/compat\n  - packaging/debian/copyright\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:40:13.632Z\nblocker_discovered: false\n---\n\n# T01: packaging/debian/ created with control, rules, changelog, compat, copyright\n\n**packaging/debian/ created with control, rules, changelog, compat, copyright**\n\n## What Happened\n\nCreated all five required Debian packaging files. control: Section=games, Depends on libasound2, BuildDepends includes libasound2-dev and libclang-dev. rules: two cargo build steps (daemon + --features gui), installs both binaries and SVG icon. changelog, compat (13), copyright (AGPL-3.0-only) all present. rules is executable (0775).\n\n## Verification\n\npackaging/debian/control has Depends: libasound2; rules is executable; both binaries in override_dh_auto_install\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/debian/control`\n- `packaging/debian/rules`\n- `packaging/debian/changelog`\n- `packaging/debian/compat`\n- `packaging/debian/copyright`\n",
+      "description": "control, rules, changelog, compat, copyright files for dpkg-buildpackage",
+      "estimate": "20m",
+      "files": [
+        "packaging/debian/control",
+        "packaging/debian/rules",
+        "packaging/debian/changelog",
+        "packaging/debian/compat",
+        "packaging/debian/copyright"
+      ],
+      "verify": "packaging/debian/control has correct Depends; rules is executable",
+      "inputs": [
+        "assets/vibe-attack.svg"
+      ],
+      "expected_output": [
+        "packaging/debian/"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S04",
+      "id": "T01",
+      "title": "PKGBUILD updated: real URL, maintainer, both binaries, SVG icon installed",
+      "status": "complete",
+      "one_liner": "PKGBUILD updated: real URL, maintainer, both binaries, SVG icon installed",
+      "narrative": "Updated packaging/PKGBUILD with real maintainer (Chris Chale), real url (https://github.com/chaleyeah/vibe-attack), both cargo build steps, both install -Dm755 binary lines, and icon install to hicolor/scalable/apps/.",
+      "verification_result": "PKGBUILD url= points to chaleyeah/vibe-attack; both binaries in package(); icon installed to correct hicolor path",
+      "duration": "",
+      "completed_at": "2026-04-27T00:40:24.782Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "packaging/PKGBUILD"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S04\nmilestone: M005\nkey_files:\n  - packaging/PKGBUILD\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:40:24.781Z\nblocker_discovered: false\n---\n\n# T01: PKGBUILD updated: real URL, maintainer, both binaries, SVG icon installed\n\n**PKGBUILD updated: real URL, maintainer, both binaries, SVG icon installed**\n\n## What Happened\n\nUpdated packaging/PKGBUILD with real maintainer (Chris Chale), real url (https://github.com/chaleyeah/vibe-attack), both cargo build steps, both install -Dm755 binary lines, and icon install to hicolor/scalable/apps/.\n\n## Verification\n\nPKGBUILD url= points to chaleyeah/vibe-attack; both binaries in package(); icon installed to correct hicolor path\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/PKGBUILD`\n",
+      "description": "Real URL, both binaries, icon, .desktop, maintainer set",
+      "estimate": "10m",
+      "files": [
+        "packaging/PKGBUILD"
+      ],
+      "verify": "PKGBUILD url= points to chaleyeah/vibe-attack; both binaries in package()",
+      "inputs": [
+        "assets/vibe-attack.svg"
+      ],
+      "expected_output": [
+        "Updated packaging/PKGBUILD"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S05",
+      "id": "T01",
+      "title": "packaging/vibe-attack.spec created for Fedora/RHEL with both binaries, icon, .desktop, %changelog",
+      "status": "complete",
+      "one_liner": "packaging/vibe-attack.spec created for Fedora/RHEL with both binaries, icon, .desktop, %changelog",
+      "narrative": "Created RPM spec file at packaging/vibe-attack.spec. Name/Version/License/URL all correct. BuildRequires: rust, cargo, clang-devel, alsa-lib-devel. Two cargo build steps. %install section uses rpmbuild macros (%{_bindir}, %{_datadir}). %files lists both binaries, icon, .desktop, doc, license. %check skips audio hardware tests. %changelog entry dated 2026-04-26.",
+      "verification_result": "spec file has Name: vibe-attack; Version: 0.1.0; License: AGPL-3.0-only; URL: github.com/chaleyeah/vibe-attack; both binaries in %files",
+      "duration": "",
+      "completed_at": "2026-04-27T00:40:29.724Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "packaging/vibe-attack.spec"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S05\nmilestone: M005\nkey_files:\n  - packaging/vibe-attack.spec\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:40:29.724Z\nblocker_discovered: false\n---\n\n# T01: packaging/vibe-attack.spec created for Fedora/RHEL with both binaries, icon, .desktop, %changelog\n\n**packaging/vibe-attack.spec created for Fedora/RHEL with both binaries, icon, .desktop, %changelog**\n\n## What Happened\n\nCreated RPM spec file at packaging/vibe-attack.spec. Name/Version/License/URL all correct. BuildRequires: rust, cargo, clang-devel, alsa-lib-devel. Two cargo build steps. %install section uses rpmbuild macros (%{_bindir}, %{_datadir}). %files lists both binaries, icon, .desktop, doc, license. %check skips audio hardware tests. %changelog entry dated 2026-04-26.\n\n## Verification\n\nspec file has Name: vibe-attack; Version: 0.1.0; License: AGPL-3.0-only; URL: github.com/chaleyeah/vibe-attack; both binaries in %files\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `packaging/vibe-attack.spec`\n",
+      "description": "RPM spec with Name/Version/License/URL, both binaries, icon, .desktop, %changelog",
+      "estimate": "15m",
+      "files": [
+        "packaging/vibe-attack.spec"
+      ],
+      "verify": "spec file has correct Name/Version/License/URL and both binaries in %files",
+      "inputs": [
+        "assets/vibe-attack.svg"
+      ],
+      "expected_output": [
+        "packaging/vibe-attack.spec"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0,
+      "blocker_source": "",
+      "escalation_pending": 0,
+      "escalation_awaiting_review": 0,
+      "escalation_artifact_path": null,
+      "escalation_override_applied_at": null
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S06",
+      "id": "T01",
+      "title": ".github/workflows/release.yml: triggers on v* tags, builds AppImage via build.sh, uploads as release asset",
+      "status": "complete",
+      "one_liner": ".github/workflows/release.yml: triggers on v* tags, builds AppImage via build.sh, uploads as release asset",
+      "narrative": "Created .github/workflows/release.yml. Trigger: push to tags matching v*. Runs on ubuntu-22.04. Steps: checkout, dtolnay/rust-toolchain@stable, Swatinem/rust-cache@v2, apt-get (libasound2-dev, libclang-dev, librsvg2-bin, libfuse2, wget), download linuxdeploy + appimagetool from their continuous releases and install to /usr/local/bin, run build.sh with APPIMAGE_EXTRACT_AND_RUN=1 (needed for AppImages-running-inside-CI), rename artifact with tag, upload via softprops/action-gh-release@v2 with GITHUB_TOKEN. YAML validated with python3 yaml.safe_load.",
+      "verification_result": "python3 yaml.safe_load returned without error; workflow has correct trigger (tags: v*), rust-cache step, build.sh call, and softprops upload step",
+      "duration": "",
+      "completed_at": "2026-04-27T00:40:39.185Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        ".github/workflows/release.yml"
+      ],
+      "key_decisions": [],
+      "full_summary_md": "---\nid: T01\nparent: S06\nmilestone: M005\nkey_files:\n  - .github/workflows/release.yml\nkey_decisions:\n  - (none)\nduration: \nverification_result: untested\ncompleted_at: 2026-04-27T00:40:39.185Z\nblocker_discovered: false\n---\n\n# T01: .github/workflows/release.yml: triggers on v* tags, builds AppImage via build.sh, uploads as release asset\n\n**.github/workflows/release.yml: triggers on v* tags, builds AppImage via build.sh, uploads as release asset**\n\n## What Happened\n\nCreated .github/workflows/release.yml. Trigger: push to tags matching v*. Runs on ubuntu-22.04. Steps: checkout, dtolnay/rust-toolchain@stable, Swatinem/rust-cache@v2, apt-get (libasound2-dev, libclang-dev, librsvg2-bin, libfuse2, wget), download linuxdeploy + appimagetool from their continuous releases and install to /usr/local/bin, run build.sh with APPIMAGE_EXTRACT_AND_RUN=1 (needed for AppImages-running-inside-CI), rename artifact with tag, upload via softprops/action-gh-release@v2 with GITHUB_TOKEN. YAML validated with python3 yaml.safe_load.\n\n## Verification\n\npython3 yaml.safe_load returned without error; workflow has correct trigger (tags: v*), rust-cache step, build.sh call, and softprops upload step\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| — | No verification commands discovered | — | — | — |\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `.github/workflows/release.yml`\n",
+      "description": "Workflow triggers on v* tags, builds AppImage via build.sh, uploads via softprops/action-gh-release",
+      "estimate": "20m",
+      "files": [
+        ".github/workflows/release.yml"
+      ],
+      "verify": "YAML parses without error; workflow has correct trigger, rust-cache, and upload steps",
+      "inputs": [
+        "packaging/appimage/build.sh"
+      ],
+      "expected_output": [
+        ".github/workflows/release.yml"
       ],
       "observability_impact": "",
       "full_plan_md": "",

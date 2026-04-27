@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cargo build --release --locked
+	cargo build --release --locked --features gui
+
+override_dh_auto_install:
+	install -Dm755 target/release/vibe-attack \
+		$(CURDIR)/debian/vibe-attack/usr/bin/vibe-attack
+	install -Dm755 target/release/vibe-attack-config \
+		$(CURDIR)/debian/vibe-attack/usr/bin/vibe-attack-config
+	install -Dm644 packaging/appimage/vibe-attack.desktop \
+		$(CURDIR)/debian/vibe-attack/usr/share/applications/vibe-attack.desktop
+	install -Dm644 assets/vibe-attack.svg \
+		$(CURDIR)/debian/vibe-attack/usr/share/icons/hicolor/scalable/apps/vibe-attack.svg
+	install -Dm644 README.md \
+		$(CURDIR)/debian/vibe-attack/usr/share/doc/vibe-attack/README.md
+
+override_dh_auto_test:
+	# Skip test suite — requires audio hardware not present in build env

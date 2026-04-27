@@ -10,6 +10,7 @@
 - 🔄 **M002:** Rebrand to vibe-attack
 - ✅ **M003:** First-Run GUI Wizard + Setup Script
 - ✅ **M004:** Runtime UX — System Tray + Daemon Control
+- ✅ **M005:** Distribution Packaging
 
 ## Recent Decisions
 - None recorded

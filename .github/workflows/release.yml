@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-appimage:
+    name: Build AppImage
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libasound2-dev \
+            libclang-dev \
+            librsvg2-bin \
+            libfuse2 \
+            wget
+
+      - name: Install linuxdeploy and appimagetool
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage
+          sudo mv linuxdeploy-x86_64.AppImage /usr/local/bin/linuxdeploy
+          sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
+
+      - name: Build AppImage
+        run: bash packaging/appimage/build.sh
+        env:
+          # ORT shared library is copied to target/release/ by the ort crate
+          # build script; build.sh's find_so() will locate it there.
+          APPIMAGE_EXTRACT_AND_RUN: 1
+
+      - name: Rename AppImage with version tag
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          mv vibe-attack-x86_64.AppImage "vibe-attack-${TAG}-x86_64.AppImage"
+
+      - name: Upload AppImage as release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vibe-attack-*-x86_64.AppImage
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
