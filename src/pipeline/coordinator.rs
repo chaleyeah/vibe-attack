@@ -32,14 +32,42 @@ enum OutputMsg {
     NoMatch { utterance_id: u64, transcript: String },
 }
 
+/// Handles returned by [`spawn_pipeline`] so the caller can join threads on shutdown.
 pub struct PipelineHandles {
+    /// OS thread running the audio drain, VAD, and wake-word loop.
     pub pipeline: std::thread::JoinHandle<()>,
+    /// OS thread that owns the stdout JSONL writer (sole writer to stdout).
     pub output: std::thread::JoinHandle<()>,
+    /// STT service wrapper (holds the whisper-rs inference thread); `None` when STT is disabled.
     pub stt: Option<SttService>,
+    /// Shared dispatcher handle — allows live macro registry updates via the control server.
     pub dispatcher: Arc<crate::pipeline::dispatcher::Dispatcher>,
 }
 
-/// Spawn the pipeline worker threads.
+/// Spawn the pipeline worker threads and return handles to each.
+///
+/// ## Thread topology
+///
+/// ```text
+/// CPAL RT callback ──► ringbuf (lock-free) ──► pipeline thread
+///                                                    │
+///                                             VAD segmenter (Silero)
+///                                             wake-word detector
+///                                                    │ UtteranceJob
+///                                                    ▼
+///                                              STT thread (whisper-rs)
+///                                                    │ SttResult
+///                                                    ▼
+///                                           dispatcher thread (phrase match + macro inject)
+///                                                    │ OutputMsg
+///                                                    ▼
+///                                            output thread (stdout JSONL, sole writer)
+/// ```
+///
+/// All cross-thread queues are bounded `crossbeam_channel` channels; the VAD→STT queue
+/// uses drop-oldest semantics under back-pressure to prevent unbounded audio buffering.
+///
+/// ## CPAL stream ownership
 ///
 /// CRITICAL: do NOT pass the full `AudioHandle` here — callers must keep the
 /// `StreamGuard` on the main thread (see `src/audio/mod.rs` for rationale).

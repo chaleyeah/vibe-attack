@@ -1,14 +1,22 @@
 use strsim::levenshtein;
 
+/// Fuzzy phrase matcher used to map STT transcripts to macro names.
+///
+/// Scoring is Levenshtein-similarity: `1.0 - (distance / max_char_len)`.
+/// Only candidates scoring at or above the configured `threshold` are considered.
 pub struct PhraseMatcher {
     threshold: f32,
 }
 
 impl PhraseMatcher {
+    /// Create a matcher with the given minimum similarity threshold (0.0–1.0).
     pub fn new(threshold: f32) -> Self {
         Self { threshold }
     }
 
+    /// Normalize a transcript or phrase for fuzzy comparison.
+    ///
+    /// Lowercases, strips punctuation, collapses whitespace.
     pub fn normalize(input: &str) -> String {
         input
             .to_lowercase()
@@ -21,6 +29,10 @@ impl PhraseMatcher {
             .join(" ")
     }
 
+    /// Return the best-matching `(id, score)` from `candidates`, or `None` if no candidate
+    /// scores at or above the threshold.
+    ///
+    /// `candidates` is an iterator of `(macro_id, phrase)` pairs.
     pub fn find_best_match<'a>(
         &self,
         input: &str,

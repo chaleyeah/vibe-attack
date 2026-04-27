@@ -26,7 +26,7 @@ No integration boundaries touched.
   - Files: `src/lib.rs`
   - Verify: cargo doc --no-deps succeeds; the rendered docs include the architecture overview at the crate root; reading src/lib.rs gives a new engineer enough orientation to find any module
 
-- [ ] **T02: Document src/pipeline/ public items** `est:2h`
+- [x] **T02: Document src/pipeline/ public items** `est:2h`
   Add /// doc comments to every undocumented pub item in src/pipeline/ submodules: coordinator.rs (PipelineHandles fields, spawn_pipeline thread topology), dispatcher.rs (Dispatcher methods), matcher.rs (PhraseMatcher, normalize, find_best_match), sound.rs (SoundPlayer + methods), timing.rs (MonoClock + UtteranceTimings methods), jsonl.rs (StageName, StageStatus, JsonlWriter::new/verbosity/write_*). spawn_pipeline doc must summarize the thread topology (audio → VAD thread, VAD → STT thread, STT → dispatch thread, etc.).
   - Files: `src/pipeline/coordinator.rs`, `src/pipeline/dispatcher.rs`, `src/pipeline/matcher.rs`, `src/pipeline/sound.rs`, `src/pipeline/timing.rs`, `src/pipeline/jsonl.rs`
   - Verify: Audit script reports 0 undocumented pub items under src/pipeline/; cargo doc renders cleanly; cargo clippy -D warnings passes

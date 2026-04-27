@@ -11,6 +11,7 @@ pub enum JsonlVerbosity {
     Stages,
 }
 
+/// Identifies the pipeline stage in a [`JsonlEvent::Stage`] event.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StageName {
@@ -18,6 +19,7 @@ pub enum StageName {
     Stt,
 }
 
+/// Whether a [`JsonlEvent::Stage`] event marks the start or end of a pipeline stage.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StageStatus {
@@ -90,6 +92,10 @@ pub struct JsonlWriter<W: Write> {
 }
 
 impl<W: Write> JsonlWriter<W> {
+    /// Create a writer that emits JSONL to `w` at the given verbosity level.
+    ///
+    /// The internal [`MonoClock`] is anchored at construction time; all `mono_ms` fields
+    /// in emitted events are relative to this instant.
     pub fn new(w: W, verbosity: JsonlVerbosity) -> Self {
         Self {
             w,
@@ -98,6 +104,7 @@ impl<W: Write> JsonlWriter<W> {
         }
     }
 
+    /// Return the verbosity level this writer was constructed with.
     pub fn verbosity(&self) -> JsonlVerbosity {
         self.verbosity
     }
@@ -137,6 +144,7 @@ impl<W: Write> JsonlWriter<W> {
         self.write_event(&evt)
     }
 
+    /// Emit an optional stage-start/end event (no-op when verbosity is `SummaryOnly`).
     pub fn write_stage(
         &mut self,
         utterance_id: u64,
@@ -156,6 +164,7 @@ impl<W: Write> JsonlWriter<W> {
         self.write_event(&evt)
     }
 
+    /// Emit a `dispatch` event recording which macro fired and at what confidence score.
     pub fn write_dispatch(
         &mut self,
         utterance_id: u64,
@@ -172,6 +181,7 @@ impl<W: Write> JsonlWriter<W> {
         self.write_event(&evt)
     }
 
+    /// Emit a `no_match` event when the transcript did not match any macro phrase.
     pub fn write_no_match(&mut self, utterance_id: u64, transcript: &str) -> IoResult<()> {
         let evt = JsonlEvent::NoMatch {
             utterance_id,
@@ -182,6 +192,7 @@ impl<W: Write> JsonlWriter<W> {
         self.write_event(&evt)
     }
 
+    /// Serialize `evt` as a single JSON line and flush.
     pub fn write_event(&mut self, evt: &JsonlEvent<'_>) -> IoResult<()> {
         serde_json::to_writer(&mut self.w, evt)?;
         self.w.write_all(b"\n")?;

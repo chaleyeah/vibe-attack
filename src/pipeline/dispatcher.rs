@@ -41,6 +41,11 @@ impl DispatcherState {
     }
 }
 
+/// Receives STT transcripts, finds the best-matching macro phrase, and fires the macro.
+///
+/// The dispatcher is shared across threads via `Arc` (see `SAFETY` comments below).
+/// Live macro registry updates arrive through [`Dispatcher::update_macros`] without
+/// restarting the pipeline.
 pub struct Dispatcher {
     state: DispatcherState,
     matcher: PhraseMatcher,
@@ -60,6 +65,10 @@ unsafe impl Send for Dispatcher {}
 unsafe impl Sync for Dispatcher {}
 
 impl Dispatcher {
+    /// Create a new `Dispatcher`.
+    ///
+    /// `threshold` is the minimum fuzzy-match score (0.0–1.0) for a phrase to fire.
+    /// `default_dwell_ms` and `default_gap_ms` are applied to key steps that omit their own timing.
     pub fn new(
         threshold: f32,
         macros: Vec<MacroConfig>,
@@ -86,12 +95,14 @@ impl Dispatcher {
         }
     }
 
+    /// Replace the live macro registry without restarting the pipeline.
     pub fn update_macros(&self, new_macros: Vec<MacroConfig>) {
         let mut macros = self.macros.write().unwrap();
         *macros = new_macros;
         tracing::info!("Registry updated with {} macros", macros.len());
     }
 
+    /// Return the number of macros currently registered.
     pub fn macro_count(&self) -> usize {
         self.macros.read().unwrap().len()
     }
@@ -109,6 +120,11 @@ impl Dispatcher {
         }
     }
 
+    /// Match `transcript` against the macro registry and fire the best-scoring macro.
+    ///
+    /// Returns [`DispatchOutcome::Fired`] when a phrase matches above the threshold,
+    /// or [`DispatchOutcome::NoMatch`] otherwise. Side effects: plays an optional
+    /// sound file and sends a [`MacroCmd`] to the input injector.
     pub fn process(&self, transcript: &str) -> DispatchOutcome {
         let macros = self.macros.read().unwrap();
         let candidates = macros
