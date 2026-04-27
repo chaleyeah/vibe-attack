@@ -31,7 +31,7 @@ After this slice, the three places that touch the profiles directory — load_pr
   - Files: `src/pipeline/dispatcher.rs`
   - Verify: grep -rn 'DispatcherState' src/ tests/ shows references only inside src/pipeline/; cargo check succeeds; cargo test passes
 
-- [ ] **T03: Fix load_profiles to scan for {name}/pack.yaml subdirectories** `est:30m`
+- [x] **T03: Fix load_profiles to scan for {name}/pack.yaml subdirectories** `est:30m`
   In src/ui/config_app.rs, replace the existing load_profiles implementation that scans for flat profiles/*.yaml files with one that iterates entries of the profiles directory, treats each entry as a profile only if it is a directory containing a pack.yaml file, and uses the directory name as the profile name. The format must match what Pack::load_from_dir and handle_switch_profile already use.
   - Files: `src/ui/config_app.rs`
   - Verify: Code review: load_profiles iterates read_dir, filters DirEntry::file_type().is_dir() && entry.path().join("pack.yaml").exists(); flat .yaml files are NOT included in the returned list; cargo check passes

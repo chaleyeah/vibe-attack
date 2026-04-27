@@ -47,8 +47,9 @@ impl Default for ConfigApp {
 
 /// Load profile names from the XDG config profiles directory.
 ///
-/// Returns the file stems (without `.yaml`) of all `.yaml` files found.
-/// Logs the count via tracing::info.
+/// Returns the directory names of all subdirectories that contain a `pack.yaml`
+/// file, matching the format expected by `Pack::load_from_dir` and
+/// `handle_switch_profile`. Flat `.yaml` files at the profiles root are ignored.
 pub fn load_profiles() -> Vec<String> {
     let profiles_dir = BaseDirectories::with_prefix("vibe-attack")
         .get_config_home()
@@ -70,8 +71,8 @@ pub fn load_profiles() -> Vec<String> {
         .flatten()
         .filter_map(|entry| {
             let path = entry.path();
-            if path.extension().and_then(|e| e.to_str()) == Some("yaml") {
-                path.file_stem()
+            if entry.file_type().ok()?.is_dir() && path.join("pack.yaml").exists() {
+                path.file_name()
                     .and_then(|s| s.to_str())
                     .map(|s| s.to_string())
             } else {
@@ -102,13 +103,14 @@ mod tests {
 
     #[test]
     #[serial]
-    fn load_profiles_returns_sorted_yaml_stems() {
+    fn load_profiles_returns_sorted_subdirectory_names() {
         let tmp = tempfile::tempdir().unwrap();
         let profiles_dir = tmp.path().join("vibe-attack/profiles");
-        std::fs::create_dir_all(&profiles_dir).unwrap();
-        std::fs::write(profiles_dir.join("zulu.yaml"), b"").unwrap();
-        std::fs::write(profiles_dir.join("alpha.yaml"), b"").unwrap();
-        std::fs::write(profiles_dir.join("bravo.yaml"), b"").unwrap();
+        for name in ["zulu", "alpha", "bravo"] {
+            let subdir = profiles_dir.join(name);
+            std::fs::create_dir_all(&subdir).unwrap();
+            std::fs::write(subdir.join("pack.yaml"), b"").unwrap();
+        }
 
         unsafe { std::env::set_var("XDG_CONFIG_HOME", tmp.path()); }
         let profiles = load_profiles();
@@ -119,13 +121,18 @@ mod tests {
 
     #[test]
     #[serial]
-    fn load_profiles_ignores_non_yaml_files() {
+    fn load_profiles_ignores_flat_yaml_and_dirs_without_pack_yaml() {
         let tmp = tempfile::tempdir().unwrap();
         let profiles_dir = tmp.path().join("vibe-attack/profiles");
         std::fs::create_dir_all(&profiles_dir).unwrap();
+        // Flat .yaml at root — must be ignored
         std::fs::write(profiles_dir.join("hd2.yaml"), b"").unwrap();
-        std::fs::write(profiles_dir.join("README.md"), b"").unwrap();
-        std::fs::write(profiles_dir.join("hd2.yaml.bak"), b"").unwrap();
+        // Dir without pack.yaml — must be ignored
+        std::fs::create_dir_all(profiles_dir.join("empty-dir")).unwrap();
+        // Valid subdirectory profile
+        let good = profiles_dir.join("hd2");
+        std::fs::create_dir_all(&good).unwrap();
+        std::fs::write(good.join("pack.yaml"), b"").unwrap();
 
         unsafe { std::env::set_var("XDG_CONFIG_HOME", tmp.path()); }
         let profiles = load_profiles();
