@@ -31,7 +31,7 @@ No integration boundaries touched.
   - Files: `src/pipeline/coordinator.rs`, `src/pipeline/jsonl.rs`
   - Verify: grep -B1 '#\[allow(' src/ shows a justifying comment above each allow; cargo clippy -D warnings clean
 
-- [ ] **T03: Document the dual get_socket_path functions in control/** `est:15m`
+- [x] **T03: Document the dual get_socket_path functions in control/** `est:15m`
   In src/control/mod.rs and src/control/client.rs, add a comment on each private get_socket_path function explaining the intentional difference: mod.rs uses place_runtime_file (creating the parent dir), client.rs uses find_runtime_file (read-only lookup). The comment should reference its counterpart so a reader searching for one finds the other.
   - Files: `src/control/mod.rs`, `src/control/client.rs`
   - Verify: grep -B3 'fn get_socket_path' src/control/ shows an explanatory comment in each location; cargo check passes

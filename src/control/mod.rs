@@ -171,6 +171,8 @@ fn handle_switch_profile(name: &str, handle: &DaemonHandle) -> Result<()> {
     Ok(())
 }
 
+// Server-side path resolution: uses place_runtime_file, which creates the XDG runtime
+// directory if it doesn't exist yet. The read-only counterpart lives in control/client.rs.
 fn get_socket_path() -> Result<PathBuf> {
     let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
 

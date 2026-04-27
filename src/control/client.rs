@@ -38,6 +38,9 @@ pub fn is_daemon_running() -> bool {
     get_socket_path().map(|p| p.exists()).unwrap_or(false)
 }
 
+// Client-side path resolution: uses find_runtime_file, which is read-only and returns an
+// error if the socket doesn't exist (i.e. the daemon isn't running). The directory-creating
+// counterpart lives in control/mod.rs.
 fn get_socket_path() -> Result<PathBuf> {
     let xdg = xdg::BaseDirectories::with_prefix("vibe-attack");
     xdg.find_runtime_file("vibe-attack.sock")
