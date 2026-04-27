@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-27T00:35:20Z | Files: 122 | Described: 0/122
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-27T00:35:20Z","fingerprint":"853ec8673b3e8367a49ea064cf15ccbfb930008a","fileCount":122,"truncated":false} -->
+Generated: 2026-04-27T11:26:06Z | Files: 130 | Described: 0/130
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-27T11:26:06Z","fingerprint":"e1c5db162a384372b82e0d03fde66b4146deb96c","fileCount":130,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -17,6 +17,10 @@ Generated: 2026-04-27T00:35:20Z | Files: 122 | Described: 0/122
 - `LICENSE`
 - `LICENSES.md`
 - `README.md`
+
+### .github/workflows/
+- `.github/workflows/ci.yml`
+- `.github/workflows/release.yml`
 
 ### docs/
 - `docs/configuration.md`
@@ -99,10 +103,18 @@ Generated: 2026-04-27T00:35:20Z | Files: 122 | Described: 0/122
 
 ### packaging/
 - `packaging/PKGBUILD`
+- `packaging/vibe-attack.spec`
 
 ### packaging/appimage/
 - `packaging/appimage/build.sh`
 - `packaging/appimage/vibe-attack.desktop`
+
+### packaging/debian/
+- `packaging/debian/changelog`
+- `packaging/debian/compat`
+- `packaging/debian/control`
+- `packaging/debian/copyright`
+- `packaging/debian/rules`
 
 ### profiles/hd2/
 - `profiles/hd2/pack.yaml`

@@ -47,7 +47,6 @@ strsim = "0.11"
 rodio = "0.17"
 zip = "0.6"
 ratatui = "0.30"
-sha2 = "0.10"
 crossterm = "0.28"
 ksni = { version = "0.3.4", optional = true, features = ["tokio"] }
 
