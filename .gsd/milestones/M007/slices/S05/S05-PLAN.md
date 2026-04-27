@@ -26,7 +26,7 @@ External documentation surface aligned with current code. No runtime boundaries 
   - Files: `README.md`
   - Verify: Manual review confirms README matches current code; running the documented build/run commands actually works
 
-- [ ] **T02: Verify CONTRIBUTING.md accuracy** `est:20m`
+- [x] **T02: Verify CONTRIBUTING.md accuracy** `est:20m`
   Read CONTRIBUTING.md line-by-line. Verify dev setup commands, test invocations (including hardware-gated ones), code style references, and PR workflow notes match current reality (CI workflow, clippy enforcement). Update any drift.
   - Files: `CONTRIBUTING.md`
   - Verify: Manual review; running the documented dev setup steps works on a fresh clone

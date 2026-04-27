@@ -5,7 +5,7 @@ Thank you for your interest in contributing. This guide covers how to build, tes
 ## Prerequisites
 
 - **Rust stable** toolchain (`rustup toolchain install stable`)
-- **libasound2-dev** (Debian/Ubuntu) or **alsa-lib** (Arch)
+- **libasound2-dev** and **libclang-dev** (Debian/Ubuntu) or **alsa-lib** and **clang** (Arch)
 - **evdev/uinput access** — your user must be in the `input` group or have appropriate udev rules (see [docs/uinput-setup.md](docs/uinput-setup.md))
 
 ## Building
@@ -57,13 +57,13 @@ Microphone → VAD → (audio chunks) → STT → (transcript) → Dispatch → 
 - **STT must use `spawn_blocking`.** Whisper inference is CPU-bound and must not run on a tokio worker thread.
 - **stdout is reserved for JSONL.** All diagnostics go to stderr via `tracing`. Nothing should `println!()` except the JSONL output path.
 - Use `anyhow` for error propagation in application code; `thiserror` for library error types.
-- Follow existing module structure: `audio`, `input`, `pipeline`, `pack`, `control`, `config`, `tui`.
+- Follow existing module structure: `audio`, `vad`, `wake`, `stt`, `input`, `pipeline`, `pack`, `control`, `config`, `ui`, `tui`.
 
 ## Pull Request Process
 
 1. Fork the repo and create a branch from `main`.
 2. Make your changes with appropriate tests.
-3. Run `cargo test` and `cargo clippy` — both must pass.
+3. Run `cargo test` and `cargo clippy --all-targets -- -D warnings` — both must pass.
 4. Open a PR with a clear description of what changed and why.
 
 For pack/macro format authoring, see [docs/pack-format.md](docs/pack-format.md) (coming soon).
