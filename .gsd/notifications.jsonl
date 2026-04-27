@@ -125,3 +125,7 @@
 {"id":"ddf7807d-87b2-457b-9647-dc5726ce8128","ts":"2026-04-27T11:29:45.633Z","severity":"info","message":"Auto-mode started. Will loop until milestone complete.","source":"notify","read":false}
 {"id":"e34e7860-7fb9-4c28-ba70-4cbf3f624cc7","ts":"2026-04-27T11:29:45.634Z","severity":"info","message":"Dynamic routing: disabled — all tasks will use claude-code/claude-opus-4-7","source":"notify","read":false}
 {"id":"e23deaa6-ac01-44ed-b7e7-eb27df8669e1","ts":"2026-04-27T11:29:45.635Z","severity":"info","message":"Pre-flight: 7 milestones queued. All have full context.","source":"notify","read":false}
+{"id":"aca8a7ea-3da3-4342-a0f7-f41906621217","ts":"2026-04-27T11:30:30.916Z","severity":"info","message":"Committed: test: Remove sha2 = \"0.10\" from Cargo.toml [dependencies] — confirmed u…","source":"notify","read":false}
+{"id":"77de2d4e-dce5-4a4d-832b-8a732b7796b7","ts":"2026-04-27T11:30:30.927Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"aa7d32e4-109e-4270-996c-5fdd18852d31","ts":"2026-04-27T11:30:30.928Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"9f791411-e624-4e31-93fd-c4070ab76546","ts":"2026-04-27T11:30:30.936Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

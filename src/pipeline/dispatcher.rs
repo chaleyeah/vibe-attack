@@ -15,8 +15,8 @@ pub enum DispatchOutcome {
     NoMatch,
 }
 
-pub struct DispatcherState {
-    pub flags: Arc<RwLock<HashMap<String, bool>>>,
+pub(crate) struct DispatcherState {
+    pub(crate) flags: Arc<RwLock<HashMap<String, bool>>>,
 }
 
 impl Default for DispatcherState {
@@ -26,17 +26,17 @@ impl Default for DispatcherState {
 }
 
 impl DispatcherState {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             flags: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
-    pub fn get(&self, flag: &str) -> bool {
+    pub(crate) fn get(&self, flag: &str) -> bool {
         *self.flags.read().unwrap().get(flag).unwrap_or(&false)
     }
 
-    pub fn set(&self, flag: &str, value: bool) {
+    pub(crate) fn set(&self, flag: &str, value: bool) {
         self.flags.write().unwrap().insert(flag.to_string(), value);
     }
 }

@@ -26,7 +26,7 @@ After this slice, the three places that touch the profiles directory — load_pr
   - Files: `Cargo.toml`, `Cargo.lock`
   - Verify: grep -rn 'use sha2\|sha2::' src/ tests/ returns no matches; cargo check succeeds; cargo test passes
 
-- [ ] **T02: Narrow DispatcherState visibility from pub to pub(crate)** `est:10m`
+- [x] **T02: Narrow DispatcherState visibility from pub to pub(crate)** `est:10m`
   Change `pub struct DispatcherState` (and any associated impls/methods that are pub) in src/pipeline/dispatcher.rs to pub(crate). Confirm via grep that DispatcherState is not referenced outside src/pipeline/. Run cargo check and cargo test.
   - Files: `src/pipeline/dispatcher.rs`
   - Verify: grep -rn 'DispatcherState' src/ tests/ shows references only inside src/pipeline/; cargo check succeeds; cargo test passes
