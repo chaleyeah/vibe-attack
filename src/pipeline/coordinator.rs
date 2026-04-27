@@ -59,17 +59,17 @@ pub fn spawn_pipeline(
     // LISTENING is active). This buffer is used to "seed" the VAD segmenter at
     // the moment wake triggers.
     const WAKE_PREROLL_MS: u64 = 600;
-    let wake_preroll_frames: usize = ((WAKE_PREROLL_MS + 19) / 20) as usize; // 20ms frames
+    let wake_preroll_frames: usize = WAKE_PREROLL_MS.div_ceil(20) as usize;
 
     // Build VAD config from config file.
-    let ms_to_frames = |ms: u64| ((ms + 19) / 20).max(1) as usize;
+    let ms_to_frames = |ms: u64| ms.div_ceil(20).max(1) as usize;
     let seg_cfg = SegCfg {
         start_threshold: config.vad.start_threshold,
         stop_threshold: config.vad.stop_threshold,
         min_speech_frames: ms_to_frames(config.vad.min_speech_ms),
         end_silence_frames: ms_to_frames(config.vad.end_silence_ms),
-        preroll_frames: ((config.vad.preroll_ms + 19) / 20) as usize,
-        tail_frames: ((config.vad.tail_ms + 19) / 20) as usize,
+        preroll_frames: config.vad.preroll_ms.div_ceil(20) as usize,
+        tail_frames: config.vad.tail_ms.div_ceil(20) as usize,
         max_utterance_frames: (config.vad.max_utterance_secs as usize) * 50, // 50 frames/sec
     };
 

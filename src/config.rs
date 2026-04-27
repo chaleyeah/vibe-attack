@@ -101,17 +101,12 @@ impl Default for TimingConfig {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum PipelineVerbosity {
+    #[default]
     Summary,
     Stages,
-}
-
-impl Default for PipelineVerbosity {
-    fn default() -> Self {
-        PipelineVerbosity::Summary
-    }
 }
 
 /// Pipeline-wide behavior and tuning knobs (Phase 2).
@@ -223,7 +218,7 @@ impl Default for SttConfig {
 }
 
 /// Wake word keyword spotter configuration (`sherpa-onnx`) (Phase 2).
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct WakeConfig {
     #[serde(default)]
@@ -233,19 +228,6 @@ pub struct WakeConfig {
     pub joiner: Option<PathBuf>,
     pub tokens: Option<PathBuf>,
     pub keywords: Option<PathBuf>,
-}
-
-impl Default for WakeConfig {
-    fn default() -> Self {
-        WakeConfig {
-            enabled: false,
-            encoder: None,
-            decoder: None,
-            joiner: None,
-            tokens: None,
-            keywords: None,
-        }
-    }
 }
 
 /// A named macro consisting of an ordered key sequence (MCRO-01, MCRO-02).

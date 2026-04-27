@@ -328,9 +328,7 @@ mod tests {
 
     #[test]
     fn min_speech_required_before_starting_utterance() {
-        let mut cfg = VadConfig::default();
-        cfg.min_speech_frames = 5;
-        cfg.preroll_frames = 2;
+        let cfg = VadConfig { min_speech_frames: 5, preroll_frames: 2, ..VadConfig::default() };
         let mut seg = VadSegmenter::new(cfg.clone());
 
         // 4 frames above start threshold: not enough to commit.
@@ -349,11 +347,7 @@ mod tests {
 
     #[test]
     fn end_requires_silence_and_includes_only_tail_not_full_silence() {
-        let mut cfg = VadConfig::default();
-        cfg.preroll_frames = 2;
-        cfg.tail_frames = 2;
-        cfg.min_speech_frames = 1;
-        cfg.end_silence_frames = 4;
+        let cfg = VadConfig { preroll_frames: 2, tail_frames: 2, min_speech_frames: 1, end_silence_frames: 4, ..VadConfig::default() };
         let mut seg = VadSegmenter::new(cfg.clone());
 
         // Start speech immediately.
@@ -397,12 +391,7 @@ mod tests {
 
     #[test]
     fn max_length_forces_cut() {
-        let mut cfg = VadConfig::default();
-        cfg.min_speech_frames = 1;
-        cfg.max_utterance_frames = 3;
-        cfg.end_silence_frames = 100; // won't end naturally in this test
-        cfg.preroll_frames = 0;
-        cfg.tail_frames = 0;
+        let cfg = VadConfig { min_speech_frames: 1, max_utterance_frames: 3, end_silence_frames: 100, preroll_frames: 0, tail_frames: 0, ..VadConfig::default() };
         let mut seg = VadSegmenter::new(cfg.clone());
 
         // Start.

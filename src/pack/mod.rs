@@ -85,7 +85,7 @@ impl Pack {
             } else {
                 if let Some(p) = outpath.parent() {
                     if !p.exists() {
-                        std::fs::create_dir_all(&p)?;
+                        std::fs::create_dir_all(p)?;
                     }
                 }
                 let mut outfile = std::fs::File::create(&outpath)?;

@@ -47,6 +47,12 @@ pub struct UtteranceTimings {
     pub output_done_ms: Option<u64>,
 }
 
+impl Default for UtteranceTimings {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl UtteranceTimings {
     pub fn new() -> Self {
         Self {

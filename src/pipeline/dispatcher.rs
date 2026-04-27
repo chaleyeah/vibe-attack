@@ -19,6 +19,12 @@ pub struct DispatcherState {
     pub flags: Arc<RwLock<HashMap<String, bool>>>,
 }
 
+impl Default for DispatcherState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DispatcherState {
     pub fn new() -> Self {
         Self {
@@ -90,13 +96,11 @@ impl Dispatcher {
         match if_flag {
             None => true,
             Some(if_flag) => {
-                let required_val = !if_flag.starts_with('!');
-                let flag_name = if if_flag.starts_with('!') {
-                    &if_flag[1..]
+                if let Some(stripped) = if_flag.strip_prefix('!') {
+                    !self.state.get(stripped)
                 } else {
-                    if_flag.as_str()
-                };
-                self.state.get(flag_name) == required_val
+                    self.state.get(if_flag.as_str())
+                }
             }
         }
     }
@@ -127,13 +131,11 @@ impl Dispatcher {
                 });
 
                 if let Some(set_flag) = &mac.set_flag {
-                    let new_val = !set_flag.starts_with('!');
-                    let flag_name = if set_flag.starts_with('!') {
-                        &set_flag[1..]
+                    if let Some(stripped) = set_flag.strip_prefix('!') {
+                        self.state.set(stripped, false);
                     } else {
-                        set_flag.as_str()
-                    };
-                    self.state.set(flag_name, new_val);
+                        self.state.set(set_flag.as_str(), true);
+                    }
                 }
 
                 return DispatchOutcome::Fired {

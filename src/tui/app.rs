@@ -84,10 +84,8 @@ impl App {
             AppMode::Browser => {
                 if let Some(pack) = &self.pack {
                     match code {
-                        KeyCode::Up => {
-                            if self.selected_macro > 0 {
-                                self.selected_macro -= 1;
-                            }
+                        KeyCode::Up if self.selected_macro > 0 => {
+                            self.selected_macro -= 1;
                         }
                         KeyCode::Down => {
                             let cat = &pack.categories[self.selected_category];
@@ -95,17 +93,13 @@ impl App {
                                 self.selected_macro += 1;
                             }
                         }
-                        KeyCode::Left => {
-                            if self.selected_category > 0 {
-                                self.selected_category -= 1;
-                                self.selected_macro = 0;
-                            }
+                        KeyCode::Left if self.selected_category > 0 => {
+                            self.selected_category -= 1;
+                            self.selected_macro = 0;
                         }
-                        KeyCode::Right => {
-                            if self.selected_category < pack.categories.len() - 1 {
-                                self.selected_category += 1;
-                                self.selected_macro = 0;
-                            }
+                        KeyCode::Right if self.selected_category < pack.categories.len() - 1 => {
+                            self.selected_category += 1;
+                            self.selected_macro = 0;
                         }
                         KeyCode::Enter => {
                             self.mode = AppMode::Editor;

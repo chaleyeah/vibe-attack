@@ -120,7 +120,6 @@ impl SttService {
                 let _ = (&job_rx, &result_tx, &result_rx_for_drop, &shutdown);
                 tracing::error!("STT is enabled but binary was built without `--features stt`");
                 tracing::info!("STT thread stopped");
-                return;
             }
 
             #[cfg(feature = "stt")]

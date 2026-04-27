@@ -102,6 +102,7 @@ impl<W: Write> JsonlWriter<W> {
         self.verbosity
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn write_utterance(
         &mut self,
         utterance_id: u64,

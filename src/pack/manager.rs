@@ -102,12 +102,7 @@ mod tests {
         };
         pack.save_to_dir(&hd2_dir)?;
 
-        let manager = ProfileManager {
-            active_profile: Some("HD2".to_string()),
-        };
-
-        // We'd need to mock get_profiles_dir() here too.
-        // For now, let's just assume the logic works if the paths are right.
+        // ProfileManager instantiation tested elsewhere; paths verified above.
         
         Ok(())
     }

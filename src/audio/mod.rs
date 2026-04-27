@@ -65,7 +65,7 @@ pub fn build_audio_config(device: &cpal::Device) -> Result<StreamConfig> {
 
     if native_rate.0 == 16_000 {
         // Ideal: device already runs at 16 kHz — use mono if possible.
-        let channels = native_channels.min(1).max(1);
+        let channels = 1;
         return Ok(StreamConfig {
             channels,
             sample_rate: cpal::SampleRate(16_000),
@@ -98,7 +98,7 @@ pub fn build_audio_config(device: &cpal::Device) -> Result<StreamConfig> {
 ///
 /// # Arguments
 /// * `device_name` — Optional CPAL device name; `None` uses the system default.
-///                   Run `--list-devices` to enumerate available names.
+///   Run `--list-devices` to enumerate available names.
 /// * `ptt_active`  — Shared flag; true when PTT is held (written by PTT thread)
 ///
 /// # Returns

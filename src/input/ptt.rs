@@ -67,7 +67,7 @@ pub fn find_ptt_device(target_key: KeyCode) -> Result<Device> {
     for (_path, device) in evdev::enumerate() {
         if device
             .supported_keys()
-            .map_or(false, |keys| keys.contains(target_key))
+            .is_some_and(|keys| keys.contains(target_key))
         {
             tracing::debug!(
                 "PTT device found: {} (key={:?})",
