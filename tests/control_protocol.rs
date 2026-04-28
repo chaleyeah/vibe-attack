@@ -42,6 +42,7 @@ fn status_data_response_roundtrip() {
         state: DaemonState::Idle,
         active_profile: Some("hd2".to_string()),
         macro_count: 42,
+        active_mode: ActivationMode::Wake,
     };
     let resp = ControlResponse::StatusData(status);
     let json = serde_json::to_string(&resp).unwrap();
@@ -51,6 +52,7 @@ fn status_data_response_roundtrip() {
             assert_eq!(s.state, DaemonState::Idle);
             assert_eq!(s.active_profile.as_deref(), Some("hd2"));
             assert_eq!(s.macro_count, 42);
+            assert_eq!(s.active_mode, ActivationMode::Wake);
         }
         other => panic!("expected StatusData, got {other:?}"),
     }
@@ -219,4 +221,42 @@ fn status_reflects_active_profile_and_macro_count() {
     assert_eq!(status.macro_count, 5);
     assert_eq!(status.active_profile.as_deref(), Some("hd2"));
     assert_eq!(status.state, DaemonState::Idle);
+}
+
+#[test]
+fn daemon_handle_active_mode_defaults_to_ptt() {
+    let h = make_handle();
+    assert_eq!(*h.active_mode.read().unwrap(), ActivationMode::Ptt);
+    assert_eq!(h.status().active_mode, ActivationMode::Ptt);
+}
+
+#[test]
+fn daemon_handle_active_mode_updates_on_write() {
+    let h = make_handle();
+    *h.active_mode.write().unwrap() = ActivationMode::Wake;
+    assert_eq!(*h.active_mode.read().unwrap(), ActivationMode::Wake);
+    assert_eq!(h.status().active_mode, ActivationMode::Wake);
+}
+
+#[test]
+fn status_active_mode_serializes_snake_case() {
+    // active_mode must round-trip through JSON (tray parses Status responses).
+    let status = DaemonStatus {
+        state: DaemonState::Idle,
+        active_profile: None,
+        macro_count: 0,
+        active_mode: ActivationMode::Ptt,
+    };
+    let json = serde_json::to_string(&status).unwrap();
+    assert!(json.contains("\"ptt\""), "expected ptt in JSON: {json}");
+    let back: DaemonStatus = serde_json::from_str(&json).unwrap();
+    assert_eq!(back.active_mode, ActivationMode::Ptt);
+}
+
+#[test]
+fn daemon_status_backward_compat_no_active_mode_field() {
+    // Old JSON without active_mode should deserialize to Ptt via #[serde(default)].
+    let old_json = r#"{"state":"idle","active_profile":null,"macro_count":0}"#;
+    let status: DaemonStatus = serde_json::from_str(old_json).unwrap();
+    assert_eq!(status.active_mode, ActivationMode::Ptt);
 }

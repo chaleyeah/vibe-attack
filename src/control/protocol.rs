@@ -10,6 +10,13 @@ pub enum ActivationMode {
     Wake,
 }
 
+impl Default for ActivationMode {
+    /// Defaults to PTT; used by `#[serde(default)]` to keep existing JSON readable.
+    fn default() -> Self {
+        ActivationMode::Ptt
+    }
+}
+
 /// Requests sent from the CLI to the daemon.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "cmd", content = "args", rename_all = "snake_case")]
@@ -63,6 +70,9 @@ pub struct DaemonStatus {
     pub active_profile: Option<String>,
     /// Number of macros currently loaded.
     pub macro_count: usize,
+    /// Currently active activation mode (PTT or Wake); defaults to Ptt for old JSON.
+    #[serde(default)]
+    pub active_mode: ActivationMode,
 }
 
 /// Responses sent from the daemon to the CLI.

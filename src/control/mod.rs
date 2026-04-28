@@ -11,7 +11,7 @@ use std::sync::{
 use anyhow::{Context, Result};
 use tokio::net::UnixListener;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
-use crate::control::protocol::{ControlRequest, ControlResponse, DaemonState, DaemonStatus};
+use crate::control::protocol::{ActivationMode, ControlRequest, ControlResponse, DaemonState, DaemonStatus};
 use crate::pipeline::coordinator::RuntimeCommand;
 use crate::pipeline::dispatcher::Dispatcher;
 
@@ -34,6 +34,9 @@ pub struct DaemonHandle {
     /// Channel to the running pipeline coordinator for live runtime changes.
     /// `None` when the pipeline is not running (e.g. during unit tests).
     pub runtime_cmd_tx: Option<Arc<std::sync::mpsc::Sender<RuntimeCommand>>>,
+    /// Currently cached activation mode; updated by the SetMode handler before
+    /// forwarding to the coordinator so Status responses stay coherent.
+    pub active_mode: Arc<RwLock<ActivationMode>>,
 }
 
 impl DaemonHandle {
@@ -46,6 +49,7 @@ impl DaemonHandle {
             listening: Arc::new(AtomicBool::new(false)),
             recording: Arc::new(AtomicBool::new(false)),
             runtime_cmd_tx: None,
+            active_mode: Arc::new(RwLock::new(ActivationMode::Ptt)),
         }
     }
 
@@ -82,13 +86,14 @@ impl DaemonHandle {
         }
     }
 
-    /// Build a full [`DaemonStatus`] snapshot (state + active profile + macro count) for Status queries.
+    /// Build a full [`DaemonStatus`] snapshot (state + active profile + macro count + active mode) for Status queries.
     pub fn status(&self) -> DaemonStatus {
         let macro_count = self.dispatcher.macro_count();
         DaemonStatus {
             state: self.state(),
             active_profile: self.active_profile.read().unwrap().clone(),
             macro_count,
+            active_mode: self.active_mode.read().unwrap().clone(),
         }
     }
 }
@@ -161,6 +166,8 @@ pub async fn spawn_control_listener(handle: DaemonHandle) -> Result<()> {
                                             ControlResponse::Ok
                                         }
                                         ControlRequest::SetMode { mode } => {
+                                            *h.active_mode.write().unwrap() = mode.clone();
+                                            tracing::debug!("SetMode: cached active_mode={mode:?}, forwarding to coordinator");
                                             h.send_runtime_cmd(RuntimeCommand::SetMode(mode))
                                         }
                                         ControlRequest::SetThreshold { threshold } => {
