@@ -35,7 +35,7 @@ This is a quick, blocking fix — every later task in this slice (and S03/S05/S0
   - Files: `packaging/appimage/vibe-attack.desktop`, `tests/ui_distribution.rs`
   - Verify: cargo test --test ui_distribution -- --test-threads=1 desktop_file && grep -q '^Exec=vibe-attack-config$' packaging/appimage/vibe-attack.desktop
 
-- [ ] **T02: Implement --skip-wizard CLI flag in vibe-attack-config main()** `est:1h`
+- [x] **T02: Implement --skip-wizard CLI flag in vibe-attack-config main()** `est:1h`
   The M010 roadmap specifies a `--skip-wizard` CLI flag so users (and UAT testers) can bypass the wizard regardless of probe state. The flag is currently NOT implemented — `src/bin/vibe-attack-config.rs` does no CLI argument parsing at all.
 
 Minimal implementation per S02-RESEARCH.md recommendation:

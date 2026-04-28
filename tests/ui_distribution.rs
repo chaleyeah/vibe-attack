@@ -138,6 +138,57 @@ fn appimage_build_script_has_shebang() {
 }
 
 #[test]
+fn skip_wizard_help_exits_zero() {
+    // Locate the binary; return early if not yet built (e.g. cargo test --no-default-features).
+    let bin = env!("CARGO_BIN_EXE_vibe-attack-config");
+    if !std::path::Path::new(bin).exists() {
+        eprintln!("skip_wizard_help_exits_zero: binary not found at {bin}, skipping");
+        return;
+    }
+    // The binary links libsherpa-onnx-c-api.so which lives next to it in target/debug/.
+    // Forward LD_LIBRARY_PATH so the spawned process can find it.
+    let lib_dir = std::path::Path::new(bin)
+        .parent()
+        .unwrap_or(std::path::Path::new("."))
+        .to_string_lossy()
+        .to_string();
+    let output = std::process::Command::new(bin)
+        .arg("--help")
+        .env("LD_LIBRARY_PATH", &lib_dir)
+        .output()
+        .expect("failed to spawn vibe-attack-config --help");
+    assert_eq!(output.status.code(), Some(0), "--help must exit 0");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("skip-wizard"),
+        "--help output must mention 'skip-wizard', got: {stdout}"
+    );
+}
+
+#[test]
+fn skip_wizard_flag_mentioned_in_help_output() {
+    let bin = env!("CARGO_BIN_EXE_vibe-attack-config");
+    if !std::path::Path::new(bin).exists() {
+        eprintln!("skip_wizard_flag_mentioned_in_help_output: binary not found at {bin}, skipping");
+        return;
+    }
+    let lib_dir = std::path::Path::new(bin)
+        .parent()
+        .unwrap_or(std::path::Path::new("."))
+        .to_string_lossy()
+        .to_string();
+    let output = std::process::Command::new(bin)
+        .arg("--help")
+        .env("LD_LIBRARY_PATH", &lib_dir)
+        .output()
+        .expect("failed to spawn vibe-attack-config --help");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    // Verify usage line and flag description are both present.
+    assert!(stdout.contains("Usage:"), "--help must print a Usage: line");
+    assert!(stdout.contains("--skip-wizard"), "--help must list --skip-wizard flag");
+}
+
+#[test]
 fn daemon_default_features_exclude_gui() {
     let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let cargo_toml = root.join("Cargo.toml");

@@ -173,7 +173,7 @@ struct VibeAttackConfigApp {
 }
 
 impl VibeAttackConfigApp {
-    fn new(log_rx: mpsc::Receiver<String>) -> Self {
+    fn new(log_rx: mpsc::Receiver<String>, skip_wizard: bool) -> Self {
         use cpal::traits::{DeviceTrait, HostTrait};
 
         let config_example_contents =
@@ -181,7 +181,12 @@ impl VibeAttackConfigApp {
         let hd2_profile_contents =
             include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/profiles/hd2/pack.yaml"));
 
-        let first_run = probe::run();
+        let first_run = if skip_wizard {
+            tracing::info!(skip_wizard = true, "Wizard bypass via --skip-wizard flag");
+            FirstRunState::from_checks(true, true, true, true)
+        } else {
+            probe::run()
+        };
         let setup_complete = first_run.is_setup_complete();
 
         let mut config = ConfigApp::new();
@@ -513,6 +518,18 @@ fn handle_save(app: &mut VibeAttackConfigApp) {
 fn main() -> eframe::Result<()> {
     use tracing_subscriber::prelude::*;
 
+    let args: Vec<String> = std::env::args().collect();
+
+    if args.iter().any(|a| a == "--help" || a == "-h") {
+        println!("Usage: vibe-attack-config [--skip-wizard] [--help]");
+        println!();
+        println!("  --skip-wizard   Bypass first-run wizard regardless of probe state");
+        println!("  --help, -h      Print this help and exit");
+        return Ok(());
+    }
+
+    let skip_wizard = args.iter().any(|a| a == "--skip-wizard");
+
     // Log channel: bounded to 500 entries; oldest are dropped under pressure.
     let (log_tx, log_rx) = mpsc::sync_channel(500);
 
@@ -531,6 +548,6 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "Vibe Attack Config",
         options,
-        Box::new(|_cc| Ok(Box::new(VibeAttackConfigApp::new(log_rx)))),
+        Box::new(move |_cc| Ok(Box::new(VibeAttackConfigApp::new(log_rx, skip_wizard)))),
     )
 }
