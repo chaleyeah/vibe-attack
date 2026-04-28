@@ -76,7 +76,7 @@ Negative tests (Q7): not required for this slice — malformed zip handling is a
   - Files: `tests/pack_lifecycle.rs`
   - Verify: cargo test --test pack_lifecycle -- --test-threads=1 — both tests must pass; cargo test -- --test-threads=1 — full suite stays green.
 
-- [ ] **T04: Wire Import / Export buttons into show_pack_editor and refresh profiles on import** `est:1h`
+- [x] **T04: Wire Import / Export buttons into show_pack_editor and refresh profiles on import** `est:1h`
   Add `Import Pack` and `Export Pack` buttons to the egui pack editor toolbar inside `show_pack_editor`. On click, open `rfd::FileDialog` with a `.hdpack` filter. Handle cancel as a no-op, success by calling the relevant Pack method, and surface failures via `state.last_error` (the existing inline pattern from S03/MEM063). After a successful import, signal the outer `show_main_config` so it can call `load_profiles()` and replace `app.pack_editor` with one pointing at the just-imported pack.
 
 Why: this is the user-visible surface of the slice. Without it, the backend round-trip in T03 has no UI exposure and the slice goal/demo are not met.

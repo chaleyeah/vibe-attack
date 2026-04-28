@@ -435,6 +435,13 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
         ui.add_space(8.0);
         ui.separator();
         show_pack_editor(ui, editor_state);
+
+        // Drain imported_pack_name: refresh the profiles list so the newly imported
+        // pack appears immediately. The editor itself was already swapped inside the
+        // import handler, so no further editor update is needed here.
+        if editor_state.imported_pack_name.take().is_some() {
+            app.config.profiles = load_profiles();
+        }
     }
 
     ui.separator();

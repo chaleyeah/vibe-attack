@@ -12,12 +12,13 @@ mod inner {
     use std::path::PathBuf;
 
     use eframe::egui;
+    use rfd::FileDialog;
     use tracing;
 
     use crate::config::MacroConfig;
     use crate::control::client::send_command;
     use crate::control::protocol::ControlRequest;
-    use crate::pack::PackEditor;
+    use crate::pack::{get_profiles_dir, Pack, PackEditor};
 
     use super::{build_macro_config_from_form, parse_key_sequence};
 
@@ -45,6 +46,8 @@ mod inner {
         pub pending_remove_macro: bool,
         /// Last synchronous error to surface inline in the panel.
         pub last_error: Option<String>,
+        /// Set to the imported pack name after a successful Import Pack; caller drains each frame.
+        pub imported_pack_name: Option<String>,
     }
 
     impl PackEditorState {
@@ -63,6 +66,7 @@ mod inner {
                 form_new_category: String::new(),
                 pending_remove_macro: false,
                 last_error: None,
+                imported_pack_name: None,
             }
         }
 
@@ -148,6 +152,81 @@ mod inner {
                     }
                     if ui.button("Cancel").clicked() {
                         state.show_rename_warning = false;
+                    }
+                }
+            }
+
+            // ── Import / Export Pack ─────────────────────────────────────────
+            if ui.button("Import Pack").clicked() {
+                if let Some(path) = FileDialog::new()
+                    .add_filter("Pack", &["hdpack"])
+                    .pick_file()
+                {
+                    match get_profiles_dir() {
+                        Ok(profiles_dir) => match Pack::import_to(&path, &profiles_dir) {
+                            Ok(pack) => {
+                                let pack_name = pack.name.clone();
+                                let macro_count: usize =
+                                    pack.categories.iter().map(|c| c.macros.len()).sum();
+                                tracing::info!(
+                                    zip_path = %path.display(),
+                                    pack_name = %pack_name,
+                                    macro_count,
+                                    "Import Pack: succeeded"
+                                );
+                                let new_profile_dir = profiles_dir.join(&pack_name);
+                                state.editor = PackEditor::new(pack);
+                                state.profile_dir = new_profile_dir;
+                                state.selected_category = None;
+                                state.selected_macro = None;
+                                state.last_error = None;
+                                state.imported_pack_name = Some(pack_name);
+                            }
+                            Err(e) => {
+                                let reason = e.to_string();
+                                tracing::warn!(reason, "Import Pack: failed");
+                                state.last_error = Some(reason);
+                            }
+                        },
+                        Err(e) => {
+                            let reason = e.to_string();
+                            tracing::warn!(reason, "Import Pack: could not resolve profiles dir");
+                            state.last_error = Some(reason);
+                        }
+                    }
+                }
+            }
+
+            if ui.button("Export Pack").clicked() {
+                let pack_name = state.editor.pack().name.clone();
+                let default_filename = format!("{pack_name}.hdpack");
+                if let Some(dest_path) = FileDialog::new()
+                    .add_filter("Pack", &["hdpack"])
+                    .set_file_name(&default_filename)
+                    .save_file()
+                {
+                    match state.editor.pack().export(&state.profile_dir, &dest_path) {
+                        Ok(()) => {
+                            let macro_count: usize = state
+                                .editor
+                                .pack()
+                                .categories
+                                .iter()
+                                .map(|c| c.macros.len())
+                                .sum();
+                            tracing::info!(
+                                dest_path = %dest_path.display(),
+                                pack_name = %pack_name,
+                                macro_count,
+                                "Export Pack: succeeded"
+                            );
+                            state.last_error = None;
+                        }
+                        Err(e) => {
+                            let reason = e.to_string();
+                            tracing::warn!(reason, "Export Pack: failed");
+                            state.last_error = Some(reason);
+                        }
                     }
                 }
             }
