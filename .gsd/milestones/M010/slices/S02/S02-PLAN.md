@@ -66,7 +66,7 @@ Also add a regression test asserting that `FirstRunState::from_checks(true,true,
   - Files: `tests/ui_distribution.rs`
   - Verify: cargo test --test ui_distribution -- --test-threads=1 wizard_completion_transition && cargo test --test ui_distribution -- --test-threads=1
 
-- [ ] **T04: Seed docs/distribution-proofs/wizard/ structure and three pending transcripts** `est:45m`
+- [x] **T04: Seed docs/distribution-proofs/wizard/ structure and three pending transcripts** `est:45m`
   Create the wizard UAT proof directory structure following the same MEM079/MEM081 convention used for `docs/distribution-proofs/appimage/`. The directory does not exist yet.
 
 Create the following:
