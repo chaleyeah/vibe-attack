@@ -246,6 +246,10 @@ async fn main() -> anyhow::Result<()> {
         actual_config: _actual_cfg,
     } = audio_handle;
 
+    // RuntimeCommand channel: tx lives in DaemonHandle (control server),
+    // rx is consumed by the pipeline coordinator's per-frame drain loop.
+    let (runtime_tx, runtime_rx) = std::sync::mpsc::channel::<vibe_attack::pipeline::coordinator::RuntimeCommand>();
+
     let pipeline_handles = vibe_attack::pipeline::coordinator::spawn_pipeline(
         audio_consumer,
         config.clone(),
@@ -253,6 +257,7 @@ async fn main() -> anyhow::Result<()> {
         Arc::clone(&muted),
         macro_tx.clone(),
         shutdown.clone(),
+        runtime_rx,
     )
     .map_err(|e| {
         // If pipeline preflight fails, stop injection thread before exiting.
@@ -263,7 +268,8 @@ async fn main() -> anyhow::Result<()> {
 
     // === 10b. Spawn UDS control listener (Phase 4) ===
     use vibe_attack::control::DaemonHandle;
-    let daemon_handle = DaemonHandle::new(pipeline_handles.dispatcher.clone());
+    let daemon_handle = DaemonHandle::new(pipeline_handles.dispatcher.clone())
+        .with_runtime_tx(runtime_tx);
     // Share muted flag with the pipeline (already passed above).
     // Replace the handle's default Arc with the one the pipeline is watching.
     let daemon_handle = DaemonHandle {

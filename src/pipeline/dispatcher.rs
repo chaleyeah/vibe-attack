@@ -107,6 +107,11 @@ impl Dispatcher {
         self.macros.read().unwrap().len()
     }
 
+    /// Return the current confidence threshold.
+    pub fn threshold(&self) -> f32 {
+        self.matcher.read().unwrap().threshold()
+    }
+
     /// Change the phrase-match confidence threshold without rebuilding the pipeline.
     ///
     /// `threshold` is clamped to `[0.0, 1.0]`; NaN is treated as 0.0.

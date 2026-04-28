@@ -57,7 +57,7 @@ None — pure type additions and serde tests, no external dependencies.
   - Files: `src/pipeline/dispatcher.rs`
   - Verify: cargo test --lib pipeline::dispatcher 2>&1 | tail -5 shows new `test_update_threshold_changes_match_behavior` passes; cargo test --lib pipeline::matcher remains green; `cargo clippy --all-targets -- -D warnings` clean.
 
-- [ ] **T03: Wire RuntimeCommand channel from control handler into coordinator and apply live mode/threshold changes** `est:1h30m`
+- [x] **T03: Wire RuntimeCommand channel from control handler into coordinator and apply live mode/threshold changes** `est:1h30m`
   Close the slice: define a `RuntimeCommand` enum, plumb a `std::sync::mpsc::Sender<RuntimeCommand>` from `DaemonHandle` to the control handler arms, give `spawn_pipeline` the `Receiver<RuntimeCommand>`, drain it on the per-frame coordinator loop, and apply SetMode/SetThreshold/ReloadConfig live.
 
 Concrete steps:

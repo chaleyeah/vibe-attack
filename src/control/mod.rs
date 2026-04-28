@@ -12,6 +12,7 @@ use anyhow::{Context, Result};
 use tokio::net::UnixListener;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use crate::control::protocol::{ControlRequest, ControlResponse, DaemonState, DaemonStatus};
+use crate::pipeline::coordinator::RuntimeCommand;
 use crate::pipeline::dispatcher::Dispatcher;
 
 /// Shared handle passed to the control listener and polled by tray/UI.
@@ -30,6 +31,9 @@ pub struct DaemonHandle {
     pub listening: Arc<AtomicBool>,
     /// Set true while PTT is held (written by coordinator).
     pub recording: Arc<AtomicBool>,
+    /// Channel to the running pipeline coordinator for live runtime changes.
+    /// `None` when the pipeline is not running (e.g. during unit tests).
+    pub runtime_cmd_tx: Option<Arc<std::sync::mpsc::Sender<RuntimeCommand>>>,
 }
 
 impl DaemonHandle {
@@ -41,6 +45,27 @@ impl DaemonHandle {
             active_profile: Arc::new(RwLock::new(None)),
             listening: Arc::new(AtomicBool::new(false)),
             recording: Arc::new(AtomicBool::new(false)),
+            runtime_cmd_tx: None,
+        }
+    }
+
+    /// Attach the runtime command sender produced by `spawn_pipeline`.
+    pub fn with_runtime_tx(mut self, tx: std::sync::mpsc::Sender<RuntimeCommand>) -> Self {
+        self.runtime_cmd_tx = Some(Arc::new(tx));
+        self
+    }
+
+    /// Send a [`RuntimeCommand`] to the pipeline coordinator.
+    ///
+    /// Returns `ControlResponse::Ok` on success or
+    /// `ControlResponse::Error { message }` when the pipeline is not running.
+    fn send_runtime_cmd(&self, cmd: RuntimeCommand) -> ControlResponse {
+        match &self.runtime_cmd_tx {
+            Some(tx) => match tx.send(cmd) {
+                Ok(()) => ControlResponse::Ok,
+                Err(_) => ControlResponse::Error { message: "pipeline not running".into() },
+            },
+            None => ControlResponse::Error { message: "pipeline not running".into() },
         }
     }
 
@@ -134,6 +159,23 @@ pub async fn spawn_control_listener(handle: DaemonHandle) -> Result<()> {
                                         ControlRequest::Shutdown => {
                                             // TODO: wire to CancellationToken in a future slice
                                             ControlResponse::Ok
+                                        }
+                                        ControlRequest::SetMode { mode } => {
+                                            h.send_runtime_cmd(RuntimeCommand::SetMode(mode))
+                                        }
+                                        ControlRequest::SetThreshold { threshold } => {
+                                            h.send_runtime_cmd(RuntimeCommand::SetThreshold(threshold))
+                                        }
+                                        ControlRequest::SetInputDevice { device } => {
+                                            tracing::info!("SetInputDevice received; requires daemon restart (S01 note)");
+                                            h.send_runtime_cmd(RuntimeCommand::SetInputDevice(device))
+                                        }
+                                        ControlRequest::SetPttBinding { key } => {
+                                            tracing::info!("SetPttBinding received; requires daemon restart (S01 note)");
+                                            h.send_runtime_cmd(RuntimeCommand::SetPttBinding(key))
+                                        }
+                                        ControlRequest::ReloadConfig => {
+                                            h.send_runtime_cmd(RuntimeCommand::ReloadConfig)
                                         }
                                         _ => ControlResponse::Error { message: "Not yet implemented".into() },
                                     }

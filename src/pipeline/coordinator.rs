@@ -18,12 +18,31 @@ use tokio_util::sync::CancellationToken;
 
 use ringbuf::HeapCons;
 use crate::config::{Config, PipelineVerbosity};
+use crate::control::protocol::ActivationMode;
 use crate::pipeline::dispatcher::DispatchOutcome;
 use crate::pipeline::jsonl::{JsonlVerbosity, JsonlWriter};
 use crate::stt::{SttResult, SttService};
 // Alias for readability: this module builds segmentation configs, not generic VAD configs.
 use crate::vad::{VadConfig as SegCfg, VadSegmenter, FRAME_SAMPLES};
 use crate::wake::WakeWord;
+
+/// Commands sent from the control handler to the running pipeline coordinator.
+///
+/// Delivered via `std::sync::mpsc`; drained non-blocking (`try_recv`) at the top
+/// of each pipeline frame so live changes land between utterances without restart.
+#[derive(Debug)]
+pub enum RuntimeCommand {
+    /// Switch activation mode (PTT ↔ Wake) live.
+    SetMode(ActivationMode),
+    /// Update the dispatcher confidence threshold live.
+    SetThreshold(f32),
+    /// Request an input-device change — requires daemon restart; logged and ignored this slice.
+    SetInputDevice(Option<String>),
+    /// Request a PTT-binding change — requires daemon restart; logged and ignored this slice.
+    SetPttBinding(String),
+    /// Reload config from disk and apply hot-reloadable fields.
+    ReloadConfig,
+}
 
 /// Messages flowing from the dispatcher thread to the output thread.
 enum OutputMsg {
@@ -79,6 +98,7 @@ pub fn spawn_pipeline(
     muted: Arc<AtomicBool>,
     macro_tx: std::sync::mpsc::Sender<crate::input::inject::MacroCmd>,
     shutdown: CancellationToken,
+    runtime_rx: std::sync::mpsc::Receiver<RuntimeCommand>,
 ) -> Result<PipelineHandles> {
     let listen_window = Duration::from_secs(config.pipeline.listen_window_secs);
     // Wake pre-roll: keep a short rolling buffer of audio while idle so the first
@@ -143,6 +163,8 @@ pub fn spawn_pipeline(
         config.timing.gap_ms,
     ));
     let dispatcher_for_thread = Arc::clone(&dispatcher);
+    // Separate clone for the pipeline thread's runtime-command drain.
+    let dispatcher_for_pipeline = Arc::clone(&dispatcher);
     let dispatcher_shutdown = shutdown.clone();
     let dispatch_out_tx = out_tx.clone();
     std::thread::spawn(move || {
@@ -336,7 +358,62 @@ pub fn spawn_pipeline(
         let mut ptt_start_frame: u64 = 0;
         let mut ptt_frame_count: u64 = 0;
 
+        // Current activation mode; defaults to PTT. Changed live via RuntimeCommand.
+        let mut active_mode = ActivationMode::Ptt;
+
         while !pipeline_shutdown.is_cancelled() {
+            // Drain runtime commands before processing audio so mode/threshold changes
+            // land between utterances without restart.
+            while let Ok(cmd) = runtime_rx.try_recv() {
+                match cmd {
+                    RuntimeCommand::SetMode(m) => {
+                        tracing::info!(cmd = "set_mode", mode = ?m, "runtime_command_applied");
+                        match (&active_mode, &m) {
+                            (ActivationMode::Ptt, ActivationMode::Wake) => {
+                                // PTT → Wake: discard any in-progress PTT capture and reset VAD.
+                                ptt_audio.clear();
+                                prev_ptt = false;
+                                seg = VadSegmenter::new(seg_cfg.clone());
+                            }
+                            (ActivationMode::Wake, ActivationMode::Ptt) => {
+                                // Wake → PTT: clear wake listen window state.
+                                listening_until = None;
+                                listening_started_at = None;
+                                wake_preroll_len = 0;
+                                seg = VadSegmenter::new(seg_cfg.clone());
+                            }
+                            _ => {}
+                        }
+                        active_mode = m;
+                    }
+                    RuntimeCommand::SetThreshold(t) => {
+                        let old = dispatcher_for_pipeline.threshold();
+                        dispatcher_for_pipeline.update_threshold(t);
+                        tracing::info!(cmd = "set_threshold", old, new = t, "runtime_command_applied");
+                    }
+                    RuntimeCommand::SetInputDevice(ref device) => {
+                        tracing::warn!(cmd = "set_input_device", device = ?device, "command requires daemon restart in S01; ignored");
+                    }
+                    RuntimeCommand::SetPttBinding(ref key) => {
+                        tracing::warn!(cmd = "set_ptt_binding", key = %key, "command requires daemon restart in S01; ignored");
+                    }
+                    RuntimeCommand::ReloadConfig => {
+                        match crate::config::load(None) {
+                            Ok(new_cfg) => {
+                                tracing::info!(cmd = "reload_config", "runtime_command_applied");
+                                // Apply hot-reloadable fields only.
+                                if new_cfg.stt.confidence_threshold != 0.0 {
+                                    dispatcher_for_pipeline.update_threshold(new_cfg.stt.confidence_threshold);
+                                }
+                            }
+                            Err(e) => {
+                                tracing::warn!(cmd = "reload_config", error = %e, "config reload failed; ignoring");
+                            }
+                        }
+                    }
+                }
+            }
+
             // Always drain completed STT results first so they are never lost regardless
             // of PTT state.  Previously this was inside the VAD branch and was skipped by
             // `continue` while PTT was idle, causing results to accumulate forever.
@@ -391,7 +468,8 @@ pub fn spawn_pipeline(
                 }
 
                 // PTT pressed: start or continue recording directly into ptt_audio.
-                if ptt {
+                // In Wake mode, ignore PTT rising/falling edges entirely.
+                if ptt && active_mode == ActivationMode::Ptt {
                     if !prev_ptt {
                         // Rising edge: begin new PTT utterance.
                         ptt_audio.clear();
@@ -408,7 +486,8 @@ pub fn spawn_pipeline(
                 }
 
                 // PTT just released: send entire PTT buffer to STT.
-                if prev_ptt {
+                // In Wake mode prev_ptt stays false, so this block is never entered.
+                if prev_ptt && active_mode == ActivationMode::Ptt {
                     let audio_len = ptt_audio.len();
                     let min_samples = (crate::vad::SAMPLE_RATE_HZ as usize) / 10; // 100 ms minimum
                     tracing::debug!(
@@ -442,8 +521,9 @@ pub fn spawn_pipeline(
                 }
                 prev_ptt = false;
 
-                // Wake-word detection while idle (no PTT) to enter LISTENING (D-17/D-18).
-                if !ptt && !listening {
+                // Wake-word detection while idle — only in Wake activation mode.
+                // In PTT mode skip this branch entirely so the wake detector stays dormant.
+                if active_mode == ActivationMode::Wake && !listening {
                     if let Some(w) = &wake {
                         // Maintain rolling pre-roll while idle so we can seed VAD
                         // immediately when wake triggers.
