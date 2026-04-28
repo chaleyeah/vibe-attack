@@ -1,16 +1,16 @@
 {
   "nodes": [
     {
-      "id": "milestone:M009",
-      "label": "M009: Pack UX — Editor, Import/Export, Full HD2 Coverage",
+      "id": "milestone:M010",
+      "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
       "type": "milestone",
-      "description": "Active milestone: M009",
+      "description": "Active milestone: M010",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:validating-milestone",
-      "label": "Phase: validating-milestone",
+      "id": "concept:phase:planning",
+      "label": "Phase: planning",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -872,6 +872,13 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "milestone:M009",
+      "label": "M009: Pack UX — Editor, Import/Export, Full HD2 Coverage",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-ROADMAP.md"
+    },
+    {
       "id": "slice:M009:S01",
       "label": "S01: Full HD2 stratagem pack + coverage test",
       "type": "slice",
@@ -1010,11 +1017,41 @@
       "confidence": "EXTRACTED"
     },
     {
-      "id": "milestone:M010",
-      "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
-      "type": "milestone",
+      "id": "slice:M010:S01",
+      "label": "S01: AppImage build verification",
+      "type": "slice",
       "confidence": "EXTRACTED",
-      "sourceFile": "milestones/M010/M010-ROADMAP.md"
+      "sourceFile": "milestones/M010/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M010:S01:T01",
+      "label": "T01: Build AppImage on host and write verify-appimage.sh wrapper",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M010:S01:T02",
+      "label": "T02: Capture build-host transcript and seed Debian/Fedora/Arch proof directories",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M010:S01:T03",
+      "label": "T03: Add tests/distribution_proofs.rs asserting transcript structure",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M010:S02",
+      "label": "M010/S02",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M010:S04",
+      "label": "M010/S04",
+      "type": "slice",
+      "confidence": "EXTRACTED"
     },
     {
       "id": "decision:M001:1",
@@ -2271,6 +2308,462 @@
       "description": "Source: S04-SUMMARY.md/Key decisions",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:1",
+      "label": "**HD2 key sequences use KEY_UP/KEY_DOWN/KEY_LEFT/KEY_RIGHT evdev names exclusively — no WASD mixing.** Chosen for semantic clarity and consistency with evdev input layer; WASD names are UI labels, not kernel key codes.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:2",
+      "label": "**PackEditor wraps Pack as a mutable state machine with typed CRUD methods returning Result<()>.** Chose typed API over direct Pack field mutation to surface precondition errors at the API boundary rather than silently producing invalid state.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:3",
+      "label": "**MacroUpdates uses Option<Option<T>> for optional fields to distinguish leave-unchanged (None) from clear (Some(None)).** Standard Option<T> cannot encode three states (set, clear, no-op) without an enum; the double-Option pattern is idiomatic Rust for partial-update builders.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:4",
+      "label": "**pub mod pack_editor declared without #[cfg(feature=\"gui\")] in mod.rs (wizard pattern, not tray pattern).** Pure-logic helpers parse_key_sequence and build_macro_config_from_form must compile under the default build for unit testability; placing them behind the gui gate would require cargo test --features gui for every pack-logic test.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:5",
+      "label": "**rfd 0.17 added as optional dep under gui feature only.** Keeps the default headless daemon build free of file-dialog backends (GTK, xdg-portal) that require display-server libraries at link time.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:6",
+      "label": "**Pack::import_to accepts the parent profiles dir (not the pack subdir); function appends pack.name internally.** Consistent with the established Pack::import contract; callers do not need to know the pack's internal directory name before the archive is inspected.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:7",
+      "label": "**score=1.0 in Dispatcher::fire_named marks direct control-plane triggers vs fuzzy phrase-matched scores.** JSONL consumers (dashboards, tests) can distinguish \"fired by voice\" from \"fired by control plane\" without a separate event type field.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:8",
+      "label": "**block_in_place requires multi_thread Tokio flavor — TestMacro integration tests use #[tokio::test(flavor=\"multi_thread\", worker_threads=2)].** block_in_place panics on a single-thread executor; the handler calls synchronous disk I/O inside the async socket handler, making this unavoidable without an async rewrite of the dispatcher.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:9",
+      "label": "**Catch-all match arm removed (not kept) when TestMacro became the last unhandled variant.** unreachable_patterns is a compile error under -D warnings; keeping an unreachable arm breaks the build gate.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:10",
+      "label": "**cargo clippy is not installed in this build environment; zero-warning compliance is verified via rustc output from cargo build.** Both `cargo build` (default) and `cargo build --features gui` must be run and must complete with `Finished` and no `warning:` lines as the clippy substitute. Record as MEM038 convention.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:11",
+      "label": "**rfd dialog trigger paths cannot be driven headlessly — Import/Export dialog integration requires manual smoke testing.** The rfd library opens a native OS file picker; there is no headless/mock mode. Automated tests can cover the backend logic (Pack::import_to, Pack::export) but cannot exercise the button → picker → path flow.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:12",
+      "label": "**TestMacro integration tests must declare flavor=\"multi_thread\" due to block_in_place inside the handler.** This was not documented in the original task plan and caused test failures during S05 implementation. Any future control-plane handler that calls synchronous blocking ops inside an async context must declare the multi-thread flavor.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:13",
+      "label": "**Catch-all match arms on enums with -D warnings must be removed when all variants are handled — not kept as documentation.** The compiler treats an unreachable arm as unreachable_patterns, which is an error under -D warnings. Future protocol additions will surface as compile errors, which is the correct behavior.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:14",
+      "label": "**UAT scripts for GUI-heavy milestones must combine artifact-driven automated evidence with human-experience manual scenarios.** Automated cargo test output proves logic correctness but cannot validate egui rendering, file picker UX, countdown animation, or audio input responsiveness. Neither coverage type alone is sufficient.",
+      "type": "decision",
+      "description": "Source: S06-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:15",
+      "label": "**HD2 stratagem key sequence accuracy has not been verified against live gameplay.** Sequences were sourced from the canonical community stratagem reference. The Spear in particular (↓↓↑↓↓) has some community disagreement. Live validation is deferred to a future milestone or community contribution.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:16",
+      "label": "**Hermetic pack coverage tests: load from repo fixture path, assert by HashSet difference for clear failure messages, no env mutation, no #[serial] needed.** Using Path::new(\"profiles/hd2\") with no XDG_CONFIG_HOME mutation makes the test portable and parallelizable; HashSet difference names the absent categories explicitly on failure.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:17",
+      "label": "**Integration test style: vibe_attack::pack::Pack import, .expect() for fixture loads (not anyhow Result), module-level //! doc comment per D002.** Consistent style across all pack integration tests makes the corpus greppable and reviewable without per-file style decisions.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:18",
+      "label": "**PackEditor validate-then-mutate order for all multi-step Vec operations ensures atomicity.** All preconditions (bounds, name uniqueness, not-same-name) are checked before any mutation begins, so a failed precondition leaves the Pack unchanged.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:19",
+      "label": "**clone Vec<String> of names before egui closures to avoid simultaneous mutable borrow conflicts.** Mirrors the app.device_names.clone() precedent from the config window. Required whenever an egui closure iterates a name list while the UI also holds a mutable reference to the state struct.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:20",
+      "label": "**last_error: Option<String> on UI state structs for synchronous inline failure visibility without modals.** Set on any operation that may fail (Save, Test); cleared on the next successful operation. Displayed as a red label inline in the panel rather than a modal dialog.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:21",
+      "label": "**Two-click inline confirmation for destructive egui actions via pending_* bool flag pattern.** First click sets pending_remove_macro = true; second click (now labeled Confirm Remove) executes the destructive action. Avoids modal state machine complexity while preventing accidental data loss.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:22",
+      "label": "**Hermetic pack round-trip tests use Pack::import_to + tempfile::tempdir() — never XDG_CONFIG_HOME mutation, no #[serial] needed.** The hermetic import_to API accepts an explicit dest_dir, eliminating any shared-directory race condition in parallel test runs.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:23",
+      "label": "**UI safety countdown: pending_test: Option<(String, Instant)> with Instant polling, no sleep, request_repaint_after(50ms).** The eframe event loop drives the countdown via elapsed() checks each repaint; request_repaint_after(50ms) ensures smooth visual updates without blocking the UI thread.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:24",
+      "label": "**pack_test_export_import_with_sounds flakes under parallel test execution due to a shared /tmp path.** Fixed by running cargo test --test-threads=1 for full suite runs (MEM005). The flake only manifests when two test threads write to the same tempdir path simultaneously; hermetic tests using tempfile::tempdir() are immune.",
+      "type": "decision",
+      "description": "Source: S06-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:25",
+      "label": "**The egui pack editor required a daemon_running: bool parameter to be threaded into show_pack_editor to gate the Test button.** The original plan did not anticipate this parameter; it was added during S05 implementation to prevent the Test button from being clickable when no daemon is running. The bool is polled from the existing daemon-status infrastructure.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M009:26",
+      "label": "**The rfd 0.17 import confirmed that async rfd is not needed — synchronous dialog calls on the egui frame thread are the ecosystem convention.** The rfd docs note that async is available but the sync API is recommended for egui integrations. This avoided adding a tokio spawn for dialog calls, keeping the import/export code straightforward.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:1",
+      "label": "**cargo clippy is not installed in this build environment; zero-warning compliance is verified via rustc output from cargo build.** Both `cargo build` (default) and `cargo build --features gui` must be run and must complete with `Finished` and no `warning:` lines as the clippy substitute. Record as MEM038 convention.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:2",
+      "label": "**rfd dialog trigger paths cannot be driven headlessly — Import/Export dialog integration requires manual smoke testing.** The rfd library opens a native OS file picker; there is no headless/mock mode. Automated tests can cover the backend logic (Pack::import_to, Pack::export) but cannot exercise the button → picker → path flow.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:3",
+      "label": "**TestMacro integration tests must declare flavor=\"multi_thread\" due to block_in_place inside the handler.** This was not documented in the original task plan and caused test failures during S05 implementation. Any future control-plane handler that calls synchronous blocking ops inside an async context must declare the multi-thread flavor.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:4",
+      "label": "**Catch-all match arms on enums with -D warnings must be removed when all variants are handled — not kept as documentation.** The compiler treats an unreachable arm as unreachable_patterns, which is an error under -D warnings. Future protocol additions will surface as compile errors, which is the correct behavior.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:5",
+      "label": "**UAT scripts for GUI-heavy milestones must combine artifact-driven automated evidence with human-experience manual scenarios.** Automated cargo test output proves logic correctness but cannot validate egui rendering, file picker UX, countdown animation, or audio input responsiveness. Neither coverage type alone is sufficient.",
+      "type": "lesson",
+      "description": "Source: S06-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:6",
+      "label": "**HD2 stratagem key sequence accuracy has not been verified against live gameplay.** Sequences were sourced from the canonical community stratagem reference. The Spear in particular (↓↓↑↓↓) has some community disagreement. Live validation is deferred to a future milestone or community contribution.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:7",
+      "label": "**Hermetic pack coverage tests: load from repo fixture path, assert by HashSet difference for clear failure messages, no env mutation, no #[serial] needed.** Using Path::new(\"profiles/hd2\") with no XDG_CONFIG_HOME mutation makes the test portable and parallelizable; HashSet difference names the absent categories explicitly on failure.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:8",
+      "label": "**Integration test style: vibe_attack::pack::Pack import, .expect() for fixture loads (not anyhow Result), module-level //! doc comment per D002.** Consistent style across all pack integration tests makes the corpus greppable and reviewable without per-file style decisions.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:9",
+      "label": "**PackEditor validate-then-mutate order for all multi-step Vec operations ensures atomicity.** All preconditions (bounds, name uniqueness, not-same-name) are checked before any mutation begins, so a failed precondition leaves the Pack unchanged.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:10",
+      "label": "**clone Vec<String> of names before egui closures to avoid simultaneous mutable borrow conflicts.** Mirrors the app.device_names.clone() precedent from the config window. Required whenever an egui closure iterates a name list while the UI also holds a mutable reference to the state struct.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:11",
+      "label": "**last_error: Option<String> on UI state structs for synchronous inline failure visibility without modals.** Set on any operation that may fail (Save, Test); cleared on the next successful operation. Displayed as a red label inline in the panel rather than a modal dialog.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:12",
+      "label": "**Two-click inline confirmation for destructive egui actions via pending_* bool flag pattern.** First click sets pending_remove_macro = true; second click (now labeled Confirm Remove) executes the destructive action. Avoids modal state machine complexity while preventing accidental data loss.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:13",
+      "label": "**Hermetic pack round-trip tests use Pack::import_to + tempfile::tempdir() — never XDG_CONFIG_HOME mutation, no #[serial] needed.** The hermetic import_to API accepts an explicit dest_dir, eliminating any shared-directory race condition in parallel test runs.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:14",
+      "label": "**UI safety countdown: pending_test: Option<(String, Instant)> with Instant polling, no sleep, request_repaint_after(50ms).** The eframe event loop drives the countdown via elapsed() checks each repaint; request_repaint_after(50ms) ensures smooth visual updates without blocking the UI thread.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:15",
+      "label": "**pack_test_export_import_with_sounds flakes under parallel test execution due to a shared /tmp path.** Fixed by running cargo test --test-threads=1 for full suite runs (MEM005). The flake only manifests when two test threads write to the same tempdir path simultaneously; hermetic tests using tempfile::tempdir() are immune.",
+      "type": "lesson",
+      "description": "Source: S06-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:16",
+      "label": "**The egui pack editor required a daemon_running: bool parameter to be threaded into show_pack_editor to gate the Test button.** The original plan did not anticipate this parameter; it was added during S05 implementation to prevent the Test button from being clickable when no daemon is running. The bool is polled from the existing daemon-status infrastructure.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M009:17",
+      "label": "**The rfd 0.17 import confirmed that async rfd is not needed — synchronous dialog calls on the egui frame thread are the ecosystem convention.** The rfd docs note that async is available but the sync API is recommended for egui integrations. This avoided adding a tokio spawn for dialog calls, keeping the import/export code straightforward.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:1",
+      "label": "**Hermetic pack coverage tests: load from repo fixture path, assert by HashSet difference for clear failure messages, no env mutation, no #[serial] needed.** Using Path::new(\"profiles/hd2\") with no XDG_CONFIG_HOME mutation makes the test portable and parallelizable; HashSet difference names the absent categories explicitly on failure.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:2",
+      "label": "**Integration test style: vibe_attack::pack::Pack import, .expect() for fixture loads (not anyhow Result), module-level //! doc comment per D002.** Consistent style across all pack integration tests makes the corpus greppable and reviewable without per-file style decisions.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:3",
+      "label": "**PackEditor validate-then-mutate order for all multi-step Vec operations ensures atomicity.** All preconditions (bounds, name uniqueness, not-same-name) are checked before any mutation begins, so a failed precondition leaves the Pack unchanged.",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:4",
+      "label": "**clone Vec<String> of names before egui closures to avoid simultaneous mutable borrow conflicts.** Mirrors the app.device_names.clone() precedent from the config window. Required whenever an egui closure iterates a name list while the UI also holds a mutable reference to the state struct.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:5",
+      "label": "**last_error: Option<String> on UI state structs for synchronous inline failure visibility without modals.** Set on any operation that may fail (Save, Test); cleared on the next successful operation. Displayed as a red label inline in the panel rather than a modal dialog.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:6",
+      "label": "**Two-click inline confirmation for destructive egui actions via pending_* bool flag pattern.** First click sets pending_remove_macro = true; second click (now labeled Confirm Remove) executes the destructive action. Avoids modal state machine complexity while preventing accidental data loss.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:7",
+      "label": "**Hermetic pack round-trip tests use Pack::import_to + tempfile::tempdir() — never XDG_CONFIG_HOME mutation, no #[serial] needed.** The hermetic import_to API accepts an explicit dest_dir, eliminating any shared-directory race condition in parallel test runs.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:8",
+      "label": "**UI safety countdown: pending_test: Option<(String, Instant)> with Instant polling, no sleep, request_repaint_after(50ms).** The eframe event loop drives the countdown via elapsed() checks each repaint; request_repaint_after(50ms) ensures smooth visual updates without blocking the UI thread.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:9",
+      "label": "**pack_test_export_import_with_sounds flakes under parallel test execution due to a shared /tmp path.** Fixed by running cargo test --test-threads=1 for full suite runs (MEM005). The flake only manifests when two test threads write to the same tempdir path simultaneously; hermetic tests using tempfile::tempdir() are immune.",
+      "type": "pattern",
+      "description": "Source: S06-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:10",
+      "label": "**The egui pack editor required a daemon_running: bool parameter to be threaded into show_pack_editor to gate the Test button.** The original plan did not anticipate this parameter; it was added during S05 implementation to prevent the Test button from being clickable when no daemon is running. The bool is polled from the existing daemon-status infrastructure.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M009:11",
+      "label": "**The rfd 0.17 import confirmed that async rfd is not needed — synchronous dialog calls on the egui frame thread are the ecosystem convention.** The rfd docs note that async is available but the sync API is recommended for egui integrations. This avoided adding a tokio spawn for dialog calls, keeping the import/export code straightforward.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M009:1",
+      "label": "**pack_test_export_import_with_sounds flakes under parallel test execution due to a shared /tmp path.** Fixed by running cargo test --test-threads=1 for full suite runs (MEM005). The flake only manifests when two test threads write to the same tempdir path simultaneously; hermetic tests using tempfile::tempdir() are immune.",
+      "type": "lesson",
+      "description": "Source: S06-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M009:2",
+      "label": "**The egui pack editor required a daemon_running: bool parameter to be threaded into show_pack_editor to gate the Test button.** The original plan did not anticipate this parameter; it was added during S05 implementation to prevent the Test button from being clickable when no daemon is running. The bool is polled from the existing daemon-status infrastructure.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M009:3",
+      "label": "**The rfd 0.17 import confirmed that async rfd is not needed — synchronous dialog calls on the egui frame thread are the ecosystem convention.** The rfd docs note that async is available but the sync API is recommended for egui integrations. This avoided adding a tokio spawn for dialog calls, keeping the import/export code straightforward.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-LEARNINGS.md"
     }
   ],
   "edges": [
@@ -3393,6 +3886,78 @@
     {
       "from": "slice:M009:S06",
       "to": "task:M009:S06:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S01",
+      "to": "task:M010:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S01",
+      "to": "task:M010:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S01",
+      "to": "task:M010:S01:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S01",
+      "to": "task:M010:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S01",
+      "to": "task:M010:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S01",
+      "to": "task:M010:S01:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S04",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -4631,7 +5196,691 @@
       "to": "surprise:M008:2",
       "type": "relates_to",
       "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:22",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:23",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:24",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:25",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:26",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "surprise:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "surprise:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "surprise:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:22",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:23",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:24",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:25",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "decision:M009:26",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "lesson:M009:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "pattern:M009:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "surprise:M009:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "surprise:M009:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "surprise:M009:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T03:33:09.420Z"
+  "builtAt": "2026-04-28T03:54:48.840Z"
 }

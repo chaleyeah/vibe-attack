@@ -107,7 +107,11 @@ fn desktop_file_exists_and_has_required_keys() {
     assert!(desktop.exists(), "packaging/appimage/vibe-attack.desktop must exist");
     let contents = std::fs::read_to_string(&desktop).expect("failed to read .desktop file");
     assert!(contents.contains("Name="), ".desktop missing Name=");
-    assert!(contents.contains("Exec="), ".desktop missing Exec=");
+    assert!(
+        contents.contains("Exec=vibe-attack-config"),
+        ".desktop Exec= must be 'vibe-attack-config', got: {:?}",
+        contents.lines().find(|l| l.starts_with("Exec=")).unwrap_or("<not found>")
+    );
     assert!(contents.contains("Type="), ".desktop missing Type=");
 }
 

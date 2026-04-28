@@ -17,10 +17,10 @@
 
 ## Slices
 
-- [ ] **S01: S01** `risk:medium` `depends:[]`
+- [x] **S01: S01** `risk:medium` `depends:[]`
   > After this: AppImage runs ./vibe-attack-x86_64.AppImage --version on all three target distros; recorded transcripts in docs/distribution-proofs/appimage/
 
-- [ ] **S02: First-run wizard end-to-end UAT** `risk:medium` `depends:[]`
+- [ ] **S02: S02** `risk:medium` `depends:[]`
   > After this: Wizard completes on all three distros; relaunch skips wizard; stratagem fires by voice; three UAT transcripts under docs/distribution-proofs/wizard/
 
 - [ ] **S03: Release CI workflow extension** `risk:low` `depends:[S01]`

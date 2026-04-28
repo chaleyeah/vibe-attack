@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T03:51:41Z | Files: 143 | Described: 0/143
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T03:51:41Z","fingerprint":"d82c44730359c5e078b7305cf4969e5b627c634a","fileCount":143,"truncated":false} -->
+Generated: 2026-04-28T03:53:00Z | Files: 144 | Described: 0/144
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T03:53:00Z","fingerprint":"4c7c2234b24dd9754babcc144c3bdb75f766e1a4","fileCount":144,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -194,7 +194,7 @@ Generated: 2026-04-28T03:51:41Z | Files: 143 | Described: 0/143
 - `src/wake/mod.rs`
 
 ### tests/
-- *(22 files: 22 .rs)*
+- *(23 files: 23 .rs)*
 
 ### uat/gui/
 - `uat/gui/builderror.txt`

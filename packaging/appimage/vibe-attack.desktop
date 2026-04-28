@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Vibe Attack
-Exec=vibe-attack
+Exec=vibe-attack-config
 Type=Application
 Icon=vibe-attack
 Comment=Voice macro daemon for Helldivers 2
