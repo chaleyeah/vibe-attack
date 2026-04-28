@@ -292,3 +292,8 @@
 {"id":"0c605fd8-b7b4-423e-a69c-998180b86b1c","ts":"2026-04-28T01:49:28.704Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"1f5ceaf8-424d-4c27-b72c-9f6e5a260dcc","ts":"2026-04-28T01:49:29.160Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
 {"id":"f38d2f1a-07e6-4152-9a01-5760da675dcf","ts":"2026-04-28T01:49:29.165Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"f6991e39-2de9-412d-8a6e-cfd3e7a53df2","ts":"2026-04-28T01:50:45.234Z","severity":"info","message":"Committed: test: Extracted icon_name_for_state free function in tray.rs with per-s…","source":"notify","read":false}
+{"id":"686e63ce-07c7-449f-805b-ad7b6be05003","ts":"2026-04-28T01:50:45.241Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"84c9ab95-3d59-4f53-b6ae-8413330f0cc6","ts":"2026-04-28T01:50:45.242Z","severity":"warning","message":"Safety: task T02 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"e0871b08-4829-46a1-b3aa-db41ed3dbe31","ts":"2026-04-28T01:50:45.621Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
+{"id":"e45ecfac-d201-451a-ba01-9c2708f79f35","ts":"2026-04-28T01:50:45.626Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

@@ -12,7 +12,7 @@ use tokio::sync::Mutex;
 use crate::{
     control::{
         client::{query_status, send_command},
-        protocol::{ControlRequest, DaemonState},
+        protocol::{ActivationMode, ControlRequest, DaemonState},
     },
     ui::config_app::load_profiles,
 };
@@ -26,6 +26,8 @@ struct TrayState {
     active_profile: Option<String>,
     /// Profile names discovered from the XDG config directory.
     profiles: Vec<String>,
+    /// Currently active activation mode (None = daemon stopped or unknown).
+    active_mode: Option<ActivationMode>,
 }
 
 /// Handle returned by [`TrayHandle::spawn`]; keeps the tray alive for the process lifetime.
@@ -77,6 +79,7 @@ impl TrayHandle {
 
                                     let status = query_status();
                                     let new_daemon_state = status.as_ref().map(|s| s.state.clone());
+                                    let new_active_mode = status.as_ref().map(|s| s.active_mode.clone());
                                     let new_active_profile = status.and_then(|s| s.active_profile);
                                     // Read profile list from disk on each tick — cheap stat, no daemon needed.
                                     let new_profiles = load_profiles();
@@ -87,6 +90,7 @@ impl TrayHandle {
                                         s.daemon_state != new_daemon_state
                                             || s.active_profile != new_active_profile
                                             || s.profiles != new_profiles
+                                            || s.active_mode != new_active_mode
                                     };
 
                                     if changed {
@@ -96,6 +100,7 @@ impl TrayHandle {
                                                     s.daemon_state = new_daemon_state.clone();
                                                     s.active_profile = new_active_profile.clone();
                                                     s.profiles = new_profiles.clone();
+                                                    s.active_mode = new_active_mode.clone();
                                                 }
                                             })
                                             .await;
@@ -274,6 +279,49 @@ impl Tray for VibeTray {
                 icon_name: "folder".into(),
                 enabled: !state.profiles.is_empty(),
                 submenu: profile_submenu,
+                ..Default::default()
+            }
+            .into(),
+        );
+
+        // Mode switcher submenu — PTT vs Wake word.
+        let is_ptt = state.active_mode == Some(ActivationMode::Ptt);
+        let is_wake = state.active_mode == Some(ActivationMode::Wake);
+        let mode_submenu: Vec<MenuItem<Self>> = vec![
+            CheckmarkItem {
+                label: "Push-to-talk".into(),
+                checked: is_ptt,
+                enabled: daemon_running,
+                activate: Box::new(move |_this: &mut Self| {
+                    std::thread::spawn(move || {
+                        let _ = send_command(ControlRequest::SetMode {
+                            mode: ActivationMode::Ptt,
+                        });
+                    });
+                }),
+                ..Default::default()
+            }
+            .into(),
+            CheckmarkItem {
+                label: "Wake word".into(),
+                checked: is_wake,
+                enabled: daemon_running,
+                activate: Box::new(move |_this: &mut Self| {
+                    std::thread::spawn(move || {
+                        let _ = send_command(ControlRequest::SetMode {
+                            mode: ActivationMode::Wake,
+                        });
+                    });
+                }),
+                ..Default::default()
+            }
+            .into(),
+        ];
+
+        items.push(
+            SubMenu {
+                label: "Mode".into(),
+                submenu: mode_submenu,
                 ..Default::default()
             }
             .into(),
