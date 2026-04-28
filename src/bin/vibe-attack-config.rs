@@ -7,6 +7,7 @@ use eframe::egui;
 use vibe_attack::control::protocol::ActivationMode;
 use vibe_attack::ui::config_app::{load_config_into_app, load_profiles, save_app_to_config, ConfigApp};
 use vibe_attack::ui::first_run::FirstRunState;
+use vibe_attack::ui::pack_editor::{show_pack_editor, PackEditorState};
 use vibe_attack::ui::probe;
 use vibe_attack::ui::tray::TrayHandle;
 use vibe_attack::ui::wizard::{show_wizard, ModelDownloadState, PttCaptureState, UinputSetupState};
@@ -167,6 +168,8 @@ struct VibeAttackConfigApp {
     cached_config: Option<vibe_attack::config::Config>,
     /// Input device names enumerated once at startup; empty list on CPAL failure.
     device_names: Vec<String>,
+    /// Active pack editor state; `None` until a profile is clicked.
+    pack_editor: Option<PackEditorState>,
 }
 
 impl VibeAttackConfigApp {
@@ -223,6 +226,7 @@ impl VibeAttackConfigApp {
             tray: TrayHandle::spawn(),
             cached_config,
             device_names,
+            pack_editor: None,
         }
     }
 }
@@ -399,8 +403,38 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
     } else {
         for name in &app.config.profiles.clone() {
             let is_active = app.config.active_profile.as_deref() == Some(name.as_str());
-            let _ = ui.selectable_label(is_active, name.as_str());
+            let is_editing = app
+                .pack_editor
+                .as_ref()
+                .map(|s| s.editor.pack().name == *name)
+                .unwrap_or(false);
+            if ui.selectable_label(is_active || is_editing, name.as_str()).clicked() {
+                match vibe_attack::pack::get_profiles_dir() {
+                    Ok(profiles_dir) => {
+                        let profile_dir = profiles_dir.join(name);
+                        match vibe_attack::pack::Pack::load_from_dir(&profile_dir) {
+                            Ok(pack) => {
+                                let editor = vibe_attack::pack::PackEditor::new(pack);
+                                app.pack_editor =
+                                    Some(PackEditorState::new(editor, profile_dir));
+                            }
+                            Err(e) => {
+                                tracing::warn!(profile = %name, reason = %e, "Failed to load pack for editor");
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        tracing::warn!(reason = %e, "Failed to resolve profiles dir for pack editor");
+                    }
+                }
+            }
         }
+    }
+
+    if let Some(editor_state) = app.pack_editor.as_mut() {
+        ui.add_space(8.0);
+        ui.separator();
+        show_pack_editor(ui, editor_state);
     }
 
     ui.separator();

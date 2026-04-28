@@ -9,3 +9,5 @@ pub mod probe;
 pub mod tray;
 /// First-run wizard panels rendered via egui (gui feature only).
 pub mod wizard;
+/// Egui pack editor panel and pure-logic key-sequence parser.
+pub mod pack_editor;

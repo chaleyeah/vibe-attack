@@ -20,10 +20,10 @@
 - [x] **S01: S01** `risk:low` `depends:[]`
   > After this: cargo test --test pack_hd2_coverage passes; grep on profiles/hd2/pack.yaml shows all 6+ ship-module categories present with correct stratagem counts
 
-- [ ] **S02: S02** `risk:medium` `depends:[]`
+- [x] **S02: S02** `risk:medium` `depends:[]`
   > After this: cargo test passes including new PackEditor unit tests for AddMacro, EditMacro, RemoveMacro, MoveMacro, RenameCategory, AddCategory, RemoveCategory; round-trip: edit → save → reload → byte equivalence
 
-- [ ] **S03: Egui editor panel** `risk:medium` `depends:[S02]`
+- [ ] **S03: S03** `risk:medium` `depends:[]`
   > After this: vibe-attack-config opens editor panel; user adds a new macro via the form; clicks Save; pack.yaml updated on disk; daemon picks up change via SwitchProfile (already shipping)
 
 - [ ] **S04: Import / Export dialogs** `risk:low` `depends:[S03]`
