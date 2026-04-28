@@ -55,7 +55,7 @@ Negative tests (Q7): the unit test above covers the happy path; negative cases (
   - Files: `src/pack/mod.rs`
   - Verify: cargo test --lib pack:: -- --test-threads=1 — the new import_to unit test plus all existing pack tests must pass; cargo test --test pack_hd2_bundle -- --test-threads=1 — existing serial export/import tests must stay green (they exercise import() via the wrapper path).
 
-- [ ] **T03: Write tests/pack_lifecycle.rs round-trip integration test** `est:45m`
+- [x] **T03: Write tests/pack_lifecycle.rs round-trip integration test** `est:45m`
   Add a new integration test file `tests/pack_lifecycle.rs` that proves the export → import round-trip is byte/field-equivalent for a non-trivial fixture pack. Use `Pack::import_to()` so the test does not mutate `XDG_CONFIG_HOME` (and is therefore not subject to MEM005-style parallel flake).
 
 Why: the milestone success criterion includes `Export → import round-trip produces byte-identical macro content — hermetic test in tests/pack_lifecycle.rs`. This is the slice's primary objective stopping condition for the backend — once it passes, the UI wiring in T04 only adds dialog plumbing on top of a verified contract.
