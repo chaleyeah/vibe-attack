@@ -23,10 +23,10 @@
 - [x] **S02: S02** `risk:medium` `depends:[]`
   > After this: cargo test passes including new PackEditor unit tests for AddMacro, EditMacro, RemoveMacro, MoveMacro, RenameCategory, AddCategory, RemoveCategory; round-trip: edit → save → reload → byte equivalence
 
-- [ ] **S03: S03** `risk:medium` `depends:[]`
+- [x] **S03: S03** `risk:medium` `depends:[]`
   > After this: vibe-attack-config opens editor panel; user adds a new macro via the form; clicks Save; pack.yaml updated on disk; daemon picks up change via SwitchProfile (already shipping)
 
-- [ ] **S04: Import / Export dialogs** `risk:low` `depends:[S03]`
+- [ ] **S04: S04** `risk:low` `depends:[]`
   > After this: User clicks Import → picks a .hdpack → pack appears in profile list; user clicks Export → picks a destination → .hdpack written; round-trip import of exported file produces byte-identical macros
 
 - [ ] **S05: TriggerMacro control request + editor Test button** `risk:low` `depends:[S02]`

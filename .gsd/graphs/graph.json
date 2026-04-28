@@ -916,6 +916,37 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "slice:M009:S03",
+      "label": "S03: Egui editor panel",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/slices/S03/S03-PLAN.md"
+    },
+    {
+      "id": "task:M009:S03:T01",
+      "label": "T01: Scaffold pack_editor module and wire PackEditorState into VibeAttackConfigApp",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M009:S03:T02",
+      "label": "T02: Implement egui editor panel: category/macro lists, edit form, CRUD buttons, Save with SwitchProfile dispatch",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M009:S03:T03",
+      "label": "T03: Add state-machine roundtrip integration test and verify full slice acceptance",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M009:S05",
+      "label": "M009/S05",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
       "id": "milestone:M010",
       "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
       "type": "milestone",
@@ -3082,6 +3113,36 @@
     },
     {
       "from": "milestone:M009",
+      "to": "slice:M009:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S03",
+      "to": "task:M009:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S03",
+      "to": "task:M009:S03:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S03",
+      "to": "task:M009:S03:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "slice:M009:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
       "to": "slice:M009:S01",
       "type": "contains",
       "confidence": "EXTRACTED"
@@ -3119,6 +3180,36 @@
     {
       "from": "slice:M009:S02",
       "to": "task:M009:S02:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "slice:M009:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S03",
+      "to": "task:M009:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S03",
+      "to": "task:M009:S03:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S03",
+      "to": "task:M009:S03:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "slice:M009:S05",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -4359,5 +4450,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T02:36:32.655Z"
+  "builtAt": "2026-04-28T02:55:10.575Z"
 }

@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T02:45:41Z | Files: 136 | Described: 0/136
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T02:45:41Z","fingerprint":"7f6e73665760bc4f407f9546cd2481387e4495e0","fileCount":136,"truncated":false} -->
+Generated: 2026-04-28T02:52:34Z | Files: 137 | Described: 0/137
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T02:52:34Z","fingerprint":"5f4f37d63f11ae141e2fef2059c230519641a417","fileCount":137,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -181,26 +181,7 @@ Generated: 2026-04-28T02:45:41Z | Files: 136 | Described: 0/136
 - `src/wake/mod.rs`
 
 ### tests/
-- `tests/concurrency_stress.rs`
-- `tests/config_parse.rs`
-- `tests/control_integration.rs`
-- `tests/control_protocol.rs`
-- `tests/daemon_headless.rs`
-- `tests/dispatcher_logic.rs`
-- `tests/documentation.rs`
-- `tests/drop_oldest_queue.rs`
-- `tests/jsonl_schema.rs`
-- `tests/macro_inject.rs`
-- `tests/pack_editor_roundtrip.rs`
-- `tests/pack_hd2_bundle.rs`
-- `tests/pack_hd2_coverage.rs`
-- `tests/packaging.rs`
-- `tests/profile_listing.rs`
-- `tests/runtime_commands.rs`
-- `tests/stt_smoke.rs`
-- `tests/ui_distribution.rs`
-- `tests/uinput_smoke.rs`
-- `tests/wake_word.rs`
+- *(21 files: 21 .rs)*
 
 ### uat/gui/
 - `uat/gui/builderror.txt`

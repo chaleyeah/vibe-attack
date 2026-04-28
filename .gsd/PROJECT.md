@@ -10,24 +10,25 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 ## Current State (2026-04-27)
 
-**M008 UI / Tray Runtime Control — complete ✅**
+**M009 Pack UX — in progress (S01 ✅, S02 ✅, S03 ✅)**
 
 | Milestone | Status | Delivered |
 |-----------|--------|-----------|
 | M001: Migration | ✅ complete | Rust toolchain, pipeline (VAD/STT/wake), phrase dispatch, pack system, UI scaffolding, docs, dual-ORT fix |
 | M007: Codebase Cleanup & Documentation | ✅ complete | Dead code removal, load_profiles fix, 191 pub items documented, 10 doc drift items corrected |
 | M008: UI / Tray Runtime Control | ✅ complete | Control protocol extensions, egui config window, tray Mode submenu, headless integration tests |
+| M009: Pack UX — Editor, Import/Export, Full HD2 Coverage | 🔄 in progress | S01–S03 complete; S04–S06 remaining |
 
-### M008 Slice Detail
+### M009 Slice Detail
 
 | Slice | Status | Delivered |
 |-------|--------|-----------|
-| S01: Control-protocol extensions | ✅ complete | SetMode/SetThreshold/SetInputDevice/SetPttBinding/ReloadConfig variants; RuntimeCommand MPSC channel; RwLock<PhraseMatcher> for live threshold |
-| S02: ConfigApp state + egui config panel | ✅ complete | egui config window with mode/threshold/device/PTT fields; atomic YAML save; daemon-absent graceful degradation |
-| S03: Tray icon state mapping + Mode submenu | ✅ complete | icon_name_for_state (5 unit tests); Mode submenu dispatching SetMode fire-and-forget; active_mode in DaemonStatus |
-| S04: End-to-end UAT + headless integration test | ✅ complete | 2 serial integration tests over real UDS socket; S04-UAT.md manual script |
-
-**Next milestone: TBD — macro editor (conditional logic, sound feedback), pack import/export, AppImage build, AUR submission**
+| S01: HD2 pack content | ✅ complete | profiles/hd2/pack.yaml expanded to 80+ macros across all stratagem categories; pack_hd2_coverage tests pass |
+| S02: PackEditor CRUD API | ✅ complete | PackEditor struct with add/edit/remove/move macro + add/rename/remove category; 22+ integration tests; round-trip byte equivalence |
+| S03: Egui editor panel | ✅ complete | Full egui pack editor panel in vibe-attack-config: category/macro browser, edit form, CRUD buttons, Save→SwitchProfile dispatch; state-machine integration tests |
+| S04: Import / Export dialogs | ⏳ pending | depends: S03 |
+| S05: TriggerMacro control request + editor Test button | ⏳ pending | depends: S02 |
+| S06: UAT — full pack lifecycle and editor flow | ⏳ pending | depends: S01, S03, S04, S05 |
 
 ## Requirements
 
@@ -105,6 +106,9 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | Arc<RwLock<ActivationMode>> on DaemonHandle | ActivationMode not atomically encodable; matches active_profile pattern; Status always coherent with last SetMode | Established in M008/S03 |
 | icon_name_for_state as free pub(crate) function | Enables unit tests without D-Bus/ksni instantiation | Established in M008/S03 |
 | Tray menu activate closures use fire-and-forget spawn | ksni D-Bus callbacks must not block | Established in M008/S03 |
+| pub mod pack_editor; ungated in mod.rs (wizard pattern) | Pure-logic helpers (parse_key_sequence, build_macro_config_from_form) compile under default build for unit testing | Established in M009/S03 |
+| Pure-logic form helpers outside #[cfg(feature="gui")] gate | Separates testable logic from untestable egui rendering code | Established in M009/S03 |
+| Rename Category does NOT cascade if_flag/set_flag references | Cascading is complex and flags are user-managed strings; surface visible warning + two-click confirm instead | Established in M009/S03 |
 
 ## Evolution
 
@@ -126,4 +130,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-27 — M008 (UI / Tray Runtime Control) complete: 4 slices, 78 tests, full runtime-control surface. ACT-03, ACT-04, STT-02, STT-03, UI-02, UI-03 validated.*
+*Last updated: 2026-04-27 — M009/S03 (Egui editor panel) complete: full pack editor GUI surface wired; 9 unit tests + 3 integration tests green; S04–S06 remaining.*

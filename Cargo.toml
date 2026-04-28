@@ -19,7 +19,7 @@ required-features = ["gui"]
 default = []
 stt = ["dep:whisper-rs"]
 stt-vulkan = ["stt", "whisper-rs/vulkan"]
-gui = ["dep:eframe", "dep:ureq", "dep:ksni"]
+gui = ["dep:eframe", "dep:ureq", "dep:ksni", "dep:rfd"]
 
 [dependencies]
 cpal        = "0.15"
@@ -49,6 +49,7 @@ zip = "0.6"
 ratatui = "0.30"
 crossterm = "0.28"
 ksni = { version = "0.3.4", optional = true, features = ["tokio"] }
+rfd = { version = "0.17", optional = true }
 
 [dev-dependencies]
 tempfile = "3"
