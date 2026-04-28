@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T03",
+  "unitId": "M008/S03/T03",
+  "timestamp": 1777341227095,
+  "passed": true,
+  "discoverySource": "task-plan",
+  "checks": [
+    {
+      "command": "cargo test --features gui",
+      "exitCode": 0,
+      "durationMs": 580,
+      "verdict": "pass"
+    },
+    {
+      "command": "cargo build",
+      "exitCode": 0,
+      "durationMs": 98,
+      "verdict": "pass"
+    },
+    {
+      "command": "cargo build --features gui",
+      "exitCode": 0,
+      "durationMs": 127,
+      "verdict": "pass"
+    }
+  ]
+}

@@ -297,3 +297,8 @@
 {"id":"84c9ab95-3d59-4f53-b6ae-8413330f0cc6","ts":"2026-04-28T01:50:45.242Z","severity":"warning","message":"Safety: task T02 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"e0871b08-4829-46a1-b3aa-db41ed3dbe31","ts":"2026-04-28T01:50:45.621Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
 {"id":"e45ecfac-d201-451a-ba01-9c2708f79f35","ts":"2026-04-28T01:50:45.626Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"c9d5e906-7e52-44a6-8d86-2c57eaa45294","ts":"2026-04-28T01:53:47.087Z","severity":"info","message":"Committed: feat: Added active_mode to TrayState, polled it from query_status, and…","source":"notify","read":false}
+{"id":"30ea93e5-4dbc-43ac-bcbc-a6b9b5e28a06","ts":"2026-04-28T01:53:47.094Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"860d1b1d-dc9c-436e-aa44-e66f0f921711","ts":"2026-04-28T01:53:47.094Z","severity":"warning","message":"Safety: task T03 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"c95302f4-80d4-43fd-8120-93901b46cfb3","ts":"2026-04-28T01:53:47.905Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
+{"id":"1dd0d838-a78f-405c-8810-6c4d9d7ade76","ts":"2026-04-28T01:53:47.910Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

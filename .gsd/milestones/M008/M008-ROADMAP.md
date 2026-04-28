@@ -23,10 +23,10 @@
 - [x] **S02: S02** `risk:medium` `depends:[]`
   > After this: vibe-attack-config opens a config window; user changes mode toggle → Save → daemon log shows SetMode received; threshold slider moves → Save → daemon log shows SetThreshold received
 
-- [ ] **S03: S03** `risk:low` `depends:[]`
+- [x] **S03: S03** `risk:low` `depends:[]`
   > After this: Run vibe-attack; tray icon changes between Idle/Listening/Recording/Muted as daemon transitions; Mode submenu shows current mode checkmarked; selecting the other mode triggers SetMode and the daemon switches without restart
 
-- [ ] **S04: End-to-end UAT + headless integration test** `risk:low` `depends:[S03]`
+- [ ] **S04: S04** `risk:low` `depends:[]`
   > After this: cargo test --test control_integration passes; S04-UAT.md manual steps produce 'mode changed, stratagem fired by voice' result without daemon restart
 
 ## Boundary Map
