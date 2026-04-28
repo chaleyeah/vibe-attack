@@ -26,7 +26,7 @@
 - [x] **S03: S03** `risk:low` `depends:[]`
   > After this: Run vibe-attack; tray icon changes between Idle/Listening/Recording/Muted as daemon transitions; Mode submenu shows current mode checkmarked; selecting the other mode triggers SetMode and the daemon switches without restart
 
-- [ ] **S04: S04** `risk:low` `depends:[]`
+- [x] **S04: S04** `risk:low` `depends:[]`
   > After this: cargo test --test control_integration passes; S04-UAT.md manual steps produce 'mode changed, stratagem fired by voice' result without daemon restart
 
 ## Boundary Map

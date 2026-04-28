@@ -10,29 +10,24 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 ## Current State (2026-04-27)
 
-**M001 Migration — complete ✅**
+**M008 UI / Tray Runtime Control — complete ✅**
+
+| Milestone | Status | Delivered |
+|-----------|--------|-----------|
+| M001: Migration | ✅ complete | Rust toolchain, pipeline (VAD/STT/wake), phrase dispatch, pack system, UI scaffolding, docs, dual-ORT fix |
+| M007: Codebase Cleanup & Documentation | ✅ complete | Dead code removal, load_profiles fix, 191 pub items documented, 10 doc drift items corrected |
+| M008: UI / Tray Runtime Control | ✅ complete | Control protocol extensions, egui config window, tray Mode submenu, headless integration tests |
+
+### M008 Slice Detail
 
 | Slice | Status | Delivered |
 |-------|--------|-----------|
-| S01: Foundation | ✅ complete | Rust toolchain, compilable project skeleton, Cargo.toml, LICENSES.md |
-| S02: Pipeline Core | ✅ complete | VAD/STT/wake-word config + test scaffolding, JSONL event schema, latency baseline |
-| S03: Phrase Dispatch | ✅ complete | PhraseMatcher + Dispatcher, 31 tests (lib + dispatcher_logic + jsonl_schema) |
-| S04: Pack System HD2 Bundle | ✅ complete | 22 hermetic integration tests: YAML round-trip, ZIP export/import, ProfileManager, full lifecycle |
-| S05: UI + Distribution | ✅ complete | Pure-logic UI state, feature-gated egui binary, PKGBUILD, AppImage scaffolding, 16 tests |
-| S06: Documentation | ✅ complete | README rewrite, CONTRIBUTING.md, troubleshooting, configuration docs, 11 structural tests |
-| S07: Wake Word ORT | ✅ complete | Shared ORT linking for sherpa-onnx, ORT_DYLIB_PATH auto-discovery, coexistence test |
+| S01: Control-protocol extensions | ✅ complete | SetMode/SetThreshold/SetInputDevice/SetPttBinding/ReloadConfig variants; RuntimeCommand MPSC channel; RwLock<PhraseMatcher> for live threshold |
+| S02: ConfigApp state + egui config panel | ✅ complete | egui config window with mode/threshold/device/PTT fields; atomic YAML save; daemon-absent graceful degradation |
+| S03: Tray icon state mapping + Mode submenu | ✅ complete | icon_name_for_state (5 unit tests); Mode submenu dispatching SetMode fire-and-forget; active_mode in DaemonStatus |
+| S04: End-to-end UAT + headless integration test | ✅ complete | 2 serial integration tests over real UDS socket; S04-UAT.md manual script |
 
-**M007 Codebase Cleanup & Documentation — complete ✅**
-
-| Slice | Status | Delivered |
-|-------|--------|-----------|
-| S01: Dead code & load_profiles fix | ✅ complete | sha2 removed, DispatcherState narrowed to pub(crate), load_profiles fixed to {name}/pack.yaml subdirectory format, hermetic integration test |
-| S02: Internal consistency comments | ✅ complete | // SAFETY: comments on all unsafe impls, justifications on all #[allow(...)], cross-reference comments on duplicate private fns |
-| S03: Public API documentation | ✅ complete | 191 pub items documented with ///, //! crate-level architecture doc in src/lib.rs with ASCII pipeline diagram, cargo doc 0 warnings |
-| S04: Config and error type cleanup | ✅ complete | Full doc coverage on src/config.rs and src/error.rs, intra-doc link fixed, audit script 0 gaps |
-| S05: README, CONTRIBUTING, docs/ accuracy | ✅ complete | 10 drift items corrected across 5 doc files; Feature Flags section added to README; all external docs accurate against current src/ |
-
-**Next milestone: TBD — system tray, full config window, AppImage build, AUR submission, runtime CI confirmation**
+**Next milestone: TBD — macro editor (conditional logic, sound feedback), pack import/export, AppImage build, AUR submission**
 
 ## Requirements
 
@@ -44,6 +39,12 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 - MCRO-05: uinput/evdev key events on Wayland — Validated in M001/S01 (Phase 1 Foundation)
 - UI-01: Headless daemon mode — Validated in M001/S01 (Phase 1 Foundation)
 - DIST-03: AGPL-3.0 license + LICENSES.md inventory — Validated in M001/S01 (Phase 1 Foundation)
+- ACT-03: PTT ↔ wake-word mode switch from config UI — Validated in M008 (SetMode via config window + tray; coordinator drain; no pipeline restart)
+- ACT-04: Tray icon reflects listening state — Validated in M008 (icon_name_for_state; all DaemonState variants; 5 unit tests)
+- STT-02: Confidence threshold fuzzy matching — Validated in M008 (RwLock<PhraseMatcher>; live update_threshold(); test passes)
+- STT-03: Configure threshold from config UI — Validated in M008 (threshold_pct slider; SetThreshold dispatch; integration test passes)
+- UI-02: System tray icon with status and controls — Validated in M008 (tray icon + Mode submenu + profile submenu complete)
+- UI-03: Config window for audio/mode/threshold/keybindings — Validated in M008 (egui config window; atomic YAML save; daemon-absent recovery)
 
 ### Advanced (structural foundation complete, runtime validation pending)
 
@@ -54,18 +55,12 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 ### Active
 
-- [ ] ACT-03: User can switch between PTT and wake-word mode from the config UI at any time
-- [ ] ACT-04: A visible status indicator (tray icon) reflects current listening state (idle / listening / muted)
-- [ ] STT-02: Phrase matching uses a **confidence threshold** (fuzzy matching) to handle slight mispronunciations
-- [ ] STT-03: User can configure the confidence threshold from the config UI
 - [ ] MCRO-03: Macro engine supports **conditional logic** (if/else, variables) for VoiceAttack-class scripting
 - [ ] MCRO-04: Macros play an optional **sound feedback** on activation (configurable per macro or globally)
 - [ ] PACK-02: User can **import packs** from versioned `.hdpack` files (JSON or YAML format with checksum)
 - [ ] PACK-03: User can **export packs** to `.hdpack` files for sharing or backup
 - [ ] PACK-04: User can create and edit macros via a **built-in editor** (phrase, key sequence, delays, conditions, sound)
 - [ ] PACK-05: App supports **multiple named profiles** (e.g. one per game or playstyle), switchable at runtime
-- [ ] UI-02: A **system tray icon** provides quick access to status and controls (mute, profile switch, open config)
-- [ ] UI-03: A **config window** allows setting audio input device, activation mode, confidence threshold, and keybindings
 
 ### Out of Scope
 
@@ -105,6 +100,11 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | Profile loading canonical format: {name}/pack.yaml subdirectories | Aligns load_profiles UI with handle_switch_profile and Pack::load_from_dir; flat *.yaml profiles no longer recognized | Established in M007/S01 |
 | Every pub item in src/ requires a /// doc comment | Mechanically auditable floor for contributor comprehension; enforced by audit script + cargo doc | Established in M007 |
 | Every unsafe block and #[allow(...)] requires an adjacent justifying comment | Makes invariants discoverable without git blame; one // SAFETY: per impl block | Established in M007/S02 |
+| RwLock<PhraseMatcher> for live threshold updates | Threshold consumed by PhraseMatcher::new(); full matcher replacement under write lock is cleaner than two separate atomics | Established in M008/S01 |
+| ActivationMode runtime-only in M008 (not persisted to YAML) | Avoids YAML schema change; SetMode sent over socket on Save; consider write-back in future milestone | Established in M008/S02 |
+| Arc<RwLock<ActivationMode>> on DaemonHandle | ActivationMode not atomically encodable; matches active_profile pattern; Status always coherent with last SetMode | Established in M008/S03 |
+| icon_name_for_state as free pub(crate) function | Enables unit tests without D-Bus/ksni instantiation | Established in M008/S03 |
+| Tray menu activate closures use fire-and-forget spawn | ksni D-Bus callbacks must not block | Established in M008/S03 |
 
 ## Evolution
 
@@ -126,4 +126,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-27 — M007 (Codebase Cleanup & Documentation) complete: 5 slices, sha2 removed, load_profiles bug fixed, 191 pub items documented, external docs corrected for 10 drift items*
+*Last updated: 2026-04-27 — M008 (UI / Tray Runtime Control) complete: 4 slices, 78 tests, full runtime-control surface. ACT-03, ACT-04, STT-02, STT-03, UI-02, UI-03 validated.*

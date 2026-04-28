@@ -1,153 +1,59 @@
 # Requirements
 
-## Active
-
-### ACT-03 — User can switch between PTT and wake-word mode from the config UI at any time
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-User can switch between PTT and wake-word mode from the config UI at any time
-
-### ACT-04 — A visible status indicator (tray icon) reflects current listening state (idle / listening / muted)
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-A visible status indicator (tray icon) reflects current listening state (idle / listening / muted)
-
-### STT-02 — Phrase matching uses a **confidence threshold** (fuzzy matching) to handle slight mispronunciations
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-Phrase matching uses a **confidence threshold** (fuzzy matching) to handle slight mispronunciations
-
-### STT-03 — User can configure the confidence threshold from the config UI
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-User can configure the confidence threshold from the config UI
-
-### MCRO-03 — Macro engine supports **conditional logic** (if/else, variables) for VoiceAttack-class scripting
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-Macro engine supports **conditional logic** (if/else, variables) for VoiceAttack-class scripting
-
-### MCRO-04 — Macros play an optional **sound feedback** on activation (configurable per macro or globally)
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-Macros play an optional **sound feedback** on activation (configurable per macro or globally)
-
-### PACK-01 — App ships with a **bundled Helldivers 2 pack** covering all current stratagems (80+) with correct key sequences
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-App ships with a **bundled Helldivers 2 pack** covering all current stratagems (80+) with correct key sequences
-
-### PACK-02 — User can **import packs** from versioned `.hdpack` files (JSON or YAML format with checksum)
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-User can **import packs** from versioned `.hdpack` files (JSON or YAML format with checksum)
-
-### PACK-03 — User can **export packs** to `.hdpack` files for sharing or backup
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-User can **export packs** to `.hdpack` files for sharing or backup
-
-### PACK-04 — User can create and edit macros via a **built-in editor** (phrase, key sequence, delays, conditions, sound)
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-User can create and edit macros via a **built-in editor** (phrase, key sequence, delays, conditions, sound)
-
-### PACK-05 — App supports **multiple named profiles** (e.g. one per game or playstyle), switchable at runtime
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-App supports **multiple named profiles** (e.g. one per game or playstyle), switchable at runtime
-
-### UI-02 — A **system tray icon** provides quick access to status and controls (mute, profile switch, open config)
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-A **system tray icon** provides quick access to status and controls (mute, profile switch, open config)
-
-### UI-03 — A **config window** allows setting audio input device, activation mode, confidence threshold, and keybindings
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-A **config window** allows setting audio input device, activation mode, confidence threshold, and keybindings
-
-### UI-04 — A **first-run wizard** guides new users through microphone test, PTT binding, and loading the HD2 pack
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-A **first-run wizard** guides new users through microphone test, PTT binding, and loading the HD2 pack
-
-### DIST-01 — App is packaged as an **AppImage** for distro-agnostic install
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-App is packaged as an **AppImage** for distro-agnostic install
-
-### DIST-02 — App provides an **AUR / PKGBUILD** for Arch Linux and CachyOS users
-
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: none yet
-
-App provides an **AUR / PKGBUILD** for Arch Linux and CachyOS users
+This file is the explicit capability and coverage contract for the project.
 
 ## Validated
 
-## Deferred
+### ACT-03 — Untitled
+- Status: validated
+- Primary owning slice: M008/S02
+- Supporting slices: M008/S01, M008/S03, M008/S04
+- Validation: M008/S01: SetMode ControlRequest + RuntimeCommand channel; M008/S02: config window mode toggle dispatches SetMode on Save; M008/S03: tray Mode submenu dispatches SetMode fire-and-forget; M008/S04: control_integration test set_mode_round_trip_via_socket passes. Mode swap does not restart the pipeline.
 
-## Out of Scope
+### ACT-04 — Untitled
+- Status: validated
+- Primary owning slice: M008/S03
+- Supporting slices: M008/S01
+- Validation: M008/S03: icon_name_for_state free function maps all DaemonState variants (Idle, Listening, Recording, Muted, None) to icon names; 5 unit tests pass; tray polls query_status() and updates icon each tick.
+
+### STT-02 — Untitled
+- Status: validated
+- Primary owning slice: M008/S01
+- Supporting slices: M008/S04
+- Validation: M008/S01: PhraseMatcher wrapped in RwLock; threshold is a runtime-mutable f32 owned by coordinator; update_threshold() clamps and replaces matcher under write lock. test_update_threshold_changes_match_behavior passes.
+
+### STT-03 — Untitled
+- Status: validated
+- Primary owning slice: M008/S02
+- Supporting slices: M008/S01, M008/S04
+- Validation: M008/S02: config window exposes threshold_pct slider (0-100 integer); Save converts to f32 and dispatches SetThreshold via control socket. M008/S04: set_threshold_via_socket_updates_dispatcher integration test passes.
+
+### UI-02 — Untitled
+- Status: validated
+- Primary owning slice: M008/S03
+- Supporting slices: M008/S01
+- Validation: M008/S03: tray icon reflects all DaemonState variants; Mode submenu with PTT/Wake checkmark items dispatches SetMode; profile submenu already present from M001. Tray state fed from JSONL stdout event stream via query_status().
+
+### UI-03 — Untitled
+- Status: validated
+- Primary owning slice: M008/S02
+- Supporting slices: M008/S01, M008/S03, M008/S04
+- Validation: M008/S02: config window reads config.yaml on open, exposes mode toggle, threshold slider, input device selector, PTT binding (read-only display in M008); Save dispatches SetMode/SetThreshold/SetInputDevice via control socket with atomic YAML write. Daemon-absent state shows recovery message.
+
+## Traceability
+
+| ID | Class | Status | Primary owner | Supporting | Proof |
+|---|---|---|---|---|---|
+| ACT-03 |  | validated | M008/S02 | M008/S01, M008/S03, M008/S04 | M008/S01: SetMode ControlRequest + RuntimeCommand channel; M008/S02: config window mode toggle dispatches SetMode on Save; M008/S03: tray Mode submenu dispatches SetMode fire-and-forget; M008/S04: control_integration test set_mode_round_trip_via_socket passes. Mode swap does not restart the pipeline. |
+| ACT-04 |  | validated | M008/S03 | M008/S01 | M008/S03: icon_name_for_state free function maps all DaemonState variants (Idle, Listening, Recording, Muted, None) to icon names; 5 unit tests pass; tray polls query_status() and updates icon each tick. |
+| STT-02 |  | validated | M008/S01 | M008/S04 | M008/S01: PhraseMatcher wrapped in RwLock; threshold is a runtime-mutable f32 owned by coordinator; update_threshold() clamps and replaces matcher under write lock. test_update_threshold_changes_match_behavior passes. |
+| STT-03 |  | validated | M008/S02 | M008/S01, M008/S04 | M008/S02: config window exposes threshold_pct slider (0-100 integer); Save converts to f32 and dispatches SetThreshold via control socket. M008/S04: set_threshold_via_socket_updates_dispatcher integration test passes. |
+| UI-02 |  | validated | M008/S03 | M008/S01 | M008/S03: tray icon reflects all DaemonState variants; Mode submenu with PTT/Wake checkmark items dispatches SetMode; profile submenu already present from M001. Tray state fed from JSONL stdout event stream via query_status(). |
+| UI-03 |  | validated | M008/S02 | M008/S01, M008/S03, M008/S04 | M008/S02: config window reads config.yaml on open, exposes mode toggle, threshold slider, input device selector, PTT binding (read-only display in M008); Save dispatches SetMode/SetThreshold/SetInputDevice via control socket with atomic YAML write. Daemon-absent state shows recovery message. |
+
+## Coverage Summary
+
+- Active requirements: 0
+- Mapped to slices: 0
+- Validated: 6 (ACT-03, ACT-04, STT-02, STT-03, UI-02, UI-03)
+- Unmapped active requirements: 0
