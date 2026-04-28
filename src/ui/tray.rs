@@ -132,6 +132,21 @@ impl TrayHandle {
     }
 }
 
+// ── Icon mapping ─────────────────────────────────────────────────────────────
+
+/// Return the XDG/FreeDesktop icon name for a given daemon state.
+///
+/// `None` means the daemon is not running — treat the same as Muted so the
+/// tray icon makes it obvious the mic is inactive.  `Listening` gets a
+/// distinct "high" variant to distinguish the wake-word window from idle.
+pub(crate) fn icon_name_for_state(state: Option<&DaemonState>) -> &'static str {
+    match state {
+        None | Some(DaemonState::Muted) => "audio-input-microphone-muted",
+        Some(DaemonState::Idle) | Some(DaemonState::Recording) => "audio-input-microphone",
+        Some(DaemonState::Listening) => "audio-input-microphone-high",
+    }
+}
+
 // ── Tray impl ────────────────────────────────────────────────────────────────
 
 struct VibeTray {
@@ -154,11 +169,7 @@ impl Tray for VibeTray {
     }
 
     fn icon_name(&self) -> String {
-        match self.current_state().daemon_state {
-            None => "audio-input-microphone-muted".into(),
-            Some(DaemonState::Muted) => "audio-input-microphone-muted".into(),
-            Some(_) => "audio-input-microphone".into(),
-        }
+        icon_name_for_state(self.current_state().daemon_state.as_ref()).into()
     }
 
     fn title(&self) -> String {
@@ -281,5 +292,47 @@ impl Tray for VibeTray {
         );
 
         items
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn icon_name_for_none_is_muted() {
+        assert_eq!(icon_name_for_state(None), "audio-input-microphone-muted");
+    }
+
+    #[test]
+    fn icon_name_for_idle() {
+        assert_eq!(
+            icon_name_for_state(Some(&DaemonState::Idle)),
+            "audio-input-microphone"
+        );
+    }
+
+    #[test]
+    fn icon_name_for_listening() {
+        assert_eq!(
+            icon_name_for_state(Some(&DaemonState::Listening)),
+            "audio-input-microphone-high"
+        );
+    }
+
+    #[test]
+    fn icon_name_for_recording() {
+        assert_eq!(
+            icon_name_for_state(Some(&DaemonState::Recording)),
+            "audio-input-microphone"
+        );
+    }
+
+    #[test]
+    fn icon_name_for_muted() {
+        assert_eq!(
+            icon_name_for_state(Some(&DaemonState::Muted)),
+            "audio-input-microphone-muted"
+        );
     }
 }

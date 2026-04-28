@@ -28,7 +28,7 @@ Failure modes are limited to RwLock poisoning — follow the existing `active_pr
   - Files: `src/control/protocol.rs`, `src/control/mod.rs`, `tests/control_protocol.rs`
   - Verify: cargo test --test control_protocol && cargo build && cargo build --features gui
 
-- [ ] **T02: Map every DaemonState to a distinct tray icon name with unit tests** `est:30m`
+- [x] **T02: Map every DaemonState to a distinct tray icon name with unit tests** `est:30m`
   Extract the icon-name match in `src/ui/tray.rs::VibeTray::icon_name` into a free function `pub(crate) fn icon_name_for_state(state: Option<&DaemonState>) -> &'static str` so the mapping is unit-testable without spawning a tray. Mapping:
 - None → "audio-input-microphone-muted"
 - Some(Muted) → "audio-input-microphone-muted"
