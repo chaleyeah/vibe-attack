@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T03:37:48Z | Files: 138 | Described: 0/138
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T03:37:48Z","fingerprint":"0925be2ed611f5b8b935741df29b4d1a6e0c76b2","fileCount":138,"truncated":false} -->
+Generated: 2026-04-28T03:49:35Z | Files: 139 | Described: 0/139
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T03:49:35Z","fingerprint":"8d1b8b159035bc443cd9714507d1dbb05f55b67d","fileCount":139,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -121,6 +121,7 @@ Generated: 2026-04-28T03:37:48Z | Files: 138 | Described: 0/138
 
 ### scripts/
 - `scripts/setup.sh`
+- `scripts/verify-appimage.sh`
 
 ### src/
 - `src/config.rs`
