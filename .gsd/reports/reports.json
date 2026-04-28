@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "projectName": "hd-linux-voice",
+  "projectPath": "/home/chadmin/Github/hd-linux-voice",
+  "gsdVersion": "2.78.1",
+  "entries": [
+    {
+      "filename": "M008-2026-04-28T02-16-39.html",
+      "generatedAt": "2026-04-28T02:16:39.207Z",
+      "milestoneId": "M008",
+      "milestoneTitle": "UI / Tray Runtime Control",
+      "label": "M008: UI / Tray Runtime Control",
+      "kind": "milestone",
+      "totalCost": 68.04269665,
+      "totalTokens": 101210478,
+      "totalDuration": 13268079,
+      "doneSlices": 42,
+      "totalSlices": 66,
+      "doneMilestones": 9,
+      "totalMilestones": 13,
+      "phase": "planning"
+    }
+  ]
+}

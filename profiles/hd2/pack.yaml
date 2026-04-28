@@ -12,6 +12,48 @@ categories:
       - name: Stalwart
         phrase: stalwart
         keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_LEFT}]
+      - name: Expendable Anti-Tank
+        phrase: expendable anti tank
+        keys: [{key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_RIGHT}]
+      - name: Recoilless Rifle
+        phrase: recoilless rifle
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_LEFT}]
+      - name: Flamethrower
+        phrase: flamethrower
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_UP}]
+      - name: Autocannon
+        phrase: autocannon
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_RIGHT}]
+      - name: Railgun
+        phrase: railgun
+        keys: [{key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Spear
+        phrase: spear
+        keys: [{key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_DOWN}]
+      - name: Quasar Cannon
+        phrase: quasar cannon
+        keys: [{key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_RIGHT}]
+      - name: Heavy Machine Gun
+        phrase: heavy machine gun
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_DOWN}]
+      - name: Arc Thrower
+        phrase: arc thrower
+        keys: [{key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Laser Cannon
+        phrase: laser cannon
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}]
+      - name: Grenade Launcher
+        phrase: grenade launcher
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Commando
+        phrase: commando
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Blitzer
+        phrase: blitzer
+        keys: [{key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_DOWN}]
+      - name: Pummeler
+        phrase: pummeler
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_UP}]
   - name: Orbital Cannons
     macros:
       - name: Orbital Gatling Barrage
@@ -23,6 +65,36 @@ categories:
       - name: Orbital 120mm HE Barrage
         phrase: orbital 120mm barrage
         keys: [{key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_DOWN}]
+      - name: Orbital 380mm HE Barrage
+        phrase: orbital 380mm barrage
+        keys: [{key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Orbital Walking Barrage
+        phrase: orbital walking barrage
+        keys: [{key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_DOWN}]
+      - name: Orbital Laser
+        phrase: orbital laser
+        keys: [{key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}]
+      - name: Orbital Railcannon Strike
+        phrase: orbital railcannon strike
+        keys: [{key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Orbital Precision Strike
+        phrase: orbital precision strike
+        keys: [{key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_UP}]
+      - name: Orbital Gas Strike
+        phrase: orbital gas strike
+        keys: [{key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Orbital EMS Strike
+        phrase: orbital ems strike
+        keys: [{key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Orbital Smoke Strike
+        phrase: orbital smoke strike
+        keys: [{key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_UP}]
+      - name: Orbital Napalm Barrage
+        phrase: orbital napalm barrage
+        keys: [{key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_RIGHT}]
+      - name: Orbital Cluster Bomb
+        phrase: orbital cluster bomb
+        keys: [{key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}]
   - name: Hangar
     macros:
       - name: Eagle Strafing Run
@@ -34,3 +106,135 @@ categories:
       - name: Eagle Cluster Bomb
         phrase: eagle cluster bomb
         keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Eagle Napalm Airstrike
+        phrase: eagle napalm airstrike
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_UP}]
+      - name: Eagle Smoke Strike
+        phrase: eagle smoke strike
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_DOWN}]
+      - name: Eagle 110mm Rocket Pods
+        phrase: eagle rocket pods
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_LEFT}]
+      - name: Eagle 500kg Bomb
+        phrase: eagle 500kg bomb
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_DOWN}]
+      - name: Eagle Rearm
+        phrase: eagle rearm
+        keys: [{key: KEY_UP}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_RIGHT}]
+      - name: Eagle Thermite Strike
+        phrase: eagle thermite strike
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_RIGHT}]
+      - name: Eagle EMS Airstrike
+        phrase: eagle ems airstrike
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Eagle Air Superiority
+        phrase: eagle air superiority
+        keys: [{key: KEY_UP}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_UP}]
+      - name: Eagle Stun Grenade
+        phrase: eagle stun grenade
+        keys: [{key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+  - name: Bridge
+    macros:
+      - name: Reinforce
+        phrase: reinforce
+        keys: [{key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_LEFT}, {key: KEY_UP}]
+      - name: Resupply
+        phrase: resupply
+        keys: [{key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}]
+      - name: SOS Beacon
+        phrase: sos beacon
+        keys: [{key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_UP}]
+      - name: Hellbomb
+        phrase: hellbomb
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_UP}]
+      - name: SEAF Artillery
+        phrase: seaf artillery
+        keys: [{key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_DOWN}]
+      - name: Prospecting Drill
+        phrase: prospecting drill
+        keys: [{key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Upload Data
+        phrase: upload data
+        keys: [{key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_DOWN}]
+      - name: NUX-223 Hellbomb
+        phrase: nux hellbomb
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Orbital Blockade
+        phrase: orbital blockade
+        keys: [{key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_DOWN}]
+  - name: Engineering Bay
+    macros:
+      - name: Anti-Personnel Minefield
+        phrase: anti personnel minefield
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_RIGHT}]
+      - name: Supply Pack
+        phrase: supply pack
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_DOWN}]
+      - name: Incendiary Mines
+        phrase: incendiary mines
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Guard Dog
+        phrase: guard dog
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}]
+      - name: Ballistic Shield Backpack
+        phrase: ballistic shield
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}]
+      - name: Anti-Tank Mines
+        phrase: anti tank mines
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_LEFT}]
+      - name: Jump Pack
+        phrase: jump pack
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_UP}, {key: KEY_DOWN}, {key: KEY_UP}]
+      - name: Shield Generator Pack
+        phrase: shield generator pack
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_LEFT}]
+      - name: Portable Hellbomb
+        phrase: portable hellbomb
+        keys: [{key: KEY_DOWN}, {key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_RIGHT}, {key: KEY_UP}]
+      - name: Throwing Knife
+        phrase: throwing knife
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Stun Grenade
+        phrase: stun grenade
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_LEFT}]
+      - name: Smoke Grenade
+        phrase: smoke grenade
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_RIGHT}]
+  - name: Robotics Workshop
+    macros:
+      - name: Machine Gun Sentry
+        phrase: machine gun sentry
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_LEFT}]
+      - name: Gatling Sentry
+        phrase: gatling sentry
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_LEFT}]
+      - name: Mortar Sentry
+        phrase: mortar sentry
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_DOWN}]
+      - name: Guard Dog Rover
+        phrase: guard dog rover
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_RIGHT}]
+      - name: Autocannon Sentry
+        phrase: autocannon sentry
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_UP}]
+      - name: Rocket Sentry
+        phrase: rocket sentry
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_RIGHT}, {key: KEY_UP}]
+      - name: EMS Mortar Sentry
+        phrase: ems mortar sentry
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
+      - name: Tesla Tower
+        phrase: tesla tower
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_RIGHT}, {key: KEY_LEFT}]
+      - name: Patriot Exosuit
+        phrase: patriot exosuit
+        keys: [{key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}]
+      - name: Emancipator Exosuit
+        phrase: emancipator exosuit
+        keys: [{key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_RIGHT}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_UP}]
+      - name: Anti-Materiel Mine
+        phrase: anti materiel mine
+        keys: [{key: KEY_DOWN}, {key: KEY_LEFT}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_LEFT}]
+      - name: Flame Sentry
+        phrase: flame sentry
+        keys: [{key: KEY_DOWN}, {key: KEY_UP}, {key: KEY_LEFT}, {key: KEY_DOWN}, {key: KEY_RIGHT}]
