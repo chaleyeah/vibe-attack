@@ -187,6 +187,46 @@ impl Dispatcher {
         tracing::debug!(transcript, "No phrase matched above threshold");
         DispatchOutcome::NoMatch
     }
+
+    /// Fire a macro by exact name, bypassing phrase matching.
+    ///
+    /// Acquires a read lock on the macro registry, locates the first entry whose
+    /// `name` equals `name`, plays its optional sound, sends `MacroCmd::Execute`
+    /// to the injection thread, and returns `Ok(DispatchOutcome::Fired)` with
+    /// `score: 1.0` (deliberate direct trigger convention).
+    ///
+    /// Returns `Err` when the macro is not found or the injection channel is closed.
+    pub fn fire_named(&self, name: &str) -> Result<DispatchOutcome, String> {
+        let macros = self.macros.read().unwrap();
+        let mac = macros
+            .iter()
+            .find(|m| m.name == name)
+            .ok_or_else(|| format!("macro not found: {name}"))?;
+
+        tracing::info!(macro_name = name, "Firing macro (direct)");
+
+        if let Some(sound_path) = &mac.sound {
+            if let Some(player) = &self.sound_player {
+                if let Err(e) = player.play(sound_path) {
+                    tracing::error!("Failed to play sound for macro {}: {}", mac.name, e);
+                }
+            }
+        }
+
+        let keys: Vec<KeyStep> = mac.keys.iter().map(KeyStep::from_config).collect();
+        self.macro_tx
+            .send(MacroCmd::Execute {
+                keys,
+                default_dwell_ms: self.default_dwell_ms,
+                default_gap_ms: self.default_gap_ms,
+            })
+            .map_err(|e| format!("injection channel closed: {e}"))?;
+
+        Ok(DispatchOutcome::Fired {
+            macro_id: name.into(),
+            score: 1.0,
+        })
+    }
 }
 
 #[cfg(test)]
@@ -263,5 +303,74 @@ mod tests {
             dispatcher.process("eagle airstrike"),
             DispatchOutcome::Fired { .. }
         ));
+    }
+
+    fn make_dispatcher_with_keys(phrase: &str, keys: Vec<crate::config::KeyAction>) -> (Dispatcher, std::sync::mpsc::Receiver<MacroCmd>) {
+        let (tx, rx) = std::sync::mpsc::channel();
+        let macro_cfg = MacroConfig {
+            name: "eagle_airstrike".to_string(),
+            phrase: Some(phrase.to_string()),
+            if_flag: None,
+            set_flag: None,
+            sound: None,
+            keys,
+        };
+        let dispatcher = Dispatcher::new(0.8, vec![macro_cfg], tx, 50, 50);
+        (dispatcher, rx)
+    }
+
+    #[test]
+    fn fire_named_found_emits_execute() {
+        use crate::config::KeyAction;
+        use std::sync::mpsc::TryRecvError;
+
+        let keys = vec![
+            KeyAction { key: "KEY_UP".to_string(), dwell_ms: None, gap_ms: None },
+            KeyAction { key: "KEY_DOWN".to_string(), dwell_ms: None, gap_ms: None },
+        ];
+        let key_count = keys.len();
+        let (dispatcher, rx) = make_dispatcher_with_keys("eagle airstrike", keys);
+
+        let outcome = dispatcher.fire_named("eagle_airstrike").expect("fire_named must succeed");
+        match outcome {
+            DispatchOutcome::Fired { macro_id, score } => {
+                assert_eq!(macro_id, "eagle_airstrike");
+                assert!((score - 1.0).abs() < 1e-6, "score must be 1.0, got {score}");
+            }
+            DispatchOutcome::NoMatch => panic!("expected Fired, got NoMatch"),
+        }
+
+        let cmd = rx.recv().expect("must have received exactly one MacroCmd");
+        match cmd {
+            MacroCmd::Execute { keys, .. } => {
+                assert_eq!(keys.len(), key_count, "keys vec must match configured KeyAction count");
+            }
+            MacroCmd::Shutdown => panic!("unexpected Shutdown cmd"),
+        }
+        assert!(
+            matches!(rx.try_recv(), Err(TryRecvError::Empty)),
+            "must have received exactly one MacroCmd"
+        );
+    }
+
+    #[test]
+    fn fire_named_missing_returns_err() {
+        use std::sync::mpsc::TryRecvError;
+
+        let (dispatcher, rx) = make_dispatcher_with_keys("eagle airstrike", vec![]);
+
+        let result = dispatcher.fire_named("does_not_exist");
+        match result {
+            Err(msg) => assert!(
+                msg.contains("macro not found"),
+                "error must contain 'macro not found', got: {msg}"
+            ),
+            Ok(_) => panic!("expected Err, got Ok"),
+        }
+
+        assert!(
+            matches!(rx.try_recv(), Err(TryRecvError::Empty)),
+            "no MacroCmd must be sent when macro is not found"
+        );
     }
 }

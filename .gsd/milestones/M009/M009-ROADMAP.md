@@ -26,10 +26,10 @@
 - [x] **S03: S03** `risk:medium` `depends:[]`
   > After this: vibe-attack-config opens editor panel; user adds a new macro via the form; clicks Save; pack.yaml updated on disk; daemon picks up change via SwitchProfile (already shipping)
 
-- [ ] **S04: S04** `risk:low` `depends:[]`
+- [x] **S04: S04** `risk:low` `depends:[]`
   > After this: User clicks Import → picks a .hdpack → pack appears in profile list; user clicks Export → picks a destination → .hdpack written; round-trip import of exported file produces byte-identical macros
 
-- [ ] **S05: TriggerMacro control request + editor Test button** `risk:low` `depends:[S02]`
+- [ ] **S05: S05** `risk:low` `depends:[]`
   > After this: User opens editor, selects a macro, clicks Test; 1-second confirmation prompt; daemon fires the key sequence via uinput; dispatcher JSONL output shows the triggered macro
 
 - [ ] **S06: UAT — full pack lifecycle and editor flow** `risk:low` `depends:[S01,S03,S04,S05]`
