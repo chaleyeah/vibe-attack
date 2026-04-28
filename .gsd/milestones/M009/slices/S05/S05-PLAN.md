@@ -47,7 +47,7 @@ Do NOT add a `category` field to ControlRequest::TestMacro; the variant is alrea
   - Files: `src/control/mod.rs`, `tests/control_integration.rs`
   - Verify: cargo test --test control_integration -- --test-threads=1 && cargo test -- --test-threads=1 && RUSTFLAGS="-D warnings" cargo clippy --all-targets
 
-- [ ] **T03: Add Test button with 1-second confirmation to pack editor** `est:2h`
+- [x] **T03: Add Test button with 1-second confirmation to pack editor** `est:2h`
   Add a Test button to the pack editor (gui-feature only) that fires the currently-selected macro via the daemon after a 1-second deliberate delay. The delay is a hard safety requirement: an accidental click during a live game session would waste a stratagem.
 
 In `src/ui/pack_editor.rs::PackEditorState` (inside the `#[cfg(feature = "gui")] mod inner`):

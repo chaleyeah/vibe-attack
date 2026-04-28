@@ -10,6 +10,7 @@ pub use inner::*;
 #[cfg(feature = "gui")]
 mod inner {
     use std::path::PathBuf;
+    use std::time::{Duration, Instant};
 
     use eframe::egui;
     use rfd::FileDialog;
@@ -17,7 +18,7 @@ mod inner {
 
     use crate::config::MacroConfig;
     use crate::control::client::send_command;
-    use crate::control::protocol::ControlRequest;
+    use crate::control::protocol::{ControlRequest, ControlResponse};
     use crate::pack::{get_profiles_dir, Pack, PackEditor};
 
     use super::{build_macro_config_from_form, parse_key_sequence};
@@ -48,6 +49,10 @@ mod inner {
         pub last_error: Option<String>,
         /// Set to the imported pack name after a successful Import Pack; caller drains each frame.
         pub imported_pack_name: Option<String>,
+        // 1-second confirmation guards against accidental fire — never use thread::sleep.
+        pub pending_test: Option<(String, Instant)>,
+        /// Inline result of the most recent Test action (success or error message).
+        pub last_test_status: Option<String>,
     }
 
     impl PackEditorState {
@@ -67,6 +72,8 @@ mod inner {
                 pending_remove_macro: false,
                 last_error: None,
                 imported_pack_name: None,
+                pending_test: None,
+                last_test_status: None,
             }
         }
 
@@ -93,7 +100,7 @@ mod inner {
     }
 
     /// Render the full pack editor panel.
-    pub fn show_pack_editor(ui: &mut egui::Ui, state: &mut PackEditorState) {
+    pub fn show_pack_editor(ui: &mut egui::Ui, state: &mut PackEditorState, daemon_running: bool) {
         ui.heading(format!("Pack Editor — {}", state.editor.pack().name));
 
         // ── Category toolbar ─────────────────────────────────────────────────
@@ -387,6 +394,36 @@ mod inner {
 
                 ui.add_space(6.0);
 
+                // Each frame: fire the pending test macro once the 1-second window elapses.
+                if let Some((name, started)) = state.pending_test.take() {
+                    if started.elapsed() >= Duration::from_secs(1) {
+                        tracing::info!(macro_name = %name, "Test: firing macro");
+                        match send_command(ControlRequest::TestMacro { name: name.clone() }) {
+                            Ok(ControlResponse::Ok) => {
+                                tracing::info!(macro_name = %name, "Test: macro fired successfully");
+                                state.last_test_status = Some(format!("Fired: {name}"));
+                            }
+                            Ok(ControlResponse::Error { message }) => {
+                                tracing::warn!(macro_name = %name, message = %message, "Test: daemon returned error");
+                                state.last_test_status = Some(format!("Test failed: {message}"));
+                            }
+                            Ok(other) => {
+                                let msg = format!("Unexpected response: {other:?}");
+                                tracing::warn!(macro_name = %name, %msg, "Test: unexpected response");
+                                state.last_test_status = Some(msg);
+                            }
+                            Err(e) => {
+                                tracing::warn!(macro_name = %name, reason = %e, "Test: daemon error");
+                                state.last_test_status = Some(format!("Daemon error: {e}"));
+                            }
+                        }
+                    } else {
+                        // Countdown still running — put it back.
+                        state.pending_test = Some((name, started));
+                        ui.ctx().request_repaint_after(Duration::from_millis(50));
+                    }
+                }
+
                 // CRUD buttons.
                 ui.horizontal(|ui| {
                     // Add Macro.
@@ -482,6 +519,30 @@ mod inner {
                         }
                     }
                 });
+
+                // Test button — fires the selected macro via the daemon after a 1-second deliberate delay.
+                if state.selected_macro.is_some() {
+                    ui.horizontal(|ui| {
+                        if let Some((ref name, started)) = state.pending_test.clone() {
+                            let elapsed_secs = started.elapsed().as_secs_f32();
+                            let remaining = (1.0_f32 - elapsed_secs).max(0.0);
+                            ui.label(format!("Firing in {remaining:.1}s…"));
+                            if ui.button("Cancel").clicked() {
+                                state.pending_test = None;
+                                tracing::info!(macro_name = %name, "Test: cancelled by user");
+                            }
+                        } else {
+                            let test_btn = egui::Button::new("Test");
+                            if ui.add_enabled(daemon_running, test_btn).clicked() {
+                                let name = state.selected_macro.clone().unwrap_or_default();
+                                tracing::info!(macro_name = %name, "Test: countdown started");
+                                state.pending_test = Some((name, Instant::now()));
+                                state.last_test_status = None;
+                            }
+                        }
+                    });
+                }
+
             });
         });
 
@@ -498,6 +559,16 @@ mod inner {
         // ── Inline error display ─────────────────────────────────────────────
         if let Some(err) = &state.last_error.clone() {
             ui.colored_label(egui::Color32::RED, format!("⚠ {err}"));
+        }
+
+        // ── Test status display ───────────────────────────────────────────────
+        if let Some(ref status) = state.last_test_status.clone() {
+            let color = if status.starts_with("Fired:") {
+                egui::Color32::GREEN
+            } else {
+                egui::Color32::RED
+            };
+            ui.colored_label(color, status.as_str());
         }
     }
 
