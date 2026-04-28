@@ -35,7 +35,7 @@ Assumption: ActivationMode is currently `#[derive(Debug, Clone, Copy, Serialize,
   - Files: `src/ui/config_app.rs`, `src/control/protocol.rs`
   - Verify: cargo test --lib config_app && cargo clippy --all-targets -- -D warnings && cargo clippy --all-targets --features gui -- -D warnings
 
-- [ ] **T02: Add config.yaml load/save helpers with full-Config round-trip** `est:1h`
+- [x] **T02: Add config.yaml load/save helpers with full-Config round-trip** `est:1h`
   Add two helpers in `src/ui/config_app.rs` that read and write `~/.config/vibe-attack/config.yaml` while round-tripping the full `Config` struct (all sub-structs use `#[serde(deny_unknown_fields)]` per `src/config.rs:8` — partial writes will fail to deserialize on next load). T01 fields are surfaced; this task wires file I/O for them.
 
 Signatures (do not deviate):
