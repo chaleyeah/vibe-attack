@@ -51,7 +51,7 @@ Do NOT add a full clap dependency for this — keep it std::env only, per projec
   - Files: `src/bin/vibe-attack-config.rs`, `tests/ui_distribution.rs`
   - Verify: cargo test --test ui_distribution -- --test-threads=1 && cargo build --bin vibe-attack-config --features gui && target/debug/vibe-attack-config --help | grep -q 'skip-wizard'
 
-- [ ] **T03: Add wizard-completion transition unit test for setup_just_completed** `est:30m`
+- [x] **T03: Add wizard-completion transition unit test for setup_just_completed** `est:30m`
   The `setup_just_completed` boolean in `src/bin/vibe-attack-config.rs` (line 165, 225, 279, 307) is the edge that triggers profile-load and mic-thread spawn after the wizard finishes. It is currently UNTESTED — there is no automated test covering the `was_incomplete && is_setup_complete()` transition.
 
 Add unit tests that exercise the FirstRunState transition logic that drives `setup_just_completed`. We cannot exec egui frames in a unit test, but we CAN test the pure transition predicate. Specifically:

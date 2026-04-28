@@ -188,6 +188,51 @@ fn skip_wizard_flag_mentioned_in_help_output() {
     assert!(stdout.contains("--skip-wizard"), "--help must list --skip-wizard flag");
 }
 
+/// Mirror of the was_incomplete && is_setup_complete() transition from
+/// vibe-attack-config.rs:298-313. Uses two snapshots (before/after probe::run)
+/// because FirstRunState has no mutation API — state is always re-constructed
+/// from fresh probe results each frame.
+#[test]
+fn wizard_completion_transition_fires_on_incomplete_to_complete() {
+    // Before: wizard not yet complete (fresh install — all checks fail).
+    let before = FirstRunState::from_checks(false, false, false, false);
+    let was_incomplete = !before.is_setup_complete();
+
+    // After: user worked through all wizard steps and probe::run() now passes.
+    let after = FirstRunState::from_checks(true, true, true, true);
+    let now_complete = after.is_setup_complete();
+
+    // This is the exact predicate that sets setup_just_completed = true.
+    assert!(was_incomplete && now_complete, "transition should fire when going from all-false to all-true");
+}
+
+#[test]
+fn wizard_completion_transition_does_not_fire_on_relaunch() {
+    // Relaunch scenario (S02-RESEARCH Scenario C): app starts with all checks
+    // already passing — was_incomplete is false, so the transition must NOT fire.
+    let before = FirstRunState::from_checks(true, true, true, true);
+    let was_incomplete = !before.is_setup_complete();
+
+    let after = FirstRunState::from_checks(true, true, true, true);
+    let now_complete = after.is_setup_complete();
+
+    // Predicate must be false — setup_just_completed must NOT be set on relaunch.
+    assert!(
+        !(was_incomplete && now_complete),
+        "transition must not fire when already complete at launch (relaunch guard)"
+    );
+}
+
+#[test]
+fn relaunch_state_has_no_first_incomplete_step() {
+    // Proves the relaunch path will not spuriously re-enter the wizard.
+    let state = FirstRunState::from_checks(true, true, true, true);
+    assert!(
+        state.first_incomplete_step().is_none(),
+        "all-true FirstRunState must have no first_incomplete_step (relaunch skips wizard)"
+    );
+}
+
 #[test]
 fn daemon_default_features_exclude_gui() {
     let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
