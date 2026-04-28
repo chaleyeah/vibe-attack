@@ -61,7 +61,7 @@ For the test fixture YAML, use the minimum required fields per `Config` definiti
   - Files: `src/ui/config_app.rs`
   - Verify: cargo test --lib config_app && cargo clippy --all-targets -- -D warnings && cargo clippy --all-targets --features gui -- -D warnings
 
-- [ ] **T03: Wire egui main config panel + Save dispatch to control socket** `est:2h`
+- [x] **T03: Wire egui main config panel + Save dispatch to control socket** `est:2h`
   Replace the current read-only `show_main_config(ui: &mut egui::Ui, config: &ConfigApp)` at `src/bin/vibe-attack-config.rs:281` with a mutable variant that lets the user edit mode/threshold/input-device/PTT-binding and trigger a Save action that (a) writes config.yaml via `save_app_to_config` and (b) sends control commands over the daemon socket via `control::client::send_command`. Touching the existing wizard, mic-level, log-drain, or tray paths is out of scope — leave them unchanged.
 
 Signature change: `fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp)` (full app handle so Save can read `app.cached_config`, mutate `app.config`, and call socket helpers). Update the caller at `vibe-attack-config.rs:276` from `show_main_config(ui, &self.config)` to `show_main_config(ui, self)`.
