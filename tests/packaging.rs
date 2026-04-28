@@ -60,3 +60,21 @@ fn pkgbuild_declares_onnxruntime_runtime_dep() {
         "PKGBUILD must list onnxruntime in depends; got:\n{src}"
     );
 }
+
+#[test]
+fn release_yml_uploads_source_tarball() {
+    let src = read_file(".github/workflows/release.yml");
+    assert!(
+        src.contains("git archive") && src.contains("vibe-attack-"),
+        "release.yml must invoke git archive and reference a vibe-attack-*.tar.gz glob; got:\n{src}"
+    );
+}
+
+#[test]
+fn release_yml_uploads_hd2_hdpack() {
+    let src = read_file(".github/workflows/release.yml");
+    assert!(
+        src.contains("profiles/hd2/pack.yaml") && src.contains(".hdpack"),
+        "release.yml must zip profiles/hd2/pack.yaml and reference a hd2-*.hdpack glob; got:\n{src}"
+    );
+}
