@@ -29,10 +29,10 @@
 - [x] **S04: S04** `risk:low` `depends:[]`
   > After this: User clicks Import → picks a .hdpack → pack appears in profile list; user clicks Export → picks a destination → .hdpack written; round-trip import of exported file produces byte-identical macros
 
-- [ ] **S05: S05** `risk:low` `depends:[]`
+- [x] **S05: S05** `risk:low` `depends:[]`
   > After this: User opens editor, selects a macro, clicks Test; 1-second confirmation prompt; daemon fires the key sequence via uinput; dispatcher JSONL output shows the triggered macro
 
-- [ ] **S06: UAT — full pack lifecycle and editor flow** `risk:low` `depends:[S01,S03,S04,S05]`
+- [ ] **S06: S06** `risk:low` `depends:[]`
   > After this: S06-UAT.md manual steps all pass; cargo test passes including pack_hd2_coverage and pack_lifecycle
 
 ## Boundary Map
