@@ -256,3 +256,7 @@
 {"id":"6be3914d-fd0b-4b4d-b81a-10a33f9da0e8","ts":"2026-04-28T01:06:37.966Z","severity":"info","message":"Dynamic routing: disabled — all tasks will use claude-code/claude-sonnet-4-6","source":"notify","read":false}
 {"id":"40c2541d-575c-4aed-b9de-6a6b5701a9a8","ts":"2026-04-28T01:06:37.967Z","severity":"info","message":"Pre-flight: 13 milestones queued. All have full context.","source":"notify","read":false}
 {"id":"244409b5-90b4-45e2-b058-d9a189ec2419","ts":"2026-04-28T01:06:37.998Z","severity":"info","message":"Pre-dispatch: pre-dispatch: created gsd snapshot after 742m of uncommitted changes","source":"notify","read":false}
+{"id":"1453bb1c-d717-49c6-8e6d-88dfd8565ecd","ts":"2026-04-28T01:13:34.591Z","severity":"info","message":"Committed: test: feat: add ActivationMode enum and five new ControlRequest variant…","source":"notify","read":false}
+{"id":"680346bc-1b8b-4cce-8e27-6ea6c3850691","ts":"2026-04-28T01:13:34.597Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"890233ff-004e-45cc-8fd5-96bf711027b1","ts":"2026-04-28T01:13:34.597Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"e96da712-fc9b-41dd-aa5b-d1bc1520e2af","ts":"2026-04-28T01:13:34.604Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

@@ -14,6 +14,11 @@ impl PhraseMatcher {
         Self { threshold }
     }
 
+    /// Return the configured threshold.
+    pub fn threshold(&self) -> f32 {
+        self.threshold
+    }
+
     /// Normalize a transcript or phrase for fuzzy comparison.
     ///
     /// Lowercases, strips punctuation, collapses whitespace.

@@ -48,7 +48,7 @@ impl DispatcherState {
 /// restarting the pipeline.
 pub struct Dispatcher {
     state: DispatcherState,
-    matcher: PhraseMatcher,
+    matcher: RwLock<PhraseMatcher>,
     macros: Arc<RwLock<Vec<MacroConfig>>>,
     sound_player: Option<SoundPlayer>,
     macro_tx: Sender<MacroCmd>,
@@ -86,7 +86,7 @@ impl Dispatcher {
 
         Self {
             state: DispatcherState::new(),
-            matcher: PhraseMatcher::new(threshold),
+            matcher: RwLock::new(PhraseMatcher::new(threshold)),
             macros: Arc::new(RwLock::new(macros)),
             sound_player,
             macro_tx,
@@ -105,6 +105,20 @@ impl Dispatcher {
     /// Return the number of macros currently registered.
     pub fn macro_count(&self) -> usize {
         self.macros.read().unwrap().len()
+    }
+
+    /// Change the phrase-match confidence threshold without rebuilding the pipeline.
+    ///
+    /// `threshold` is clamped to `[0.0, 1.0]`; NaN is treated as 0.0.
+    pub fn update_threshold(&self, threshold: f32) {
+        let clamped = if threshold.is_nan() {
+            0.0_f32
+        } else {
+            threshold.clamp(0.0, 1.0)
+        };
+        let old = self.matcher.read().unwrap().threshold();
+        *self.matcher.write().unwrap() = PhraseMatcher::new(clamped);
+        tracing::info!(old, new = clamped, "dispatcher threshold updated");
     }
 
     fn check_condition(&self, if_flag: &Option<String>) -> bool {
@@ -132,7 +146,7 @@ impl Dispatcher {
             .filter(|m| self.check_condition(&m.if_flag))
             .filter_map(|m| m.phrase.as_ref().map(|p| (m.name.as_str(), p.as_str())));
 
-        if let Some((best_match_name, score)) = self.matcher.find_best_match(transcript, candidates) {
+        if let Some((best_match_name, score)) = self.matcher.read().unwrap().find_best_match(transcript, candidates) {
             tracing::info!(macro_name = best_match_name, score, "Firing macro");
             if let Some(mac) = macros.iter().find(|m| m.name == best_match_name) {
                 if let Some(sound_path) = &mac.sound {
@@ -167,5 +181,82 @@ impl Dispatcher {
 
         tracing::debug!(transcript, "No phrase matched above threshold");
         DispatchOutcome::NoMatch
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::MacroConfig;
+
+    fn make_dispatcher(threshold: f32, phrase: &str) -> Dispatcher {
+        let (tx, _rx) = std::sync::mpsc::channel();
+        let macro_cfg = MacroConfig {
+            name: "eagle_airstrike".to_string(),
+            phrase: Some(phrase.to_string()),
+            if_flag: None,
+            set_flag: None,
+            sound: None,
+            keys: vec![],
+        };
+        Dispatcher::new(threshold, vec![macro_cfg], tx, 50, 50)
+    }
+
+    #[test]
+    fn test_update_threshold_changes_match_behavior() {
+        let dispatcher = make_dispatcher(0.99, "eagle airstrike");
+        // "eagal airstrike" has distance 1 from "eagle airstrike" (15 chars → score ≈ 0.933)
+        // Should be below threshold 0.99 → NoMatch
+        assert!(
+            matches!(dispatcher.process("eagal airstrike"), DispatchOutcome::NoMatch),
+            "expected NoMatch at threshold 0.99"
+        );
+        // Lower threshold to 0.5 → same input should now Fire
+        dispatcher.update_threshold(0.5);
+        assert!(
+            matches!(
+                dispatcher.process("eagal airstrike"),
+                DispatchOutcome::Fired { .. }
+            ),
+            "expected Fired at threshold 0.5"
+        );
+    }
+
+    #[test]
+    fn test_update_threshold_clamp_negative() {
+        let dispatcher = make_dispatcher(0.8, "eagle airstrike");
+        dispatcher.update_threshold(-0.5);
+        // threshold clamped to 0.0 → everything matches
+        assert!(matches!(
+            dispatcher.process("eagle airstrike"),
+            DispatchOutcome::Fired { .. }
+        ));
+    }
+
+    #[test]
+    fn test_update_threshold_clamp_above_one() {
+        let dispatcher = make_dispatcher(0.8, "eagle airstrike");
+        dispatcher.update_threshold(2.0);
+        // threshold clamped to 1.0 → only exact match fires; "eagal" is not exact
+        assert!(matches!(
+            dispatcher.process("eagal airstrike"),
+            DispatchOutcome::NoMatch
+        ));
+        // exact input should still fire (score == 1.0 >= 1.0)
+        assert!(matches!(
+            dispatcher.process("eagle airstrike"),
+            DispatchOutcome::Fired { .. }
+        ));
+    }
+
+    #[test]
+    fn test_update_threshold_nan_becomes_zero() {
+        let dispatcher = make_dispatcher(0.8, "eagle airstrike");
+        dispatcher.update_threshold(f32::NAN);
+        // threshold clamped to 0.0 → any non-empty transcript with a candidate matches
+        assert!(matches!(
+            dispatcher.process("eagle airstrike"),
+            DispatchOutcome::Fired { .. }
+        ));
     }
 }
