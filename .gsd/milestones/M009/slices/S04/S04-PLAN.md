@@ -36,7 +36,7 @@ Key constraints:
   - Files: `Cargo.toml`
   - Verify: cargo build && cargo build --features gui — both must exit 0 with zero rustc warnings; cargo metadata --format-version 1 | grep -q '"name":"rfd"' to confirm the crate is in the dependency graph.
 
-- [ ] **T02: Add Pack::import_to(zip_path, dest_dir) and make Pack::import delegate** `est:30m`
+- [x] **T02: Add Pack::import_to(zip_path, dest_dir) and make Pack::import delegate** `est:30m`
   Refactor `Pack::import` so the destination directory is injectable. Add a new public `Pack::import_to(zip_path: &Path, dest_dir: &Path) -> Result<Pack>` that contains the actual extraction logic, then make the existing `Pack::import(zip_path)` a thin wrapper that resolves `get_profiles_dir()?.join(&pack.name)` and delegates to `import_to`. Also add a unit test for `import_to` against a tempdir to lock the behaviour in.
 
 Why: the existing `Pack::import` writes unconditionally to `get_profiles_dir()` (XDG_CONFIG_HOME). MEM005 records that the existing parallel test for export/import is already flaky under shared XDG mutation. To write a reliable round-trip integration test in T03, the import side must accept a destination path so the test can pass a tempdir. Refactoring `import` to delegate keeps backwards compatibility — all existing call sites (and existing tests using `XDG_CONFIG_HOME` env override) remain green.

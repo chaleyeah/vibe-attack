@@ -55,11 +55,16 @@ impl Pack {
         Ok(())
     }
 
-    /// Import a .hdpack (ZIP) file.
-    pub fn import(zip_path: &Path) -> Result<Self> {
+    /// Import a .hdpack (ZIP) file, extracting into `dest_dir/<pack_name>`.
+    ///
+    /// The caller passes the *parent* profiles directory; this function appends
+    /// the pack name itself — matching the semantics of the original `import`.
+    pub fn import_to(zip_path: &Path, dest_dir: &Path) -> Result<Self> {
+        tracing::info!(zip_path = %zip_path.display(), dest_dir = %dest_dir.display(), "import_to: starting");
+
         let file = std::fs::File::open(zip_path)?;
         let mut archive = zip::ZipArchive::new(file)?;
-        
+
         // Find pack.yaml to get the pack name
         let mut pack_yaml_content = String::new();
         {
@@ -68,21 +73,21 @@ impl Pack {
             use std::io::Read;
             file.read_to_string(&mut pack_yaml_content)?;
         }
-        
+
         let pack: Pack = serde_yaml_ng::from_str(&pack_yaml_content)
             .context("Failed to parse pack.yaml from ZIP")?;
-        
-        let dest_dir = get_profiles_dir()?.join(&pack.name);
-        if dest_dir.exists() {
-            std::fs::remove_dir_all(&dest_dir)?;
+
+        let pack_dest = dest_dir.join(&pack.name);
+        if pack_dest.exists() {
+            std::fs::remove_dir_all(&pack_dest)?;
         }
-        std::fs::create_dir_all(&dest_dir)?;
+        std::fs::create_dir_all(&pack_dest)?;
 
         // Extract all files with path traversal protection
         for i in 0..archive.len() {
             let mut file = archive.by_index(i)?;
             let outpath = match file.enclosed_name() {
-                Some(path) => dest_dir.join(path),
+                Some(path) => pack_dest.join(path),
                 None => continue,
             };
 
@@ -99,7 +104,16 @@ impl Pack {
             }
         }
 
+        let macro_count = pack.flatten().len();
+        tracing::info!(zip_path = %zip_path.display(), dest_dir = %pack_dest.display(), macro_count, "import_to: done");
+
         Ok(pack)
+    }
+
+    /// Import a .hdpack (ZIP) file into the default XDG profiles directory.
+    pub fn import(zip_path: &Path) -> Result<Self> {
+        let profiles_dir = get_profiles_dir()?;
+        Self::import_to(zip_path, &profiles_dir)
     }
 
     /// Export a pack to a .hdpack (ZIP) file.
@@ -789,6 +803,40 @@ mod tests {
 
         // Clean up
         std::fs::remove_dir_all(profile_dir)?;
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_import_to_extracts_into_dest_dir() -> Result<()> {
+        // Build a small pack with one macro.
+        let source_dir = tempdir()?;
+        let pack = Pack {
+            name: "ImportToTest".to_string(),
+            author: Some("tester".to_string()),
+            categories: vec![Category {
+                name: "Actions".to_string(),
+                macros: vec![editor_macro("Reinforce", Some("reinforce"))],
+            }],
+        };
+        pack.save_to_dir(source_dir.path())?;
+
+        // Export to a zip in a temp dir.
+        let zip_dir = tempdir()?;
+        let zip_path = zip_dir.path().join("importtotest.hdpack");
+        pack.export(source_dir.path(), &zip_path)?;
+
+        // import_to into a separate temp dir — no XDG_CONFIG_HOME mutation.
+        let dest_root = tempdir()?;
+        let imported = Pack::import_to(&zip_path, dest_root.path())?;
+
+        assert_eq!(imported.name, "ImportToTest");
+        assert_eq!(imported.categories.len(), 1);
+        assert_eq!(imported.categories[0].macros[0].name, "Reinforce");
+
+        // Verify files landed under dest_root/<pack_name>.
+        let extracted = dest_root.path().join("ImportToTest");
+        assert!(extracted.join("pack.yaml").exists(), "pack.yaml must be extracted");
 
         Ok(())
     }
