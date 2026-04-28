@@ -153,7 +153,7 @@ All new tests pass; existing T01 tests still pass; no warnings.
   - Files: `src/pack/mod.rs`
   - Verify: RUSTFLAGS="-D warnings" cargo check --all-targets && cargo test --lib pack:: -- --test-threads=1
 
-- [ ] **T03: Add hermetic round-trip integration test (edit → save → reload → structural equality)** `est:45m`
+- [x] **T03: Add hermetic round-trip integration test (edit → save → reload → structural equality)** `est:45m`
   Create `tests/pack_editor_roundtrip.rs` proving that PackEditor edits survive a full save/load cycle without corruption. This is the slice's integration-level proof that the pure-logic state machine composes correctly with the existing `Pack::save_to_dir` / `Pack::load_from_dir` boundary.
 
 Skills used: test, verify-before-complete.
