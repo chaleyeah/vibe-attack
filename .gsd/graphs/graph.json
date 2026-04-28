@@ -1,16 +1,16 @@
 {
   "nodes": [
     {
-      "id": "milestone:M007",
-      "label": "M007: Codebase Cleanup & Documentation",
+      "id": "milestone:M008",
+      "label": "M008: UI / Tray Runtime Control",
       "type": "milestone",
-      "description": "Active milestone: M007",
+      "description": "Active milestone: M008",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:validating-milestone",
-      "label": "Phase: validating-milestone",
+      "id": "concept:phase:planning",
+      "label": "Phase: planning",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -585,6 +585,13 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "milestone:M007",
+      "label": "M007: Codebase Cleanup & Documentation",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-ROADMAP.md"
+    },
+    {
       "id": "slice:M007:S01",
       "label": "S01: Dead code, dead deps, and the load_profiles bug fix",
       "type": "slice",
@@ -762,6 +769,45 @@
       "label": "T05: Run final M007 milestone verification",
       "type": "task",
       "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M008:S01",
+      "label": "S01: Control-protocol extensions",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M008:S01:T01",
+      "label": "T01: Add ActivationMode enum and five new ControlRequest variants with round-trip tests",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M008:S01:T02",
+      "label": "T02: Make Dispatcher threshold runtime-mutable via update_threshold()",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M008:S01:T03",
+      "label": "T03: Wire RuntimeCommand channel from control handler into coordinator and apply live mode/threshold changes",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "milestone:M009",
+      "label": "M009: Pack UX — Editor, Import/Export, Full HD2 Coverage",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/M009-ROADMAP.md"
+    },
+    {
+      "id": "milestone:M010",
+      "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-ROADMAP.md"
     },
     {
       "id": "decision:M001:1",
@@ -1226,6 +1272,406 @@
       "description": "Source: S04-SUMMARY.md/Known Limitations, S05-SUMMARY.md/Known Limitations",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M001/M001-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:1",
+      "label": "**Profile loading canonical format pinned to {name}/pack.yaml subdirectories.** load_profiles in config_app.rs was rewritten to filter by is_dir() && path.join(\"pack.yaml\").exists(), aligning the config UI with Pack::load_from_dir and handle_switch_profile. Flat *.yaml files are no longer recognized; a migration step is prescribed for future user-facing complaints.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:2",
+      "label": "**DispatcherState visibility narrowed from pub to pub(crate).** Verified zero external references before narrowing; impl Default required no pub annotation. This is the correct scope for state that should never be exposed outside the pipeline module.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:3",
+      "label": "**Every public item in src/ requires a /// doc comment (project convention, enforced by audit script).** The Python audit script from M007-RESEARCH.md is the mechanical enforcement gate, with cargo doc --no-deps as the authoritative tie-breaker when the script reports false positives.",
+      "type": "decision",
+      "description": "Source: D002/Decisions; S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:4",
+      "label": "**Every unsafe block and #[allow(...)] in src/ requires an adjacent justifying comment.** Each unsafe impl Send/Sync on Dispatcher gets its own // SAFETY: comment (not shared), because the invariants for Send and Sync are subtly different. Each #[allow(...)] gets a one-line justification immediately above it.",
+      "type": "decision",
+      "description": "Source: D003/Decisions; S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:5",
+      "label": "**M007 explicitly excludes behavior changes except the load_profiles bug fix.** Scope guardrail: no new features, no error-handling refactors, no API changes, no CI changes. Visibility narrowing (pub→pub(crate)) is allowed when verifiably internal-only. Any trivial behavior cleanup discovered mid-slice goes into a new slice with explicit success criteria.",
+      "type": "decision",
+      "description": "Source: D004/Decisions; M007-ROADMAP.md/Boundary Map",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:6",
+      "label": "**cargo clippy is not installed via apt in this system Rust environment.** RUSTFLAGS=-D warnings cargo check --all-targets was used as the substitute throughout all slices. CI runs the authoritative clippy check via rustup-provisioned toolchain. Any future milestone planning on this machine should account for this — don't write slice acceptance criteria that require local clippy without noting the substitute.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Deviations; S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:7",
+      "label": "**The Python undocumented-pub-item audit script has two known false-positive patterns:** (1) enums with #[derive(...)] between the doc comment and the pub keyword; (2) functions with a non-doc // comment between the /// block and the pub fn line. cargo doc --no-deps with 0 warnings is the authoritative gate — the script is a screening tool, not the final arbiter.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Known limitations; S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:8",
+      "label": "**Intra-doc links work in lib.rs but fail in mod.rs when re-exporting child types.** In lib.rs, top-level modules are in scope so [`module`] links resolve. In mod.rs files, child module types are not in scope, causing unresolved-link warnings under cargo doc — use plain backtick spans instead.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:9",
+      "label": "**Doc comments must go above #[derive(...)] attributes, not below them.** Both rustdoc and cargo doc handle the above-derive placement correctly; the audit script may not detect the gap when derive comes between the comment and the pub keyword.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:10",
+      "label": "**DaemonError::Config variant preserved though currently unused.** Config errors propagate as anyhow::Error today; the typed variant is retained for future tightening without removing API surface. A placeholder hostname in UinputPermissionDenied Display (yourusername/vibe-attack) was left unchanged — it is user-facing behavior, not documentation, so it is out of scope for a doc-only milestone.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:11",
+      "label": "**Doc audit must cross-reference every external prose claim against Cargo.toml [features], src/main.rs Commands enum, control/protocol.rs ControlResponse variants, and src/error.rs Display impls.** Prose summaries drift faster than code. S05 found 10 concrete drift items across 5 doc files through this method — none would have been caught by reading docs in isolation.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Patterns established; S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:12",
+      "label": "**Profile loading convention: {name}/pack.yaml subdirectory format.** All three surfaces (load_profiles, handle_switch_profile, Pack::load_from_dir) now agree. Any future profile loading code must filter by is_dir() && path.join(\"pack.yaml\").exists() — not by *.yaml glob.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:13",
+      "label": "**Integration tests for XDG-dependent functions use XDG_CONFIG_HOME env-var override + serial_test::serial.** No API changes needed; the env-var redirect points load_profiles at a tempdir. serial_test::serial prevents env-var races when multiple tests run in parallel.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:14",
+      "label": "**Full test suite must run with --test-threads=1 locally to avoid test_pack_export_import_with_sounds tmpdir-pollution flake.** This is a pre-existing issue (not introduced in M007) and passes cleanly in isolation. CI handles it via its own thread management.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:15",
+      "label": "**// SAFETY: comment per unsafe impl block, one per block, placed directly above each impl.** Use two distinct comments for two unsafe impls even if they guard the same struct — invariants may differ between Send and Sync. Cross-reference comments on intentionally duplicated private functions should name the counterpart file path for navigability.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:16",
+      "label": "**spawn_pipeline thread-topology ASCII diagram pattern.** For multi-thread orchestration functions, an ASCII diagram in the doc comment showing parallel OS thread structure is more scannable than prose. Established in coordinator.rs for spawn_pipeline.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:17",
+      "label": "**Final-pass verification task (T03/T05 pattern) catches defects missed by per-task checks.** Intra-doc link resolution failures surface only under cargo doc; pub field docs on non-top-level structs require the audit script to scan all nesting depths. Running the full gate (cargo doc, cargo check, audit script) at the slice end is non-optional.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:18",
+      "label": "**Feature flags must be documented in README at the time they are added to Cargo.toml [features], not retroactively.** S05 added the Feature Flags section to README after discovering it was completely absent — users had no indication the default build ships without STT. Add-feature and add-to-README should be the same commit.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:19",
+      "label": "**The config UI (load_profiles) and the config switcher (handle_switch_profile) had silently diverged on what constitutes a valid profile directory.** The UI listed flat *.yaml files that the switcher could never load. This went undetected because there were no integration tests asserting the UI and switcher agreed on the profile format. The fix required rewriting load_profiles and adding a hermetic integration test.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:20",
+      "label": "**The Python audit script reported 191 undocumented public items at the start of S03.** The codebase had grown substantially with almost no /// coverage. Documenting all 191 items took the full S03 slice — the estimate was not off, but the volume confirmed that documentation debt compounds silently and is expensive to pay back in bulk.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/One-liner",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M007:21",
+      "label": "**S05 found 10 concrete drift items across 5 doc files despite the codebase having been recently written.** README contained a Feature Flags section that didn't exist at all; troubleshooting.md referenced a `daemon` subcommand that doesn't exist; ControlResponse::Pong casing was wrong; libclang-dev was missing from build prerequisites. Documentation drifts from code even during active development, not just in legacy codebases.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:1",
+      "label": "**cargo clippy is not installed via apt in this system Rust environment.** RUSTFLAGS=-D warnings cargo check --all-targets was used as the substitute throughout all slices. CI runs the authoritative clippy check via rustup-provisioned toolchain. Any future milestone planning on this machine should account for this — don't write slice acceptance criteria that require local clippy without noting the substitute.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Deviations; S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:2",
+      "label": "**The Python undocumented-pub-item audit script has two known false-positive patterns:** (1) enums with #[derive(...)] between the doc comment and the pub keyword; (2) functions with a non-doc // comment between the /// block and the pub fn line. cargo doc --no-deps with 0 warnings is the authoritative gate — the script is a screening tool, not the final arbiter.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Known limitations; S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:3",
+      "label": "**Intra-doc links work in lib.rs but fail in mod.rs when re-exporting child types.** In lib.rs, top-level modules are in scope so [`module`] links resolve. In mod.rs files, child module types are not in scope, causing unresolved-link warnings under cargo doc — use plain backtick spans instead.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:4",
+      "label": "**Doc comments must go above #[derive(...)] attributes, not below them.** Both rustdoc and cargo doc handle the above-derive placement correctly; the audit script may not detect the gap when derive comes between the comment and the pub keyword.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:5",
+      "label": "**DaemonError::Config variant preserved though currently unused.** Config errors propagate as anyhow::Error today; the typed variant is retained for future tightening without removing API surface. A placeholder hostname in UinputPermissionDenied Display (yourusername/vibe-attack) was left unchanged — it is user-facing behavior, not documentation, so it is out of scope for a doc-only milestone.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:6",
+      "label": "**Doc audit must cross-reference every external prose claim against Cargo.toml [features], src/main.rs Commands enum, control/protocol.rs ControlResponse variants, and src/error.rs Display impls.** Prose summaries drift faster than code. S05 found 10 concrete drift items across 5 doc files through this method — none would have been caught by reading docs in isolation.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Patterns established; S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:7",
+      "label": "**Profile loading convention: {name}/pack.yaml subdirectory format.** All three surfaces (load_profiles, handle_switch_profile, Pack::load_from_dir) now agree. Any future profile loading code must filter by is_dir() && path.join(\"pack.yaml\").exists() — not by *.yaml glob.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:8",
+      "label": "**Integration tests for XDG-dependent functions use XDG_CONFIG_HOME env-var override + serial_test::serial.** No API changes needed; the env-var redirect points load_profiles at a tempdir. serial_test::serial prevents env-var races when multiple tests run in parallel.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:9",
+      "label": "**Full test suite must run with --test-threads=1 locally to avoid test_pack_export_import_with_sounds tmpdir-pollution flake.** This is a pre-existing issue (not introduced in M007) and passes cleanly in isolation. CI handles it via its own thread management.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:10",
+      "label": "**// SAFETY: comment per unsafe impl block, one per block, placed directly above each impl.** Use two distinct comments for two unsafe impls even if they guard the same struct — invariants may differ between Send and Sync. Cross-reference comments on intentionally duplicated private functions should name the counterpart file path for navigability.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:11",
+      "label": "**spawn_pipeline thread-topology ASCII diagram pattern.** For multi-thread orchestration functions, an ASCII diagram in the doc comment showing parallel OS thread structure is more scannable than prose. Established in coordinator.rs for spawn_pipeline.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:12",
+      "label": "**Final-pass verification task (T03/T05 pattern) catches defects missed by per-task checks.** Intra-doc link resolution failures surface only under cargo doc; pub field docs on non-top-level structs require the audit script to scan all nesting depths. Running the full gate (cargo doc, cargo check, audit script) at the slice end is non-optional.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:13",
+      "label": "**Feature flags must be documented in README at the time they are added to Cargo.toml [features], not retroactively.** S05 added the Feature Flags section to README after discovering it was completely absent — users had no indication the default build ships without STT. Add-feature and add-to-README should be the same commit.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:14",
+      "label": "**The config UI (load_profiles) and the config switcher (handle_switch_profile) had silently diverged on what constitutes a valid profile directory.** The UI listed flat *.yaml files that the switcher could never load. This went undetected because there were no integration tests asserting the UI and switcher agreed on the profile format. The fix required rewriting load_profiles and adding a hermetic integration test.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:15",
+      "label": "**The Python audit script reported 191 undocumented public items at the start of S03.** The codebase had grown substantially with almost no /// coverage. Documenting all 191 items took the full S03 slice — the estimate was not off, but the volume confirmed that documentation debt compounds silently and is expensive to pay back in bulk.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/One-liner",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M007:16",
+      "label": "**S05 found 10 concrete drift items across 5 doc files despite the codebase having been recently written.** README contained a Feature Flags section that didn't exist at all; troubleshooting.md referenced a `daemon` subcommand that doesn't exist; ControlResponse::Pong casing was wrong; libclang-dev was missing from build prerequisites. Documentation drifts from code even during active development, not just in legacy codebases.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:1",
+      "label": "**Profile loading convention: {name}/pack.yaml subdirectory format.** All three surfaces (load_profiles, handle_switch_profile, Pack::load_from_dir) now agree. Any future profile loading code must filter by is_dir() && path.join(\"pack.yaml\").exists() — not by *.yaml glob.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:2",
+      "label": "**Integration tests for XDG-dependent functions use XDG_CONFIG_HOME env-var override + serial_test::serial.** No API changes needed; the env-var redirect points load_profiles at a tempdir. serial_test::serial prevents env-var races when multiple tests run in parallel.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:3",
+      "label": "**Full test suite must run with --test-threads=1 locally to avoid test_pack_export_import_with_sounds tmpdir-pollution flake.** This is a pre-existing issue (not introduced in M007) and passes cleanly in isolation. CI handles it via its own thread management.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:4",
+      "label": "**// SAFETY: comment per unsafe impl block, one per block, placed directly above each impl.** Use two distinct comments for two unsafe impls even if they guard the same struct — invariants may differ between Send and Sync. Cross-reference comments on intentionally duplicated private functions should name the counterpart file path for navigability.",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:5",
+      "label": "**spawn_pipeline thread-topology ASCII diagram pattern.** For multi-thread orchestration functions, an ASCII diagram in the doc comment showing parallel OS thread structure is more scannable than prose. Established in coordinator.rs for spawn_pipeline.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:6",
+      "label": "**Final-pass verification task (T03/T05 pattern) catches defects missed by per-task checks.** Intra-doc link resolution failures surface only under cargo doc; pub field docs on non-top-level structs require the audit script to scan all nesting depths. Running the full gate (cargo doc, cargo check, audit script) at the slice end is non-optional.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:7",
+      "label": "**Feature flags must be documented in README at the time they are added to Cargo.toml [features], not retroactively.** S05 added the Feature Flags section to README after discovering it was completely absent — users had no indication the default build ships without STT. Add-feature and add-to-README should be the same commit.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:8",
+      "label": "**The config UI (load_profiles) and the config switcher (handle_switch_profile) had silently diverged on what constitutes a valid profile directory.** The UI listed flat *.yaml files that the switcher could never load. This went undetected because there were no integration tests asserting the UI and switcher agreed on the profile format. The fix required rewriting load_profiles and adding a hermetic integration test.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:9",
+      "label": "**The Python audit script reported 191 undocumented public items at the start of S03.** The codebase had grown substantially with almost no /// coverage. Documenting all 191 items took the full S03 slice — the estimate was not off, but the volume confirmed that documentation debt compounds silently and is expensive to pay back in bulk.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/One-liner",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M007:10",
+      "label": "**S05 found 10 concrete drift items across 5 doc files despite the codebase having been recently written.** README contained a Feature Flags section that didn't exist at all; troubleshooting.md referenced a `daemon` subcommand that doesn't exist; ControlResponse::Pong casing was wrong; libclang-dev was missing from build prerequisites. Documentation drifts from code even during active development, not just in legacy codebases.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M007:1",
+      "label": "**The config UI (load_profiles) and the config switcher (handle_switch_profile) had silently diverged on what constitutes a valid profile directory.** The UI listed flat *.yaml files that the switcher could never load. This went undetected because there were no integration tests asserting the UI and switcher agreed on the profile format. The fix required rewriting load_profiles and adding a hermetic integration test.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M007:2",
+      "label": "**The Python audit script reported 191 undocumented public items at the start of S03.** The codebase had grown substantially with almost no /// coverage. Documenting all 191 items took the full S03 slice — the estimate was not off, but the volume confirmed that documentation debt compounds silently and is expensive to pay back in bulk.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/One-liner",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M007:3",
+      "label": "**S05 found 10 concrete drift items across 5 doc files despite the codebase having been recently written.** README contained a Feature Flags section that didn't exist at all; troubleshooting.md referenced a `daemon` subcommand that doesn't exist; ControlResponse::Pong casing was wrong; libclang-dev was missing from build prerequisites. Documentation drifts from code even during active development, not just in legacy codebases.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M007/M007-LEARNINGS.md"
     }
   ],
   "edges": [
@@ -1908,6 +2354,54 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "milestone:M008",
+      "to": "slice:M008:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M008:S01",
+      "to": "task:M008:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M008:S01",
+      "to": "task:M008:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M008:S01",
+      "to": "task:M008:S01:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "slice:M008:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M008:S01",
+      "to": "task:M008:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M008:S01",
+      "to": "task:M008:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M008:S01",
+      "to": "task:M008:S01:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M001",
       "to": "decision:M001:1",
       "type": "relates_to",
@@ -2254,7 +2748,307 @@
       "to": "surprise:M001:4",
       "type": "relates_to",
       "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "decision:M007:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "lesson:M007:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "pattern:M007:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "surprise:M007:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "surprise:M007:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M007",
+      "to": "surprise:M007:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-27T12:35:37.164Z"
+  "builtAt": "2026-04-28T01:28:35.936Z"
 }

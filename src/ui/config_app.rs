@@ -1,6 +1,9 @@
 use tracing::info;
 use xdg::BaseDirectories;
 
+use crate::config::Config;
+use crate::control::protocol::ActivationMode;
+
 /// Maximum number of log lines retained in the config UI.
 pub const MAX_LOG_LINES: usize = 100;
 
@@ -16,6 +19,18 @@ pub struct ConfigApp {
     pub mic_level: f32,
     /// True when no audio input device is available (shows a warning in the UI).
     pub mic_no_device: bool,
+    /// Current activation mode (PTT or Wake).
+    pub mode: ActivationMode,
+    /// Confidence threshold as a 0–100 integer (converted from/to f32 at I/O boundaries).
+    pub threshold_pct: u8,
+    /// Selected audio input device name, or `None` to use the system default.
+    pub input_device: Option<String>,
+    /// PTT key binding string (e.g. "KEY_F13").
+    pub ptt_binding: String,
+    /// Status bar message surfaced to the UI after save or error.
+    pub status_message: Option<String>,
+    /// True when the daemon is reachable (polled each frame).
+    pub daemon_running: bool,
 }
 
 impl ConfigApp {
@@ -27,6 +42,12 @@ impl ConfigApp {
             log_lines: Vec::new(),
             mic_level: 0.0,
             mic_no_device: false,
+            mode: ActivationMode::Ptt,
+            threshold_pct: 80,
+            input_device: None,
+            ptt_binding: String::new(),
+            status_message: None,
+            daemon_running: false,
         }
     }
 
@@ -41,6 +62,23 @@ impl ConfigApp {
             self.log_lines.remove(0);
         }
         self.log_lines.push(line);
+    }
+
+    /// Copy config-derived fields from a loaded `Config` into this app state.
+    ///
+    /// `threshold_pct` is rounded (not truncated) and clamped to 0–100 to guard
+    /// against out-of-range values in hand-edited config files.
+    pub fn apply_from_config(&mut self, cfg: &Config) {
+        self.threshold_pct = (cfg.stt.confidence_threshold * 100.0)
+            .round()
+            .clamp(0.0, 100.0) as u8;
+        self.input_device = cfg.audio.device.clone();
+        self.ptt_binding = cfg.ptt.key.clone();
+    }
+
+    /// Write a status message to the status bar (replaces any previous message).
+    pub fn set_status(&mut self, msg: impl Into<String>) {
+        self.status_message = Some(msg.into());
     }
 }
 
@@ -94,7 +132,84 @@ pub fn load_profiles() -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::{AudioConfig, PttConfig, SttConfig, TimingConfig};
     use serial_test::serial;
+
+    fn minimal_config(confidence_threshold: f32) -> Config {
+        Config {
+            ptt: PttConfig { key: "KEY_F13".to_string() },
+            timing: TimingConfig { dwell_ms: 50, gap_ms: 30 },
+            audio: AudioConfig { device: None },
+            pipeline: Default::default(),
+            vad: Default::default(),
+            stt: SttConfig {
+                confidence_threshold,
+                ..Default::default()
+            },
+            wake: Default::default(),
+            macros: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn apply_from_config_round_trips_08_to_80() {
+        let mut app = ConfigApp::new();
+        let cfg = minimal_config(0.8);
+        app.apply_from_config(&cfg);
+        assert_eq!(app.threshold_pct, 80);
+    }
+
+    #[test]
+    fn apply_from_config_clamps_above_100() {
+        let mut app = ConfigApp::new();
+        let cfg = minimal_config(1.5);
+        app.apply_from_config(&cfg);
+        assert_eq!(app.threshold_pct, 100);
+    }
+
+    #[test]
+    fn apply_from_config_clamps_below_0() {
+        let mut app = ConfigApp::new();
+        let cfg = minimal_config(-0.2);
+        app.apply_from_config(&cfg);
+        assert_eq!(app.threshold_pct, 0);
+    }
+
+    #[test]
+    fn apply_from_config_rounds_not_truncates() {
+        // 0.835 * 100 = 83.5, rounds to 84 (not 83)
+        let mut app = ConfigApp::new();
+        let cfg = minimal_config(0.835);
+        app.apply_from_config(&cfg);
+        assert_eq!(app.threshold_pct, 84);
+    }
+
+    #[test]
+    fn activation_mode_round_trips_through_field() {
+        let mut app = ConfigApp::new();
+        assert_eq!(app.mode, ActivationMode::Ptt);
+        app.mode = ActivationMode::Wake;
+        assert_eq!(app.mode, ActivationMode::Wake);
+    }
+
+    #[test]
+    fn set_status_writes_message() {
+        let mut app = ConfigApp::new();
+        assert!(app.status_message.is_none());
+        app.set_status("Saved");
+        assert_eq!(app.status_message.as_deref(), Some("Saved"));
+    }
+
+    #[test]
+    fn apply_from_config_copies_device_and_ptt_key() {
+        let mut app = ConfigApp::new();
+        let mut cfg = minimal_config(0.8);
+        cfg.audio.device = Some("plughw:CARD=Gaming,DEV=0".to_string());
+        cfg.ptt.key = "KEY_GRAVE".to_string();
+        app.apply_from_config(&cfg);
+        assert_eq!(app.input_device.as_deref(), Some("plughw:CARD=Gaming,DEV=0"));
+        assert_eq!(app.ptt_binding, "KEY_GRAVE");
+    }
 
     #[test]
     #[serial]

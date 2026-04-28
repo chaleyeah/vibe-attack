@@ -17,10 +17,10 @@
 
 ## Slices
 
-- [ ] **S01: S01** `risk:high` `depends:[]`
+- [x] **S01: S01** `risk:high` `depends:[]`
   > After this: cargo test passes including new control_protocol tests; round-trip serde test for each new request variant passes; coordinator accepts RuntimeCommand::SetMode and RuntimeCommand::SetThreshold without restarting the full pipeline
 
-- [ ] **S02: ConfigApp state + egui config panel** `risk:medium` `depends:[S01]`
+- [ ] **S02: S02** `risk:medium` `depends:[]`
   > After this: vibe-attack-config opens a config window; user changes mode toggle → Save → daemon log shows SetMode received; threshold slider moves → Save → daemon log shows SetThreshold received
 
 - [ ] **S03: Tray icon state mapping + Mode submenu** `risk:low` `depends:[S02]`
