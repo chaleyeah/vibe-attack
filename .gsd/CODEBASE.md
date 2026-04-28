@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T11:14:59Z | Files: 150 | Described: 0/150
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T11:14:59Z","fingerprint":"d5a5e12794b0371f26b21e1c0318c37b12b61a2c","fileCount":150,"truncated":false} -->
+Generated: 2026-04-28T11:22:44Z | Files: 154 | Described: 0/154
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T11:22:44Z","fingerprint":"3101a3a7400d536017d891a992d9a3fd271008a5","fileCount":154,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -42,6 +42,18 @@ Generated: 2026-04-28T11:14:59Z | Files: 150 | Described: 0/150
 
 ### docs/distribution-proofs/aur/
 - `docs/distribution-proofs/aur/README.md`
+
+### docs/distribution-proofs/final/
+- `docs/distribution-proofs/final/README.md`
+
+### docs/distribution-proofs/final/arch/
+- `docs/distribution-proofs/final/arch/transcript.md`
+
+### docs/distribution-proofs/final/debian12/
+- `docs/distribution-proofs/final/debian12/transcript.md`
+
+### docs/distribution-proofs/final/fedora39/
+- `docs/distribution-proofs/final/fedora39/transcript.md`
 
 ### docs/distribution-proofs/wizard/
 - `docs/distribution-proofs/wizard/README.md`

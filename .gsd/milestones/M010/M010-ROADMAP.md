@@ -32,7 +32,7 @@
 - [x] **S05: S05** `risk:low` `depends:[]`
   > After this: A person unfamiliar with the project reads README.md and reaches 'stratagem fired by voice' without asking for help
 
-- [ ] **S06: S06** `risk:low` `depends:[]`
+- [x] **S06: S06** `risk:low` `depends:[]`
   > After this: Three transcripts under docs/distribution-proofs/final/ — one per distro — each showing stratagem fired by voice from a clean AppImage install
 
 ## Boundary Map

@@ -9,8 +9,8 @@
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:planning",
-      "label": "Phase: planning",
+      "id": "concept:phase:validating-milestone",
+      "label": "Phase: validating-milestone",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -1168,6 +1168,19 @@
     {
       "id": "task:M010:S05:T01",
       "label": "T01: Rewrite README.md install section: AppImage primary, AUR alternative, wizard walkthrough, demote build-from-source",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M010:S06",
+      "label": "S06: Final distribution UAT",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/slices/S06/S06-PLAN.md"
+    },
+    {
+      "id": "task:M010:S06:T01",
+      "label": "T01: Scaffold docs/distribution-proofs/final/ with three pending transcripts and structural tests",
       "type": "task",
       "confidence": "EXTRACTED"
     },
@@ -4166,6 +4179,18 @@
     },
     {
       "from": "milestone:M010",
+      "to": "slice:M010:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S06",
+      "to": "task:M010:S06:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
       "to": "slice:M010:S01",
       "type": "contains",
       "confidence": "EXTRACTED"
@@ -4275,6 +4300,18 @@
     {
       "from": "slice:M010:S05",
       "to": "task:M010:S05:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S06",
+      "to": "task:M010:S06:T01",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -6199,5 +6236,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T11:17:45.745Z"
+  "builtAt": "2026-04-28T11:24:20.593Z"
 }
