@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T03:49:35Z | Files: 139 | Described: 0/139
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T03:49:35Z","fingerprint":"8d1b8b159035bc443cd9714507d1dbb05f55b67d","fileCount":139,"truncated":false} -->
+Generated: 2026-04-28T03:51:41Z | Files: 143 | Described: 0/143
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T03:51:41Z","fingerprint":"d82c44730359c5e078b7305cf4969e5b627c634a","fileCount":143,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -27,6 +27,18 @@ Generated: 2026-04-28T03:49:35Z | Files: 139 | Described: 0/139
 - `docs/latency-baseline.md`
 - `docs/troubleshooting.md`
 - `docs/uinput-setup.md`
+
+### docs/distribution-proofs/appimage/
+- `docs/distribution-proofs/appimage/README.md`
+
+### docs/distribution-proofs/appimage/arch/
+- `docs/distribution-proofs/appimage/arch/transcript.md`
+
+### docs/distribution-proofs/appimage/debian12/
+- `docs/distribution-proofs/appimage/debian12/transcript.md`
+
+### docs/distribution-proofs/appimage/fedora39/
+- `docs/distribution-proofs/appimage/fedora39/transcript.md`
 
 ### docs/latency-proofs/phase-02-target-hardware/
 - `docs/latency-proofs/phase-02-target-hardware/error.txt`
