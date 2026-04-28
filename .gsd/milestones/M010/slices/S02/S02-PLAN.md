@@ -96,7 +96,7 @@ All four files must be tracked in git (no .gitignore matches under docs/).
   - Files: `docs/distribution-proofs/wizard/README.md`, `docs/distribution-proofs/wizard/debian12/transcript.md`, `docs/distribution-proofs/wizard/fedora39/transcript.md`, `docs/distribution-proofs/wizard/arch/transcript.md`
   - Verify: test -f docs/distribution-proofs/wizard/README.md && for d in debian12 fedora39 arch; do test -f docs/distribution-proofs/wizard/$d/transcript.md && grep -q '^STATUS:' docs/distribution-proofs/wizard/$d/transcript.md && grep -q '^SCENARIO_A:' docs/distribution-proofs/wizard/$d/transcript.md && grep -q '^SCENARIO_D:' docs/distribution-proofs/wizard/$d/transcript.md; done
 
-- [ ] **T05: Add tests/wizard_proofs.rs structural assertions for wizard transcripts** `est:45m`
+- [x] **T05: Add tests/wizard_proofs.rs structural assertions for wizard transcripts** `est:45m`
   Mirror the structure of `tests/distribution_proofs.rs` (which validates AppImage transcripts) for the wizard transcripts created in T04. The test file is `tests/wizard_proofs.rs` (new).
 
 Requirements:

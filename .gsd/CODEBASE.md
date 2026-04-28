@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T03:53:00Z | Files: 144 | Described: 0/144
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T03:53:00Z","fingerprint":"4c7c2234b24dd9754babcc144c3bdb75f766e1a4","fileCount":144,"truncated":false} -->
+Generated: 2026-04-28T04:04:33Z | Files: 148 | Described: 0/148
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T04:04:33Z","fingerprint":"702573cae0a18fc2d716dcebfd93a1c57800a401","fileCount":148,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -39,6 +39,18 @@ Generated: 2026-04-28T03:53:00Z | Files: 144 | Described: 0/144
 
 ### docs/distribution-proofs/appimage/fedora39/
 - `docs/distribution-proofs/appimage/fedora39/transcript.md`
+
+### docs/distribution-proofs/wizard/
+- `docs/distribution-proofs/wizard/README.md`
+
+### docs/distribution-proofs/wizard/arch/
+- `docs/distribution-proofs/wizard/arch/transcript.md`
+
+### docs/distribution-proofs/wizard/debian12/
+- `docs/distribution-proofs/wizard/debian12/transcript.md`
+
+### docs/distribution-proofs/wizard/fedora39/
+- `docs/distribution-proofs/wizard/fedora39/transcript.md`
 
 ### docs/latency-proofs/phase-02-target-hardware/
 - `docs/latency-proofs/phase-02-target-hardware/error.txt`
