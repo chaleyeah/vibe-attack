@@ -265,6 +265,42 @@
       "sourceFile": "milestones/M002/M002-ROADMAP.md"
     },
     {
+      "id": "slice:M002:S01",
+      "label": "M002/S01",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S02",
+      "label": "M002/S02",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S03",
+      "label": "M002/S03",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S04",
+      "label": "M002/S04",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S05",
+      "label": "M002/S05",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S06",
+      "label": "M002/S06",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
       "id": "milestone:M003",
       "label": "M003: First-Run GUI Wizard + Setup Script",
       "type": "milestone",
@@ -410,7 +446,7 @@
     },
     {
       "id": "milestone:M004",
-      "label": "M004: Runtime UX — System Tray + Daemon Control",
+      "label": "M004: Runtime UX - System Tray + Daemon Control",
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M004/M004-ROADMAP.md"
@@ -873,7 +909,7 @@
     },
     {
       "id": "milestone:M009",
-      "label": "M009: Pack UX — Editor, Import/Export, Full HD2 Coverage",
+      "label": "M009: Pack UX - Editor, Import/Export, Full HD2 Coverage",
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M009/M009-ROADMAP.md"
@@ -1121,6 +1157,26 @@
       "label": "T03: Document AUR submission workflow and pkgver/sha256sums pinning",
       "type": "task",
       "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M010:S05",
+      "label": "S05: README install section rewrite",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/slices/S05/S05-PLAN.md"
+    },
+    {
+      "id": "task:M010:S05:T01",
+      "label": "T01: Rewrite README.md install section: AppImage primary, AUR alternative, wizard walkthrough, demote build-from-source",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "milestone:M011",
+      "label": "M011: M011",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-ROADMAP.md"
     },
     {
       "id": "decision:M001:1",
@@ -3065,6 +3121,42 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "milestone:M002",
+      "to": "slice:M002:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M003",
       "to": "slice:M003:S01",
       "type": "contains",
@@ -4062,6 +4154,18 @@
     },
     {
       "from": "milestone:M010",
+      "to": "slice:M010:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S05",
+      "to": "task:M010:S05:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
       "to": "slice:M010:S01",
       "type": "contains",
       "confidence": "EXTRACTED"
@@ -4159,6 +4263,18 @@
     {
       "from": "slice:M010:S04",
       "to": "task:M010:S04:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S05",
+      "to": "task:M010:S05:T01",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -6083,5 +6199,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T04:23:26.573Z"
+  "builtAt": "2026-04-28T11:17:45.745Z"
 }

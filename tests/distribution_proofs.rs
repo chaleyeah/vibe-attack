@@ -108,3 +108,49 @@ fn build_sh_bundles_both_ort_libraries() {
         "build.sh must reference libsherpa-onnx-c-api.so for dual-ORT bundling"
     );
 }
+
+// ── Final UAT proof helpers ──────────────────────────────────────────────────
+
+const FINAL_REQUIRED_FIELDS: &[&str] = &[
+    "STATUS:",
+    "DISTRO:",
+    "KERNEL:",
+    "APPIMAGE_VERSION:",
+    "APPIMAGE_SIZE_BYTES:",
+    "WIZARD_COMPLETED:",
+    "STRATAGEM_FIRED:",
+    "INSTALL_METHOD:",
+];
+
+fn assert_final_transcript(rel: &str) {
+    let content = read_file(rel);
+    for field in FINAL_REQUIRED_FIELDS {
+        assert!(
+            content.contains(field),
+            "transcript {rel} is missing required field '{field}'"
+        );
+    }
+    // Accept: "STATUS: ok", "STATUS: pending VM run", or "STATUS: failed:<reason>"
+    let has_valid_status = content.contains("STATUS: ok")
+        || content.contains("STATUS: pending VM run")
+        || content.lines().any(|l| l.starts_with("STATUS: failed:"));
+    assert!(
+        has_valid_status,
+        "transcript {rel} has no recognized STATUS line; accepted: 'ok', 'pending VM run', or 'failed:<reason>'"
+    );
+}
+
+#[test]
+fn debian12_final_transcript_has_required_fields() {
+    assert_final_transcript("docs/distribution-proofs/final/debian12/transcript.md");
+}
+
+#[test]
+fn fedora39_final_transcript_has_required_fields() {
+    assert_final_transcript("docs/distribution-proofs/final/fedora39/transcript.md");
+}
+
+#[test]
+fn arch_final_transcript_has_required_fields() {
+    assert_final_transcript("docs/distribution-proofs/final/arch/transcript.md");
+}
