@@ -1,16 +1,16 @@
 {
   "nodes": [
     {
-      "id": "milestone:M008",
-      "label": "M008: UI / Tray Runtime Control",
+      "id": "milestone:M009",
+      "label": "M009: Pack UX — Editor, Import/Export, Full HD2 Coverage",
       "type": "milestone",
-      "description": "Active milestone: M008",
+      "description": "Active milestone: M009",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:validating-milestone",
-      "label": "Phase: validating-milestone",
+      "id": "concept:phase:planning",
+      "label": "Phase: planning",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -771,6 +771,13 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "milestone:M008",
+      "label": "M008: UI / Tray Runtime Control",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-ROADMAP.md"
+    },
+    {
       "id": "slice:M008:S01",
       "label": "S01: Control-protocol extensions",
       "type": "slice",
@@ -865,11 +872,29 @@
       "confidence": "EXTRACTED"
     },
     {
-      "id": "milestone:M009",
-      "label": "M009: Pack UX — Editor, Import/Export, Full HD2 Coverage",
-      "type": "milestone",
+      "id": "slice:M009:S01",
+      "label": "S01: Full HD2 stratagem pack + coverage test",
+      "type": "slice",
       "confidence": "EXTRACTED",
-      "sourceFile": "milestones/M009/M009-ROADMAP.md"
+      "sourceFile": "milestones/M009/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M009:S01:T01",
+      "label": "T01: Expand profiles/hd2/pack.yaml to full 6-category HD2 stratagem coverage",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M009:S01:T02",
+      "label": "T02: Add tests/pack_hd2_coverage.rs hermetic coverage test",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M009:S02",
+      "label": "M009/S02",
+      "type": "slice",
+      "confidence": "EXTRACTED"
     },
     {
       "id": "milestone:M010",
@@ -1741,6 +1766,398 @@
       "description": "Source: S05-SUMMARY.md/What Happened",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M007/M007-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:1",
+      "label": "**RwLock<PhraseMatcher> for live threshold.** Chose RwLock<PhraseMatcher> over Arc<AtomicF32> because threshold is consumed by PhraseMatcher::new(); replacing the full matcher under a write lock is cleaner than maintaining two separate atomics with a consistency risk.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:2",
+      "label": "**ActivationMode runtime-only in M008 (not persisted to config.yaml).** Deferred YAML schema change to a future milestone; SetMode is sent over the control socket on Save instead. Mode reverts to config default after daemon restart.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:3",
+      "label": "**threshold_pct uses u8 (0–100) integer domain in ConfigApp.** Prevents float drift in the UI layer; round+clamp conversion happens only at I/O boundaries (load_config_into_app / save_app_to_config).",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:4",
+      "label": "**Arc<RwLock<ActivationMode>> on DaemonHandle.** ActivationMode is not atomically encodable; Arc<RwLock<T>> matches the existing active_profile pattern. SetMode handler writes active_mode to handle BEFORE forwarding RuntimeCommand to coordinator so Status responses are always coherent with the last SetMode.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:5",
+      "label": "**icon_name_for_state extracted as free pub(crate) function.** Enables unit tests without requiring a live D-Bus session or ksni instantiation — the free function takes Option<&DaemonState> and returns a &'static str, fully testable in headless CI.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:6",
+      "label": "**Tray menu activate closures use std::thread::spawn fire-and-forget.** ksni D-Bus callbacks must not block. All tray menu activate closures follow the pattern: spawn → send_command → discard result.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:7",
+      "label": "**SocketGuard uses place_runtime_file (server-side path) not find_runtime_file.** In integration tests, the cleanup path must match the bound socket path; place_runtime_file is the server-side path-generation function while find_runtime_file is the client-side lookup, which may differ.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:8",
+      "label": "**SetThreshold integration test asserts on the RuntimeCommand channel, not dispatcher.threshold().** The coordinator drain loop applies the threshold asynchronously on the next audio frame; asserting the dispatcher value directly would introduce a race condition. Asserting on the channel that the command was received is the correct boundary.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:9",
+      "label": "**clippy not available at system level (rustup not installed).** cargo build was substituted throughout S02 and S04 for lint verification. No new warnings were introduced, but the automated clippy gate was not enforced. Install clippy via rustup for proper lint gating in CI.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:10",
+      "label": "**ActivationMode changes are runtime-only and not persisted to config.yaml.** Mode reverts to config default after daemon restart. This was an explicit scope decision for M008, but future milestones should consider write-back so mode survives restarts.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:11",
+      "label": "**Integration tests that bind UDS sockets need #[serial] + a Drop-based SocketGuard.** Without #[serial], parallel test execution causes bind conflicts on the same socket path. The SocketGuard Drop impl ensures deterministic cleanup even on panic, and both tests skip gracefully when XDG_RUNTIME_DIR is absent (bare CI environments).",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:12",
+      "label": "**XDG_CONFIG_HOME override + serial_test::serial required for config file tests.** Without path isolation, concurrent config tests race on the same file. This is a project-wide convention established in S02.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:13",
+      "label": "**Daemon-absent graceful degradation: always write to disk, only send socket commands when daemon_running=true.** Always leaving the user with an actionable status message prevents silent failure. The pattern: write YAML regardless, skip socket commands if daemon_running is false, set status_message so the UI shows feedback.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:14",
+      "label": "**UAT assertions should reference exact log strings from source code.** Using approximate descriptions in UAT steps leads to ambiguity during manual testing. Exact grep-able strings (e.g. \"runtime_command_applied\") let testers unambiguously confirm the right log line fired.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:15",
+      "label": "**try_recv drain loop at top of coordinator frame.** Non-blocking ~50/s drain processes all queued RuntimeCommands before audio work each frame. Ensures mode/threshold changes take effect between utterances without blocking the audio pipeline.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:16",
+      "label": "**send_runtime_cmd helper on DaemonHandle.** Option check + SendError → ControlResponse::Error{pipeline not running}. Centralises the \"is the channel live?\" guard so callers don't need to handle Option<Sender> directly.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:17",
+      "label": "**update_threshold() pattern: clamp → write-lock → replace matcher → emit tracing::info(old, new).** Three-step pattern for live threshold updates. Clamp before lock acquisition; replace entire PhraseMatcher under the write lock; log old and new values for observability.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:18",
+      "label": "**ConfigApp I/O helpers: load returns full Config for caching; save takes cached Config as base to clone+mutate.** Preserves all non-UI fields (macros, pack metadata, etc.) across save cycles. Per-frame I/O is avoided by populating cached_config and device_names once at startup.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:19",
+      "label": "**Free pub(crate) functions for icon/state mappings enable headless unit tests without D-Bus or ksni.** Extracting icon_name_for_state as a free function (not a method on a ksni struct) makes the mapping fully testable in CI with no display server.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:20",
+      "label": "**TrayState optional fields use Option<T> for daemon-not-running sentinel.** Option<ActivationMode> cleanly represents \"daemon not running\" without a sentinel value; items are disabled via the daemon_running flag rather than dummy values.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:21",
+      "label": "**make_handle_with_runtime_tx() helper for integration tests.** Mirrors make_handle from control_protocol.rs but adds .with_runtime_tx() so SetMode/SetThreshold commands succeed in integration tests. Keeps test setup DRY and explicit about which tests require a live RuntimeCommand channel.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:22",
+      "label": "**cargo build substituted for cargo clippy throughout due to missing rustup/clippy at system level.** This was discovered mid-S02 and propagated as a known limitation through S04. The substitution is safe (build catches type errors) but does not enforce lint cleanliness. Not a blocker, but unexpected for a Rust project.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M008:23",
+      "label": "**SetThreshold integration test cannot assert dispatcher.threshold() directly.** Initial approach would assert the dispatcher's threshold field after sending SetThreshold over the socket, but the coordinator drain loop is asynchronous — the value is applied on the next audio frame tick, not synchronously in the handler. Asserting on the RuntimeCommand channel (that the command was received) is the correct boundary for a handler-level test.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:1",
+      "label": "**clippy not available at system level (rustup not installed).** cargo build was substituted throughout S02 and S04 for lint verification. No new warnings were introduced, but the automated clippy gate was not enforced. Install clippy via rustup for proper lint gating in CI.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:2",
+      "label": "**ActivationMode changes are runtime-only and not persisted to config.yaml.** Mode reverts to config default after daemon restart. This was an explicit scope decision for M008, but future milestones should consider write-back so mode survives restarts.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:3",
+      "label": "**Integration tests that bind UDS sockets need #[serial] + a Drop-based SocketGuard.** Without #[serial], parallel test execution causes bind conflicts on the same socket path. The SocketGuard Drop impl ensures deterministic cleanup even on panic, and both tests skip gracefully when XDG_RUNTIME_DIR is absent (bare CI environments).",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:4",
+      "label": "**XDG_CONFIG_HOME override + serial_test::serial required for config file tests.** Without path isolation, concurrent config tests race on the same file. This is a project-wide convention established in S02.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:5",
+      "label": "**Daemon-absent graceful degradation: always write to disk, only send socket commands when daemon_running=true.** Always leaving the user with an actionable status message prevents silent failure. The pattern: write YAML regardless, skip socket commands if daemon_running is false, set status_message so the UI shows feedback.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:6",
+      "label": "**UAT assertions should reference exact log strings from source code.** Using approximate descriptions in UAT steps leads to ambiguity during manual testing. Exact grep-able strings (e.g. \"runtime_command_applied\") let testers unambiguously confirm the right log line fired.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:7",
+      "label": "**try_recv drain loop at top of coordinator frame.** Non-blocking ~50/s drain processes all queued RuntimeCommands before audio work each frame. Ensures mode/threshold changes take effect between utterances without blocking the audio pipeline.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:8",
+      "label": "**send_runtime_cmd helper on DaemonHandle.** Option check + SendError → ControlResponse::Error{pipeline not running}. Centralises the \"is the channel live?\" guard so callers don't need to handle Option<Sender> directly.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:9",
+      "label": "**update_threshold() pattern: clamp → write-lock → replace matcher → emit tracing::info(old, new).** Three-step pattern for live threshold updates. Clamp before lock acquisition; replace entire PhraseMatcher under the write lock; log old and new values for observability.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:10",
+      "label": "**ConfigApp I/O helpers: load returns full Config for caching; save takes cached Config as base to clone+mutate.** Preserves all non-UI fields (macros, pack metadata, etc.) across save cycles. Per-frame I/O is avoided by populating cached_config and device_names once at startup.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:11",
+      "label": "**Free pub(crate) functions for icon/state mappings enable headless unit tests without D-Bus or ksni.** Extracting icon_name_for_state as a free function (not a method on a ksni struct) makes the mapping fully testable in CI with no display server.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:12",
+      "label": "**TrayState optional fields use Option<T> for daemon-not-running sentinel.** Option<ActivationMode> cleanly represents \"daemon not running\" without a sentinel value; items are disabled via the daemon_running flag rather than dummy values.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:13",
+      "label": "**make_handle_with_runtime_tx() helper for integration tests.** Mirrors make_handle from control_protocol.rs but adds .with_runtime_tx() so SetMode/SetThreshold commands succeed in integration tests. Keeps test setup DRY and explicit about which tests require a live RuntimeCommand channel.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:14",
+      "label": "**cargo build substituted for cargo clippy throughout due to missing rustup/clippy at system level.** This was discovered mid-S02 and propagated as a known limitation through S04. The substitution is safe (build catches type errors) but does not enforce lint cleanliness. Not a blocker, but unexpected for a Rust project.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M008:15",
+      "label": "**SetThreshold integration test cannot assert dispatcher.threshold() directly.** Initial approach would assert the dispatcher's threshold field after sending SetThreshold over the socket, but the coordinator drain loop is asynchronous — the value is applied on the next audio frame tick, not synchronously in the handler. Asserting on the RuntimeCommand channel (that the command was received) is the correct boundary for a handler-level test.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:1",
+      "label": "**try_recv drain loop at top of coordinator frame.** Non-blocking ~50/s drain processes all queued RuntimeCommands before audio work each frame. Ensures mode/threshold changes take effect between utterances without blocking the audio pipeline.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:2",
+      "label": "**send_runtime_cmd helper on DaemonHandle.** Option check + SendError → ControlResponse::Error{pipeline not running}. Centralises the \"is the channel live?\" guard so callers don't need to handle Option<Sender> directly.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:3",
+      "label": "**update_threshold() pattern: clamp → write-lock → replace matcher → emit tracing::info(old, new).** Three-step pattern for live threshold updates. Clamp before lock acquisition; replace entire PhraseMatcher under the write lock; log old and new values for observability.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:4",
+      "label": "**ConfigApp I/O helpers: load returns full Config for caching; save takes cached Config as base to clone+mutate.** Preserves all non-UI fields (macros, pack metadata, etc.) across save cycles. Per-frame I/O is avoided by populating cached_config and device_names once at startup.",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:5",
+      "label": "**Free pub(crate) functions for icon/state mappings enable headless unit tests without D-Bus or ksni.** Extracting icon_name_for_state as a free function (not a method on a ksni struct) makes the mapping fully testable in CI with no display server.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:6",
+      "label": "**TrayState optional fields use Option<T> for daemon-not-running sentinel.** Option<ActivationMode> cleanly represents \"daemon not running\" without a sentinel value; items are disabled via the daemon_running flag rather than dummy values.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:7",
+      "label": "**make_handle_with_runtime_tx() helper for integration tests.** Mirrors make_handle from control_protocol.rs but adds .with_runtime_tx() so SetMode/SetThreshold commands succeed in integration tests. Keeps test setup DRY and explicit about which tests require a live RuntimeCommand channel.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:8",
+      "label": "**cargo build substituted for cargo clippy throughout due to missing rustup/clippy at system level.** This was discovered mid-S02 and propagated as a known limitation through S04. The substitution is safe (build catches type errors) but does not enforce lint cleanliness. Not a blocker, but unexpected for a Rust project.",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M008:9",
+      "label": "**SetThreshold integration test cannot assert dispatcher.threshold() directly.** Initial approach would assert the dispatcher's threshold field after sending SetThreshold over the socket, but the coordinator drain loop is asynchronous — the value is applied on the next audio frame tick, not synchronously in the handler. Asserting on the RuntimeCommand channel (that the command was received) is the correct boundary for a handler-level test.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M008:1",
+      "label": "**cargo build substituted for cargo clippy throughout due to missing rustup/clippy at system level.** This was discovered mid-S02 and propagated as a known limitation through S04. The substitution is safe (build catches type errors) but does not enforce lint cleanliness. Not a blocker, but unexpected for a Rust project.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M008:2",
+      "label": "**SetThreshold integration test cannot assert dispatcher.threshold() directly.** Initial approach would assert the dispatcher's threshold field after sending SetThreshold over the socket, but the coordinator drain loop is asynchronous — the value is applied on the next audio frame tick, not synchronously in the handler. Asserting on the RuntimeCommand channel (that the command was received) is the correct boundary for a handler-level test.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M008/M008-LEARNINGS.md"
     }
   ],
   "edges": [
@@ -2603,6 +3020,54 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "milestone:M009",
+      "to": "slice:M009:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S01",
+      "to": "task:M009:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S01",
+      "to": "task:M009:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "slice:M009:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "slice:M009:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S01",
+      "to": "task:M009:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S01",
+      "to": "task:M009:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "slice:M009:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M001",
       "to": "decision:M001:1",
       "type": "relates_to",
@@ -3249,7 +3714,595 @@
       "to": "surprise:M007:3",
       "type": "relates_to",
       "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:22",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:23",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "surprise:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "surprise:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:22",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "decision:M008:23",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "lesson:M008:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "pattern:M008:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "surprise:M008:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M008",
+      "to": "surprise:M008:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T02:07:05.208Z"
+  "builtAt": "2026-04-28T02:26:41.246Z"
 }
