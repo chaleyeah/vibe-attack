@@ -23,6 +23,17 @@ jobs:
       - name: Cache Rust build artifacts
         uses: Swatinem/rust-cache@v2
 
+      - name: Cache sherpa-onnx prebuilt libs
+        id: sherpa-cache
+        uses: actions/cache@v4
+        with:
+          path: target/sherpa-onnx-prebuilt
+          key: sherpa-onnx-1.12.39-linux-x64
+
+      - name: Rebuild sherpa-onnx-sys if prebuilt cache missed
+        if: steps.sherpa-cache.outputs.cache-hit != 'true'
+        run: cargo build -p sherpa-onnx-sys
+
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
@@ -53,10 +64,23 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           mv vibe-attack-x86_64.AppImage "vibe-attack-${TAG}-x86_64.AppImage"
 
-      - name: Upload AppImage as release asset
+      - name: Create source tarball
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          git archive --format=tar.gz --prefix="vibe-attack-${TAG}/" HEAD -o "vibe-attack-${TAG}.tar.gz"
+
+      - name: Create HD2 pack bundle
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          zip -j "hd2-${TAG}.hdpack" profiles/hd2/pack.yaml
+
+      - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: vibe-attack-*-x86_64.AppImage
+          files: |
+            vibe-attack-*-x86_64.AppImage
+            vibe-attack-*.tar.gz
+            hd2-*.hdpack
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
