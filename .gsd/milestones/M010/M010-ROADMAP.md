@@ -26,10 +26,10 @@
 - [x] **S03: S03** `risk:low` `depends:[]`
   > After this: Tag push triggers release workflow; AppImage, tarball, .hdpack appear in GitHub Releases; workflow passes
 
-- [ ] **S04: S04** `risk:medium` `depends:[]`
+- [x] **S04: S04** `risk:medium` `depends:[]`
   > After this: namcap clean; makepkg -si installs working binary; AUR package visible at aur.archlinux.org
 
-- [ ] **S05: README install section rewrite** `risk:low` `depends:[S01,S02,S04]`
+- [ ] **S05: S05** `risk:low` `depends:[]`
   > After this: A person unfamiliar with the project reads README.md and reaches 'stratagem fired by voice' without asking for help
 
 - [ ] **S06: Final distribution UAT** `risk:low` `depends:[S03,S05]`

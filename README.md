@@ -23,15 +23,59 @@ vibe-attack is built with Cargo feature flags. The default build includes the da
 
 ## Installation
 
-### Prerequisites
+### AppImage (recommended — Debian, Fedora, Arch, any distro)
 
-- Linux (Debian/Ubuntu or Arch-based recommended)
-- Rust stable toolchain ([rustup.rs](https://rustup.rs))
-- A working microphone
+Download the latest `vibe-attack-*-x86_64.AppImage` from the [Releases page](https://github.com/chaleyeah/vibe-attack/releases), then run:
 
-### System Dependencies
+```bash
+chmod +x vibe-attack-*-x86_64.AppImage
+./vibe-attack-*-x86_64.AppImage
+```
 
-**Debian / Ubuntu:**
+**Debian / Ubuntu:** FUSE is required to mount the AppImage. Install `libfuse2` (not `libfuse3`):
+
+```bash
+sudo apt install libfuse2
+```
+
+On first launch the first-run wizard starts automatically — see [First-Run Wizard](#first-run-wizard) below.
+
+### AUR (Arch Linux / CachyOS)
+
+```bash
+paru -S vibe-attack
+# or
+yay -S vibe-attack
+```
+
+`onnxruntime` is a runtime dependency and is installed automatically by pacman alongside the package. On first launch the first-run wizard starts automatically.
+
+### First-Run Wizard
+
+The wizard runs once when `~/.config/vibe-attack/config.yaml` does not exist. It walks through four steps in order:
+
+1. **CreateConfig** — writes `~/.config/vibe-attack/config.yaml` from the built-in example template.
+2. **InstallModel** — downloads the Whisper GGML model file to `~/.local/share/vibe-attack/models/whisper/`.
+3. **SetupUinput** — configures `/dev/uinput` permissions via polkit so the daemon can inject keystrokes. See [docs/uinput-setup.md](docs/uinput-setup.md) for details.
+4. **ConfigurePtt** — captures your push-to-talk key via evdev and writes it to the config.
+
+After the wizard completes the main config screen appears and the daemon is ready to use. Relaunching skips the wizard automatically when `~/.config/vibe-attack/config.yaml` already exists.
+
+To skip the wizard entirely (for example when supplying your own config):
+
+```bash
+vibe-attack-config --skip-wizard
+```
+
+### Build from Source
+
+For contributors and packagers who need a custom build.
+
+**Prerequisites:** a working microphone and Rust stable ([rustup.rs](https://rustup.rs)).
+
+**System dependencies:**
+
+*Debian / Ubuntu:*
 ```bash
 sudo apt-get install -y \
   build-essential \
@@ -39,28 +83,25 @@ sudo apt-get install -y \
   pkg-config
 ```
 
-**Arch / Manjaro:**
+*Arch / Manjaro:*
 ```bash
 sudo pacman -S base-devel alsa-lib pkg-config
 ```
 
-### Install Rust
+*Fedora:*
+```bash
+sudo dnf install gcc alsa-lib-devel pkg-config
+```
 
+**Install Rust:**
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source $HOME/.cargo/env
 ```
 
-### uinput / evdev Permissions
+**uinput / evdev permissions:** see [docs/uinput-setup.md](docs/uinput-setup.md).
 
-The daemon injects keypresses via `/dev/uinput`. See [docs/uinput-setup.md](docs/uinput-setup.md) for permission setup instructions.
-
-### Whisper Model
-
-Speech-to-text requires the `stt` feature flag **and** a Whisper GGML model file. Models are **not** downloaded automatically — you must place the `.gguf` file yourself and point to it in `config.yaml` under `stt.model_path`.
-
-### Clone and Build
-
+**Clone and build:**
 ```bash
 git clone https://github.com/chaleyeah/vibe-attack.git
 cd vibe-attack
@@ -79,6 +120,8 @@ cargo build --release --features stt,gui
 ```
 
 The main daemon binary is at `./target/release/vibe-attack`. The GUI config app (`--features gui`) also produces `./target/release/vibe-attack-config`.
+
+**Note:** building from source and running the binary directly does not trigger the first-run wizard unless `~/.config/vibe-attack/config.yaml` is absent. You will need to place the Whisper model manually and write `config.yaml` yourself (use `config.example.yaml` as a starting point).
 
 ## Usage
 

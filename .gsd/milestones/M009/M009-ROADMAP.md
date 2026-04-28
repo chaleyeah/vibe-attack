@@ -1,4 +1,4 @@
-# M009: Pack UX — Editor, Import/Export, Full HD2 Coverage
+# M009: Pack UX - Editor, Import/Export, Full HD2 Coverage
 
 **Vision:** A user can open the config window, edit macros with a built-in editor, import/export .hdpack files, and fire any of the 80+ Helldivers 2 stratagems by voice out of the box. The pack subsystem is structurally complete; this milestone adds the user-facing surface and the full HD2 content.
 

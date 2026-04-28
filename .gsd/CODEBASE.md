@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T04:05:36Z | Files: 149 | Described: 0/149
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T04:05:36Z","fingerprint":"0764525b1b848a987ff39372ee00245ca74837f6","fileCount":149,"truncated":false} -->
+Generated: 2026-04-28T11:14:59Z | Files: 150 | Described: 0/150
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T11:14:59Z","fingerprint":"d5a5e12794b0371f26b21e1c0318c37b12b61a2c","fileCount":150,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -39,6 +39,9 @@ Generated: 2026-04-28T04:05:36Z | Files: 149 | Described: 0/149
 
 ### docs/distribution-proofs/appimage/fedora39/
 - `docs/distribution-proofs/appimage/fedora39/transcript.md`
+
+### docs/distribution-proofs/aur/
+- `docs/distribution-proofs/aur/README.md`
 
 ### docs/distribution-proofs/wizard/
 - `docs/distribution-proofs/wizard/README.md`

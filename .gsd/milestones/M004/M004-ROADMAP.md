@@ -1,4 +1,4 @@
-# M004: Runtime UX — System Tray + Daemon Control
+# M004: Runtime UX - System Tray + Daemon Control
 
 **Vision:** 
 

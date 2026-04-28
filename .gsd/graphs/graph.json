@@ -1099,8 +1099,27 @@
     },
     {
       "id": "slice:M010:S04",
-      "label": "M010/S04",
+      "label": "S04: AUR PKGBUILD finalization and submission",
       "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/slices/S04/S04-PLAN.md"
+    },
+    {
+      "id": "task:M010:S04:T01",
+      "label": "T01: Fix PKGBUILD makedepends, sherpa-onnx offline source, and onnxruntime depends",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M010:S04:T02",
+      "label": "T02: Add packaging.rs assertions enforcing PKGBUILD AUR-readiness",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M010:S04:T03",
+      "label": "T03: Document AUR submission workflow and pkgver/sha256sums pinning",
+      "type": "task",
       "confidence": "EXTRACTED"
     },
     {
@@ -4024,6 +4043,24 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "slice:M010:S04",
+      "to": "task:M010:S04:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S04",
+      "to": "task:M010:S04:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S04",
+      "to": "task:M010:S04:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M010",
       "to": "slice:M010:S01",
       "type": "contains",
@@ -4104,6 +4141,24 @@
     {
       "from": "milestone:M010",
       "to": "slice:M010:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S04",
+      "to": "task:M010:S04:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S04",
+      "to": "task:M010:S04:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S04",
+      "to": "task:M010:S04:T03",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -6028,5 +6083,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T04:14:21.210Z"
+  "builtAt": "2026-04-28T04:23:26.573Z"
 }
