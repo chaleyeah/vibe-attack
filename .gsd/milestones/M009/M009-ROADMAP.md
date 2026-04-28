@@ -32,7 +32,7 @@
 - [x] **S05: S05** `risk:low` `depends:[]`
   > After this: User opens editor, selects a macro, clicks Test; 1-second confirmation prompt; daemon fires the key sequence via uinput; dispatcher JSONL output shows the triggered macro
 
-- [ ] **S06: S06** `risk:low` `depends:[]`
+- [x] **S06: S06** `risk:low` `depends:[]`
   > After this: S06-UAT.md manual steps all pass; cargo test passes including pack_hd2_coverage and pack_lifecycle
 
 ## Boundary Map

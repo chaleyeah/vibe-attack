@@ -9,8 +9,8 @@
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:planning",
-      "label": "Phase: planning",
+      "id": "concept:phase:validating-milestone",
+      "label": "Phase: validating-milestone",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -993,6 +993,19 @@
     {
       "id": "task:M009:S05:T03",
       "label": "T03: Add Test button with 1-second confirmation to pack editor",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M009:S06",
+      "label": "S06: UAT — full pack lifecycle and editor flow",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M009/slices/S06/S06-PLAN.md"
+    },
+    {
+      "id": "task:M009:S06:T01",
+      "label": "T01: Author S06-UAT.md and capture cargo test evidence",
       "type": "task",
       "confidence": "EXTRACTED"
     },
@@ -3241,6 +3254,18 @@
     },
     {
       "from": "milestone:M009",
+      "to": "slice:M009:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S06",
+      "to": "task:M009:S06:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
       "to": "slice:M009:S01",
       "type": "contains",
       "confidence": "EXTRACTED"
@@ -3356,6 +3381,18 @@
     {
       "from": "slice:M009:S05",
       "to": "task:M009:S05:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M009",
+      "to": "slice:M009:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M009:S06",
+      "to": "task:M009:S06:T01",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -4596,5 +4633,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T03:22:19.234Z"
+  "builtAt": "2026-04-28T03:33:09.420Z"
 }

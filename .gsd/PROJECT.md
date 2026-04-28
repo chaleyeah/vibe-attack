@@ -10,25 +10,25 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 ## Current State (2026-04-27)
 
-**M009 Pack UX — in progress (S01 ✅, S02 ✅, S03 ✅)**
+**M009 Pack UX — complete ✅**
 
 | Milestone | Status | Delivered |
 |-----------|--------|-----------|
 | M001: Migration | ✅ complete | Rust toolchain, pipeline (VAD/STT/wake), phrase dispatch, pack system, UI scaffolding, docs, dual-ORT fix |
 | M007: Codebase Cleanup & Documentation | ✅ complete | Dead code removal, load_profiles fix, 191 pub items documented, 10 doc drift items corrected |
 | M008: UI / Tray Runtime Control | ✅ complete | Control protocol extensions, egui config window, tray Mode submenu, headless integration tests |
-| M009: Pack UX — Editor, Import/Export, Full HD2 Coverage | 🔄 in progress | S01–S03 complete; S04–S06 remaining |
+| M009: Pack UX — Editor, Import/Export, Full HD2 Coverage | ✅ complete | Full pack editor UI (CRUD, import/export, Test button); 75-stratagem HD2 pack across 6 categories; hermetic coverage tests; zero-warning builds |
 
 ### M009 Slice Detail
 
 | Slice | Status | Delivered |
 |-------|--------|-----------|
-| S01: HD2 pack content | ✅ complete | profiles/hd2/pack.yaml expanded to 80+ macros across all stratagem categories; pack_hd2_coverage tests pass |
-| S02: PackEditor CRUD API | ✅ complete | PackEditor struct with add/edit/remove/move macro + add/rename/remove category; 22+ integration tests; round-trip byte equivalence |
-| S03: Egui editor panel | ✅ complete | Full egui pack editor panel in vibe-attack-config: category/macro browser, edit form, CRUD buttons, Save→SwitchProfile dispatch; state-machine integration tests |
-| S04: Import / Export dialogs | ⏳ pending | depends: S03 |
-| S05: TriggerMacro control request + editor Test button | ⏳ pending | depends: S02 |
-| S06: UAT — full pack lifecycle and editor flow | ⏳ pending | depends: S01, S03, S04, S05 |
+| S01: HD2 pack content | ✅ complete | profiles/hd2/pack.yaml expanded to 75 macros across all 6 ship-module categories; pack_hd2_coverage.rs hermetic guard |
+| S02: PackEditor CRUD API | ✅ complete | PackEditor struct with 7 CRUD methods; 27 unit tests; 3 round-trip integration tests; byte-stable YAML |
+| S03: Egui editor panel | ✅ complete | Full egui pack editor panel; category/macro browser; edit form; Save→SwitchProfile dispatch; 3 state-machine integration tests |
+| S04: Import / Export dialogs | ✅ complete | Pack::import_to hermetic API; rfd 0.17 gui-only; Import Pack / Export Pack buttons; 2 round-trip integration tests |
+| S05: TriggerMacro + editor Test button | ✅ complete | Dispatcher::fire_named; ControlRequest::TestMacro handler; 1-second countdown Test button with cancel |
+| S06: UAT — full pack lifecycle | ✅ complete | S06-UAT.md with 5 manual scenarios; full cargo test evidence captured; all suites green |
 
 ## Requirements
 
@@ -49,19 +49,19 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 ### Advanced (structural foundation complete, runtime validation pending)
 
-- PACK-01: HD2 pack bundle — 22 tests prove lifecycle; runtime CI confirmation pending
+- PACK-01: HD2 pack bundle — 75 macros across 6 categories; hermetic coverage test guards; runtime CI confirmation pending
+- PACK-02: Import packs from .hdpack — implementation complete (Pack::import_to + egui Import button + hermetic tests); formal validation pending
+- PACK-03: Export packs to .hdpack — implementation complete (Pack::export + egui Export button + hermetic tests); formal validation pending
+- PACK-04: Built-in macro editor — implementation complete (PackEditor + PackEditorState + egui panel + CRUD tests); formal validation pending
 - UI-04: First-run wizard — FirstRunState struct models wizard state machine; GUI integration not yet built
 - DIST-01: AppImage — build script scaffolded; actual AppImage build not yet run
 - DIST-02: AUR/PKGBUILD — PKGBUILD present; AUR submission not yet done
 
 ### Active
 
+- [ ] PACK-05: App supports **multiple named profiles** (e.g. one per game or playstyle), switchable at runtime
 - [ ] MCRO-03: Macro engine supports **conditional logic** (if/else, variables) for VoiceAttack-class scripting
 - [ ] MCRO-04: Macros play an optional **sound feedback** on activation (configurable per macro or globally)
-- [ ] PACK-02: User can **import packs** from versioned `.hdpack` files (JSON or YAML format with checksum)
-- [ ] PACK-03: User can **export packs** to `.hdpack` files for sharing or backup
-- [ ] PACK-04: User can create and edit macros via a **built-in editor** (phrase, key sequence, delays, conditions, sound)
-- [ ] PACK-05: App supports **multiple named profiles** (e.g. one per game or playstyle), switchable at runtime
 
 ### Out of Scope
 
@@ -109,6 +109,9 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | pub mod pack_editor; ungated in mod.rs (wizard pattern) | Pure-logic helpers (parse_key_sequence, build_macro_config_from_form) compile under default build for unit testing | Established in M009/S03 |
 | Pure-logic form helpers outside #[cfg(feature="gui")] gate | Separates testable logic from untestable egui rendering code | Established in M009/S03 |
 | Rename Category does NOT cascade if_flag/set_flag references | Cascading is complex and flags are user-managed strings; surface visible warning + two-click confirm instead | Established in M009/S03 |
+| Pack::import_to accepts parent profiles dir (not pack subdir) | Function appends pack.name internally; consistent with Pack::import contract | Established in M009/S04 |
+| score=1.0 in Dispatcher::fire_named for control-plane triggers | Disambiguates direct control-plane fires from fuzzy phrase-matched scores in JSONL consumer | Established in M009/S05 |
+| TestMacro handler uses block_in_place (multi_thread Tokio flavor required) | block_in_place cannot run on a single-thread executor; tests must declare flavor="multi_thread" | Established in M009/S05 |
 
 ## Evolution
 
@@ -130,4 +133,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-27 — M009/S03 (Egui editor panel) complete: full pack editor GUI surface wired; 9 unit tests + 3 integration tests green; S04–S06 remaining.*
+*Last updated: 2026-04-27 — M009 complete: full pack editor UI (CRUD, import/export, Test button), 75-stratagem HD2 pack, all 6 slices green, zero-warning builds.*
