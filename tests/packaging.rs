@@ -62,6 +62,36 @@ fn pkgbuild_declares_onnxruntime_runtime_dep() {
 }
 
 #[test]
+fn pkgbuild_has_clang_in_makedepends() {
+    let src = read_file("packaging/PKGBUILD");
+    // clang is required at build time by bindgen/clang-sys (transitive dep of sherpa-onnx-sys)
+    let has_makedepends = src.lines().any(|l| l.contains("makedepends="));
+    let has_clang = src.contains("'clang'");
+    assert!(
+        has_makedepends && has_clang,
+        "PKGBUILD must list 'clang' inside makedepends=; got:\n{src}"
+    );
+}
+
+#[test]
+fn pkgbuild_includes_sherpa_onnx_offline_source() {
+    let src = read_file("packaging/PKGBUILD");
+    assert!(
+        src.contains("sherpa-onnx-v1.12.39-linux-x64-shared-lib.tar.bz2"),
+        "PKGBUILD must include the sherpa-onnx 1.12.39 prebuilt archive as a source entry; got:\n{src}"
+    );
+}
+
+#[test]
+fn pkgbuild_sets_sherpa_onnx_archive_dir() {
+    let src = read_file("packaging/PKGBUILD");
+    assert!(
+        src.contains("SHERPA_ONNX_ARCHIVE_DIR"),
+        "PKGBUILD must export SHERPA_ONNX_ARCHIVE_DIR so the build script picks up the local archive; got:\n{src}"
+    );
+}
+
+#[test]
 fn release_yml_uploads_source_tarball() {
     let src = read_file(".github/workflows/release.yml");
     assert!(
