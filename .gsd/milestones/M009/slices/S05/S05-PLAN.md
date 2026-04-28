@@ -32,7 +32,7 @@ Do NOT touch `process()` or any other dispatcher behavior. Do NOT add a `categor
   - Files: `src/pipeline/dispatcher.rs`
   - Verify: cargo test --lib pipeline::dispatcher -- --test-threads=1 && RUSTFLAGS="-D warnings" cargo check --all-targets
 
-- [ ] **T02: Wire TestMacro control handler and add round-trip integration test** `est:1h30m`
+- [x] **T02: Wire TestMacro control handler and add round-trip integration test** `est:1h30m`
   Replace the catch-all `_ => ControlResponse::Error { message: "Not yet implemented" }` arm in `src/control/mod.rs` with an explicit `ControlRequest::TestMacro { name }` arm. Mirror the `SwitchProfile` pattern exactly: use `tokio::task::block_in_place(|| h.dispatcher.fire_named(&name))` so the synchronous `RwLock` read does not block the Tokio executor across an await point. On `Ok(_)` return `ControlResponse::Ok`; on `Err(msg)` return `ControlResponse::Error { message: msg }`. Add `tracing::info!(macro_name = %name, "TestMacro request received")` immediately before the block_in_place call. Keep the catch-all arm (now redundant since TestMacro was the only un-handled variant) — replace it with `#[cfg(test)]` exhaustive coverage by adding a panicking arm only if a future variant slips through; otherwise leave as a defensive `_ =>` returning a clearly-named error.
 
 Add a new integration test `test_macro_via_socket_fires_dispatcher` to `tests/control_integration.rs` modeled on `set_threshold_via_socket_updates_dispatcher`:

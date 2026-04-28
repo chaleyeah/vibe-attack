@@ -50,6 +50,25 @@ fn make_handle_with_runtime_tx() -> (DaemonHandle, mpsc::Receiver<RuntimeCommand
     (handle, rt_rx)
 }
 
+/// Build a `DaemonHandle` whose dispatcher contains one macro named `"smoke_test"` with
+/// a single KEY_UP key step. Returns the handle and the `MacroCmd` receiver so tests can
+/// assert that `MacroCmd::Execute` was sent when `TestMacro` fires.
+fn make_handle_with_macro_rx() -> (DaemonHandle, mpsc::Receiver<MacroCmd>) {
+    use vibe_attack::config::{KeyAction, MacroConfig};
+    let (macro_tx, macro_rx) = mpsc::channel::<MacroCmd>();
+    let macro_cfg = MacroConfig {
+        name: "smoke_test".to_string(),
+        phrase: None,
+        if_flag: None,
+        set_flag: None,
+        sound: None,
+        keys: vec![KeyAction { key: "KEY_UP".to_string(), dwell_ms: None, gap_ms: None }],
+    };
+    let dispatcher = Arc::new(Dispatcher::new(0.5, vec![macro_cfg], macro_tx, 50, 30));
+    let handle = DaemonHandle::new(dispatcher);
+    (handle, macro_rx)
+}
+
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 /// Prove the full round-trip: SetMode travels over the socket, the handler caches
@@ -212,5 +231,119 @@ async fn set_threshold_via_socket_updates_dispatcher() {
             );
         }
         other => panic!("expected SetThreshold, got: {other:?}"),
+    }
+}
+
+/// Prove that `TestMacro` travels over the socket, the handler calls `fire_named`, and
+/// exactly one `MacroCmd::Execute` is delivered to the injection channel.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[serial]
+async fn test_macro_via_socket_fires_dispatcher() {
+    use std::sync::mpsc::TryRecvError;
+
+    let path = match socket_path() {
+        Some(p) => p,
+        None => {
+            eprintln!("test_macro_via_socket_fires_dispatcher: XDG_RUNTIME_DIR absent — skipping");
+            return;
+        }
+    };
+
+    let (handle, macro_rx) = make_handle_with_macro_rx();
+
+    if let Err(e) = spawn_control_listener(handle.clone()).await {
+        eprintln!("test_macro_via_socket_fires_dispatcher: bind failed ({e}) — skipping");
+        return;
+    }
+
+    let _guard = SocketGuard(path.clone());
+
+    let mut ready = false;
+    for _ in 0..50 {
+        if is_daemon_running() {
+            ready = true;
+            break;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    if !ready {
+        eprintln!("test_macro_via_socket_fires_dispatcher: socket never became ready — skipping");
+        return;
+    }
+
+    let resp = tokio::task::spawn_blocking(|| {
+        send_command(ControlRequest::TestMacro { name: "smoke_test".to_string() })
+    })
+    .await
+    .expect("spawn_blocking panicked")
+    .expect("send_command failed");
+
+    assert!(
+        matches!(resp, ControlResponse::Ok),
+        "expected Ok from TestMacro, got: {resp:?}"
+    );
+
+    // Exactly one MacroCmd::Execute must have been sent to the injection channel.
+    let cmd = macro_rx.try_recv().expect("expected one MacroCmd::Execute on the channel");
+    assert!(
+        matches!(cmd, MacroCmd::Execute { .. }),
+        "expected MacroCmd::Execute but got a different variant"
+    );
+    assert!(
+        matches!(macro_rx.try_recv(), Err(TryRecvError::Empty)),
+        "expected exactly one MacroCmd, got more"
+    );
+}
+
+/// Prove that a `TestMacro` for an unknown name returns `ControlResponse::Error`
+/// whose message contains "macro not found".
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[serial]
+async fn test_macro_unknown_name_returns_error() {
+    let path = match socket_path() {
+        Some(p) => p,
+        None => {
+            eprintln!("test_macro_unknown_name_returns_error: XDG_RUNTIME_DIR absent — skipping");
+            return;
+        }
+    };
+
+    let (handle, _macro_rx) = make_handle_with_macro_rx();
+
+    if let Err(e) = spawn_control_listener(handle.clone()).await {
+        eprintln!("test_macro_unknown_name_returns_error: bind failed ({e}) — skipping");
+        return;
+    }
+
+    let _guard = SocketGuard(path.clone());
+
+    let mut ready = false;
+    for _ in 0..50 {
+        if is_daemon_running() {
+            ready = true;
+            break;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    if !ready {
+        eprintln!("test_macro_unknown_name_returns_error: socket never became ready — skipping");
+        return;
+    }
+
+    let resp = tokio::task::spawn_blocking(|| {
+        send_command(ControlRequest::TestMacro { name: "nonexistent".to_string() })
+    })
+    .await
+    .expect("spawn_blocking panicked")
+    .expect("send_command failed");
+
+    match resp {
+        ControlResponse::Error { message } => {
+            assert!(
+                message.contains("macro not found"),
+                "error message must contain 'macro not found', got: {message}"
+            );
+        }
+        other => panic!("expected ControlResponse::Error, got: {other:?}"),
     }
 }

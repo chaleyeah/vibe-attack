@@ -184,7 +184,13 @@ pub async fn spawn_control_listener(handle: DaemonHandle) -> Result<()> {
                                         ControlRequest::ReloadConfig => {
                                             h.send_runtime_cmd(RuntimeCommand::ReloadConfig)
                                         }
-                                        _ => ControlResponse::Error { message: "Not yet implemented".into() },
+                                        ControlRequest::TestMacro { name } => {
+                                            tracing::info!(macro_name = %name, "TestMacro request received");
+                                            match tokio::task::block_in_place(|| h.dispatcher.fire_named(&name)) {
+                                                Ok(_) => ControlResponse::Ok,
+                                                Err(msg) => ControlResponse::Error { message: msg },
+                                            }
+                                        }
                                     }
                                 }
                                 Err(e) => ControlResponse::Error { message: format!("Invalid JSON: {e}") },
