@@ -6,13 +6,26 @@ pkgdesc='Voice-macro daemon for Helldivers 2 on Linux'
 arch=('x86_64')
 url='https://github.com/chaleyeah/vibe-attack'
 license=('AGPL-3.0-only')
+# onnxruntime: libsherpa-onnx-c-api.so links libonnxruntime.so dynamically.
+# The $ORIGIN rpath trick (used in AppImage where both .so files land together)
+# does not apply here — only the binaries are installed to /usr/bin/, so the
+# system onnxruntime package must provide libonnxruntime.so via /usr/lib/.
 depends=('alsa-lib' 'onnxruntime')
-makedepends=('rust' 'cargo')
-source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
-sha256sums=('SKIP')
+# clang: required at build time by bindgen/clang-sys (transitive dep of sherpa-onnx-sys)
+makedepends=('rust' 'cargo' 'clang')
+# source[0]: release tarball (pkgver/sha256 pinned at release time — see docs/distribution-proofs/aur/)
+# source[1]: sherpa-onnx 1.12.39 prebuilt shared-lib archive; fetched by makepkg so the
+#            sherpa-onnx-sys build script can skip its own network download (SHERPA_ONNX_ARCHIVE_DIR)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
+        "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.39/sherpa-onnx-v1.12.39-linux-x64-shared-lib.tar.bz2")
+sha256sums=('SKIP'
+            'SKIP')
 
 build() {
     cd "$pkgname-$pkgver"
+    # Point sherpa-onnx-sys build script to the pre-fetched archive in $srcdir
+    # so it does not attempt a network download inside the build sandbox.
+    export SHERPA_ONNX_ARCHIVE_DIR="$srcdir"
     cargo build --release --locked
     cargo build --release --locked --features gui
 }

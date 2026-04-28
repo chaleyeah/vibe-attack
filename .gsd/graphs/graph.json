@@ -1079,6 +1079,25 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "slice:M010:S03",
+      "label": "S03: Release CI workflow extension",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/slices/S03/S03-PLAN.md"
+    },
+    {
+      "id": "task:M010:S03:T01",
+      "label": "T01: Extend release.yml with sherpa cache, source tarball, and HD2 hdpack steps",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M010:S03:T02",
+      "label": "T02: Add packaging tests asserting release.yml uploads tarball and hdpack",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
       "id": "slice:M010:S04",
       "label": "M010/S04",
       "type": "slice",
@@ -3982,6 +4001,24 @@
     },
     {
       "from": "milestone:M010",
+      "to": "slice:M010:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S03",
+      "to": "task:M010:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S03",
+      "to": "task:M010:S03:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
       "to": "slice:M010:S04",
       "type": "contains",
       "confidence": "EXTRACTED"
@@ -4043,6 +4080,24 @@
     {
       "from": "slice:M010:S02",
       "to": "task:M010:S02:T05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "slice:M010:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S03",
+      "to": "task:M010:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M010:S03",
+      "to": "task:M010:S03:T02",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -5973,5 +6028,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T04:07:32.377Z"
+  "builtAt": "2026-04-28T04:14:21.210Z"
 }

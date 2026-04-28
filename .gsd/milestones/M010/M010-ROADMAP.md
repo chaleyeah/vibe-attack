@@ -23,10 +23,10 @@
 - [x] **S02: S02** `risk:medium` `depends:[]`
   > After this: Wizard completes on all three distros; relaunch skips wizard; stratagem fires by voice; three UAT transcripts under docs/distribution-proofs/wizard/
 
-- [ ] **S03: S03** `risk:low` `depends:[]`
+- [x] **S03: S03** `risk:low` `depends:[]`
   > After this: Tag push triggers release workflow; AppImage, tarball, .hdpack appear in GitHub Releases; workflow passes
 
-- [ ] **S04: AUR PKGBUILD finalization and submission** `risk:medium` `depends:[]`
+- [ ] **S04: S04** `risk:medium` `depends:[]`
   > After this: namcap clean; makepkg -si installs working binary; AUR package visible at aur.archlinux.org
 
 - [ ] **S05: README install section rewrite** `risk:low` `depends:[S01,S02,S04]`
