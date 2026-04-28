@@ -94,7 +94,7 @@ All new tests pass; no warnings.
   - Files: `src/pack/mod.rs`
   - Verify: RUSTFLAGS="-D warnings" cargo check --all-targets && cargo test --lib pack:: -- --test-threads=1
 
-- [ ] **T02: Implement category-level CRUD (MoveMacro, RenameCategory, AddCategory, RemoveCategory)** `est:1h`
+- [x] **T02: Implement category-level CRUD (MoveMacro, RenameCategory, AddCategory, RemoveCategory)** `est:1h`
   Extend the `PackEditor` from T01 with the four category-level operations. Each method must validate state before mutation and return a descriptive error on failure.
 
 Skills used: tdd, test.

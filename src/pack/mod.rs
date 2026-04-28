@@ -286,6 +286,124 @@ impl PackEditor {
         cat.macros.remove(idx);
         Ok(())
     }
+
+    /// Move `macro_name` from `from_category` to the end of `to_category`.
+    ///
+    /// Atomic: validates all preconditions before any mutation.
+    /// Errors if either category is missing, the macro is missing from source,
+    /// or a macro with the same name already exists in the destination.
+    pub fn move_macro(
+        &mut self,
+        from_category: &str,
+        to_category: &str,
+        macro_name: &str,
+    ) -> Result<()> {
+        // Validate preconditions before any mutation.
+        let from_idx = self
+            .pack
+            .categories
+            .iter()
+            .position(|c| c.name == from_category)
+            .ok_or_else(|| anyhow::anyhow!("source category '{}' not found", from_category))?;
+
+        let to_idx = self
+            .pack
+            .categories
+            .iter()
+            .position(|c| c.name == to_category)
+            .ok_or_else(|| anyhow::anyhow!("destination category '{}' not found", to_category))?;
+
+        let macro_idx = self.pack.categories[from_idx]
+            .macros
+            .iter()
+            .position(|m| m.name == macro_name)
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "macro '{}' not found in category '{}'",
+                    macro_name,
+                    from_category
+                )
+            })?;
+
+        if self.pack.categories[to_idx]
+            .macros
+            .iter()
+            .any(|m| m.name == macro_name)
+        {
+            bail!(
+                "macro '{}' already exists in destination category '{}'",
+                macro_name,
+                to_category
+            );
+        }
+
+        // All checks passed — mutate atomically.
+        let moved = self.pack.categories[from_idx].macros.remove(macro_idx);
+        self.pack.categories[to_idx].macros.push(moved);
+        Ok(())
+    }
+
+    /// Rename `old_name` category to `new_name` in place (preserves index and macros).
+    ///
+    /// Errors if `old_name` is not found, if `new_name == old_name`, or if `new_name` is already in use.
+    pub fn rename_category(&mut self, old_name: &str, new_name: &str) -> Result<()> {
+        if old_name == new_name {
+            bail!("new category name '{}' is identical to the old name", new_name);
+        }
+
+        if self.pack.categories.iter().any(|c| c.name == new_name) {
+            bail!("category '{}' already exists", new_name);
+        }
+
+        let cat = self
+            .pack
+            .categories
+            .iter_mut()
+            .find(|c| c.name == old_name)
+            .ok_or_else(|| anyhow::anyhow!("category '{}' not found", old_name))?;
+
+        cat.name = new_name.to_string();
+        Ok(())
+    }
+
+    /// Append a new empty category with `name` to the end of `pack.categories`.
+    ///
+    /// Errors if `name` is already in use.
+    pub fn add_category(&mut self, name: &str) -> Result<()> {
+        if self.pack.categories.iter().any(|c| c.name == name) {
+            bail!("category '{}' already exists", name);
+        }
+
+        self.pack.categories.push(Category {
+            name: name.to_string(),
+            macros: vec![],
+        });
+        Ok(())
+    }
+
+    /// Remove the named category.
+    ///
+    /// Errors if `name` is not found or if the category still contains macros
+    /// (caller must explicitly empty it first via `remove_macro`).
+    pub fn remove_category(&mut self, name: &str) -> Result<()> {
+        let idx = self
+            .pack
+            .categories
+            .iter()
+            .position(|c| c.name == name)
+            .ok_or_else(|| anyhow::anyhow!("category '{}' not found", name))?;
+
+        if !self.pack.categories[idx].macros.is_empty() {
+            bail!(
+                "category '{}' still has {} macro(s); empty it first",
+                name,
+                self.pack.categories[idx].macros.len()
+            );
+        }
+
+        self.pack.categories.remove(idx);
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -461,6 +579,155 @@ mod tests {
         let err = ed.remove_macro("Stratagems", "Phantom Macro").unwrap_err();
         assert!(err.to_string().contains("Phantom Macro"));
         assert!(err.to_string().contains("Stratagems"));
+    }
+
+    // -----------------------------------------------------------------------
+    // move_macro tests
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn editor_move_macro_success() {
+        let mut ed = PackEditor::new(fixture_pack());
+        ed.move_macro("Stratagems", "Ship Modules", "Reinforce").expect("move_macro must succeed");
+
+        let src = ed.pack().categories.iter().find(|c| c.name == "Stratagems").unwrap();
+        assert!(src.macros.iter().all(|m| m.name != "Reinforce"), "macro must be absent from source");
+
+        let dst = ed.pack().categories.iter().find(|c| c.name == "Ship Modules").unwrap();
+        assert_eq!(dst.macros.last().unwrap().name, "Reinforce", "macro must appear at end of dest");
+    }
+
+    #[test]
+    fn editor_move_macro_unknown_source_category_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.move_macro("Nonexistent", "Ship Modules", "Reinforce").unwrap_err();
+        assert!(err.to_string().contains("Nonexistent"), "error must name the missing source category");
+    }
+
+    #[test]
+    fn editor_move_macro_unknown_dest_category_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.move_macro("Stratagems", "Nonexistent", "Reinforce").unwrap_err();
+        assert!(err.to_string().contains("Nonexistent"), "error must name the missing dest category");
+    }
+
+    #[test]
+    fn editor_move_macro_unknown_macro_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.move_macro("Stratagems", "Ship Modules", "Ghost Macro").unwrap_err();
+        assert!(err.to_string().contains("Ghost Macro"), "error must name the missing macro");
+    }
+
+    #[test]
+    fn editor_move_macro_duplicate_in_dest_errors_and_leaves_source_unchanged() {
+        let mut ed = PackEditor::new(fixture_pack());
+        // Pre-populate dest with the same name to trigger the duplicate check.
+        ed.add_macro("Ship Modules", editor_macro("Reinforce", None)).expect("pre-populate must succeed");
+
+        let err = ed.move_macro("Stratagems", "Ship Modules", "Reinforce").unwrap_err();
+        assert!(err.to_string().contains("Reinforce"), "error must name the duplicate macro");
+
+        // Atomicity check: source must still contain the macro.
+        let src = ed.pack().categories.iter().find(|c| c.name == "Stratagems").unwrap();
+        assert!(
+            src.macros.iter().any(|m| m.name == "Reinforce"),
+            "source category must still contain Reinforce after failed move"
+        );
+    }
+
+    // -----------------------------------------------------------------------
+    // rename_category tests
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn editor_rename_category_success() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let original_idx = ed.pack().categories.iter().position(|c| c.name == "Stratagems").unwrap();
+
+        ed.rename_category("Stratagems", "Tactics").expect("rename_category must succeed");
+
+        assert!(
+            ed.pack().categories.iter().all(|c| c.name != "Stratagems"),
+            "old name must be absent"
+        );
+        let renamed = ed.pack().categories.iter().find(|c| c.name == "Tactics").unwrap();
+        assert_eq!(
+            ed.pack().categories.iter().position(|c| c.name == "Tactics").unwrap(),
+            original_idx,
+            "renamed category must stay at the same index"
+        );
+        assert_eq!(renamed.macros.len(), 2, "macros must be preserved after rename");
+    }
+
+    #[test]
+    fn editor_rename_category_unknown_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.rename_category("Ghost Category", "New Name").unwrap_err();
+        assert!(err.to_string().contains("Ghost Category"));
+    }
+
+    #[test]
+    fn editor_rename_category_duplicate_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.rename_category("Stratagems", "Ship Modules").unwrap_err();
+        assert!(err.to_string().contains("Ship Modules"), "error must name the duplicate category");
+    }
+
+    // -----------------------------------------------------------------------
+    // add_category tests
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn editor_add_category_success() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let before_len = ed.pack().categories.len();
+        ed.add_category("Boosters").expect("add_category must succeed");
+
+        assert_eq!(ed.pack().categories.len(), before_len + 1, "categories must grow by one");
+        let added = ed.pack().categories.last().unwrap();
+        assert_eq!(added.name, "Boosters", "new category must be appended at end");
+        assert!(added.macros.is_empty(), "new category must be empty");
+    }
+
+    #[test]
+    fn editor_add_category_duplicate_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.add_category("Stratagems").unwrap_err();
+        assert!(err.to_string().contains("Stratagems"));
+    }
+
+    // -----------------------------------------------------------------------
+    // remove_category tests
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn editor_remove_category_success() {
+        let mut ed = PackEditor::new(fixture_pack());
+        // Empty the category first.
+        ed.remove_macro("Stratagems", "Reinforce").unwrap();
+        ed.remove_macro("Stratagems", "Resupply").unwrap();
+        let before_len = ed.pack().categories.len();
+
+        ed.remove_category("Stratagems").expect("remove_category must succeed on empty category");
+        assert_eq!(ed.pack().categories.len(), before_len - 1);
+        assert!(ed.pack().categories.iter().all(|c| c.name != "Stratagems"));
+    }
+
+    #[test]
+    fn editor_remove_category_non_empty_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.remove_category("Stratagems").unwrap_err();
+        assert!(
+            err.to_string().contains("Stratagems"),
+            "error must name the non-empty category"
+        );
+    }
+
+    #[test]
+    fn editor_remove_category_unknown_errors() {
+        let mut ed = PackEditor::new(fixture_pack());
+        let err = ed.remove_category("Ghost Category").unwrap_err();
+        assert!(err.to_string().contains("Ghost Category"));
     }
 
     // -----------------------------------------------------------------------
