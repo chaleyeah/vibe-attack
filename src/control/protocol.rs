@@ -1,5 +1,15 @@
 use serde::{Deserialize, Serialize};
 
+/// Activation mode for the voice pipeline.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActivationMode {
+    /// Push-to-talk: audio captured only while key held.
+    Ptt,
+    /// Wake-word: audio captured after wake word detected.
+    Wake,
+}
+
 /// Requests sent from the CLI to the daemon.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "cmd", content = "args", rename_all = "snake_case")]
@@ -18,6 +28,16 @@ pub enum ControlRequest {
     TestMacro { name: String },
     /// Gracefully shut down the daemon.
     Shutdown,
+    /// Change the activation mode (ptt or wake) without restarting the pipeline.
+    SetMode { mode: ActivationMode },
+    /// Change the VAD/wake-word confidence threshold without restarting.
+    SetThreshold { threshold: f32 },
+    /// Request a change to the input audio device (requires pipeline restart; noted, not applied live).
+    SetInputDevice { device: Option<String> },
+    /// Request a change to the PTT key binding (requires restart; noted, not applied live).
+    SetPttBinding { key: String },
+    /// Reload configuration from disk without restarting the daemon.
+    ReloadConfig,
 }
 
 /// Runtime state of the daemon pipeline.

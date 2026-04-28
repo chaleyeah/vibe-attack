@@ -7,7 +7,7 @@
 ///   - DaemonHandle status snapshot (active_profile, macro_count)
 use std::sync::Arc;
 use vibe_attack::control::protocol::{
-    ControlRequest, ControlResponse, DaemonState, DaemonStatus,
+    ActivationMode, ControlRequest, ControlResponse, DaemonState, DaemonStatus,
 };
 
 // ── Serialization round-trips ────────────────────────────────────────────────
@@ -67,6 +67,84 @@ fn daemon_state_serde_snake_case() {
     assert_eq!(recording, r#""recording""#);
     let idle = serde_json::to_string(&DaemonState::Idle).unwrap();
     assert_eq!(idle, r#""idle""#);
+}
+
+// ── New control variants: round-trip serde ───────────────────────────────────
+
+#[test]
+fn set_mode_roundtrip() {
+    let req = ControlRequest::SetMode { mode: ActivationMode::Wake };
+    let json = serde_json::to_string(&req).unwrap();
+    // adjacently tagged: {"cmd":"set_mode","args":{"mode":"wake"}}
+    assert!(json.contains("\"set_mode\""), "cmd tag missing: {json}");
+    assert!(json.contains("\"wake\""), "mode value missing: {json}");
+    let back: ControlRequest = serde_json::from_str(&json).unwrap();
+    assert!(matches!(back, ControlRequest::SetMode { mode: ActivationMode::Wake }));
+
+    // also round-trip Ptt variant
+    let req2 = ControlRequest::SetMode { mode: ActivationMode::Ptt };
+    let json2 = serde_json::to_string(&req2).unwrap();
+    let back2: ControlRequest = serde_json::from_str(&json2).unwrap();
+    assert!(matches!(back2, ControlRequest::SetMode { mode: ActivationMode::Ptt }));
+}
+
+#[test]
+fn set_threshold_roundtrip() {
+    let req = ControlRequest::SetThreshold { threshold: 0.75 };
+    let json = serde_json::to_string(&req).unwrap();
+    assert!(json.contains("\"set_threshold\""), "cmd tag missing: {json}");
+    let back: ControlRequest = serde_json::from_str(&json).unwrap();
+    match back {
+        ControlRequest::SetThreshold { threshold } => {
+            assert!((threshold - 0.75_f32).abs() < 1e-6, "threshold mismatch: {threshold}");
+        }
+        other => panic!("expected SetThreshold, got {other:?}"),
+    }
+}
+
+#[test]
+fn set_input_device_roundtrip() {
+    // Some(device)
+    let req = ControlRequest::SetInputDevice { device: Some("hw:1,0".to_string()) };
+    let json = serde_json::to_string(&req).unwrap();
+    assert!(json.contains("\"set_input_device\""), "cmd tag missing: {json}");
+    let back: ControlRequest = serde_json::from_str(&json).unwrap();
+    assert!(matches!(back, ControlRequest::SetInputDevice { device: Some(ref d) } if d == "hw:1,0"));
+
+    // None variant
+    let req_none = ControlRequest::SetInputDevice { device: None };
+    let json_none = serde_json::to_string(&req_none).unwrap();
+    let back_none: ControlRequest = serde_json::from_str(&json_none).unwrap();
+    assert!(matches!(back_none, ControlRequest::SetInputDevice { device: None }));
+}
+
+#[test]
+fn set_ptt_binding_roundtrip() {
+    let req = ControlRequest::SetPttBinding { key: "ctrl+shift+v".to_string() };
+    let json = serde_json::to_string(&req).unwrap();
+    assert!(json.contains("\"set_ptt_binding\""), "cmd tag missing: {json}");
+    let back: ControlRequest = serde_json::from_str(&json).unwrap();
+    assert!(matches!(back, ControlRequest::SetPttBinding { ref key } if key == "ctrl+shift+v"));
+}
+
+#[test]
+fn reload_config_roundtrip() {
+    let req = ControlRequest::ReloadConfig;
+    let json = serde_json::to_string(&req).unwrap();
+    // Unit variant with adjacently tagged enum: {"cmd":"reload_config"} — no "args" key
+    assert_eq!(json, r#"{"cmd":"reload_config"}"#, "unexpected JSON: {json}");
+    let back: ControlRequest = serde_json::from_str(&json).unwrap();
+    assert!(matches!(back, ControlRequest::ReloadConfig));
+}
+
+// ── Negative tests ───────────────────────────────────────────────────────────
+
+#[test]
+fn set_mode_bogus_activation_mode_is_error() {
+    let result = serde_json::from_str::<ControlRequest>(
+        r#"{"cmd":"set_mode","args":{"mode":"bogus"}}"#,
+    );
+    assert!(result.is_err(), "expected Err for unknown ActivationMode, got: {result:?}");
 }
 
 // ── DaemonHandle state machine ───────────────────────────────────────────────
