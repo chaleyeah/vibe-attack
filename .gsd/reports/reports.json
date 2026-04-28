@@ -19,6 +19,22 @@
       "doneMilestones": 9,
       "totalMilestones": 13,
       "phase": "planning"
+    },
+    {
+      "filename": "M009-2026-04-28T03-42-37.html",
+      "generatedAt": "2026-04-28T03:42:37.459Z",
+      "milestoneId": "M009",
+      "milestoneTitle": "Pack UX — Editor, Import/Export, Full HD2 Coverage",
+      "label": "M009: Pack UX — Editor, Import/Export, Full HD2 Coverage",
+      "kind": "milestone",
+      "totalCost": 99.24031454999997,
+      "totalTokens": 136714245,
+      "totalDuration": 18414374,
+      "doneSlices": 54,
+      "totalSlices": 66,
+      "doneMilestones": 11,
+      "totalMilestones": 13,
+      "phase": "planning"
     }
   ]
 }

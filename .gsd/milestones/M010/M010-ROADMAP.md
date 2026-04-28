@@ -17,7 +17,7 @@
 
 ## Slices
 
-- [ ] **S01: AppImage build verification** `risk:medium` `depends:[]`
+- [ ] **S01: S01** `risk:medium` `depends:[]`
   > After this: AppImage runs ./vibe-attack-x86_64.AppImage --version on all three target distros; recorded transcripts in docs/distribution-proofs/appimage/
 
 - [ ] **S02: First-run wizard end-to-end UAT** `risk:medium` `depends:[]`
