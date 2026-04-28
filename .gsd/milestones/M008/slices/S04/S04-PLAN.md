@@ -65,7 +65,7 @@ No new dependencies needed — tokio with `full` is a normal dep and serial_test
   - Files: `tests/control_integration.rs`, `src/control/mod.rs`, `src/control/client.rs`, `src/control/protocol.rs`, `tests/control_protocol.rs`, `tests/runtime_commands.rs`
   - Verify: cargo test --test control_integration -- --test-threads=1 2>&1 | tee /tmp/s04-t01-test.log && grep -q 'test result: ok' /tmp/s04-t01-test.log && cargo test 2>&1 | tail -20 | grep -q 'test result: ok'
 
-- [ ] **T02: Author S04-UAT.md manual test script for tray/config end-to-end mode switch** `est:30m`
+- [x] **T02: Author S04-UAT.md manual test script for tray/config end-to-end mode switch** `est:30m`
   Write .gsd/milestones/M008/slices/S04/S04-UAT.md as a freestanding manual test script. The doc walks a human through verifying that M008's tray + config window + daemon control surface works end-to-end on a real Linux desktop session, with no daemon restart required for mode/threshold changes.
 
 Structure the doc as a runnable checklist with these sections:

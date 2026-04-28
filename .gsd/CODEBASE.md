@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T01:58:06Z | Files: 132 | Described: 0/132
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T01:58:06Z","fingerprint":"9456fab12f1fe576c708cd21d90e61c05065781e","fileCount":132,"truncated":false} -->
+Generated: 2026-04-28T02:02:56Z | Files: 133 | Described: 0/133
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T02:02:56Z","fingerprint":"3be2942213ca4d894946cb99e1815a5d69aeb367","fileCount":133,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -182,6 +182,7 @@ Generated: 2026-04-28T01:58:06Z | Files: 132 | Described: 0/132
 ### tests/
 - `tests/concurrency_stress.rs`
 - `tests/config_parse.rs`
+- `tests/control_integration.rs`
 - `tests/control_protocol.rs`
 - `tests/daemon_headless.rs`
 - `tests/dispatcher_logic.rs`

@@ -302,3 +302,8 @@
 {"id":"860d1b1d-dc9c-436e-aa44-e66f0f921711","ts":"2026-04-28T01:53:47.094Z","severity":"warning","message":"Safety: task T03 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"c95302f4-80d4-43fd-8120-93901b46cfb3","ts":"2026-04-28T01:53:47.905Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
 {"id":"1dd0d838-a78f-405c-8810-6c4d9d7ade76","ts":"2026-04-28T01:53:47.910Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"7ccfa109-2172-4e8a-8abd-f508aaaf72f4","ts":"2026-04-28T02:02:56.043Z","severity":"info","message":"Committed: test: Added tests/control_integration.rs with two serial tokio tests pr…","source":"notify","read":false}
+{"id":"d3d33587-11e2-49e6-bcf3-20dc3ef30fc4","ts":"2026-04-28T02:02:56.050Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"c8179816-335d-41e2-927c-4c2d38310dd0","ts":"2026-04-28T02:02:56.050Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"c3a77542-8c58-40f9-a9b1-1c01750123c8","ts":"2026-04-28T02:02:56.057Z","severity":"info","message":"Verification gate: 1/1 checks passed","source":"notify","read":false}
+{"id":"23d76af8-a814-45db-8de3-dbfe77f0f68a","ts":"2026-04-28T02:02:56.061Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
