@@ -35,6 +35,22 @@
       "doneMilestones": 11,
       "totalMilestones": 13,
       "phase": "planning"
+    },
+    {
+      "filename": "M010-2026-04-28T11-36-25.html",
+      "generatedAt": "2026-04-28T11:36:25.681Z",
+      "milestoneId": "M010",
+      "milestoneTitle": "Distribution — AppImage, AUR, First-Run Wizard",
+      "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
+      "kind": "milestone",
+      "totalCost": 124.66542094999998,
+      "totalTokens": 160834588,
+      "totalDuration": 22307886,
+      "doneSlices": 66,
+      "totalSlices": 66,
+      "doneMilestones": 13,
+      "totalMilestones": 14,
+      "phase": "pre-planning"
     }
   ]
 }

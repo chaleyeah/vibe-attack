@@ -4,8 +4,10 @@
 // Transcripts may carry any of three valid STATUS values:
 //   STATUS: ok                    (full VM run succeeded)
 //   STATUS: skipped:tools-missing (build host lacks linuxdeploy/appimagetool)
-//   STATUS: pending VM run        (placeholder until VM run is executed in S06)
+//   STATUS: pending VM run        (placeholder until VM run is executed in S02)
 // All three are accepted here; only structural completeness is enforced.
+//
+// Supported distros (M011): Debian 13, Ubuntu 26.04, Fedora 44, CachyOS
 
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
@@ -53,18 +55,23 @@ fn assert_transcript(rel: &str) {
 }
 
 #[test]
-fn debian12_transcript_has_required_fields() {
-    assert_transcript("docs/distribution-proofs/appimage/debian12/transcript.md");
+fn debian13_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/appimage/debian13/transcript.md");
 }
 
 #[test]
-fn fedora39_transcript_has_required_fields() {
-    assert_transcript("docs/distribution-proofs/appimage/fedora39/transcript.md");
+fn ubuntu2604_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/appimage/ubuntu2604/transcript.md");
 }
 
 #[test]
-fn arch_transcript_has_required_fields() {
-    assert_transcript("docs/distribution-proofs/appimage/arch/transcript.md");
+fn fedora44_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/appimage/fedora44/transcript.md");
+}
+
+#[test]
+fn cachyos_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/appimage/cachyos/transcript.md");
 }
 
 #[test]
@@ -141,16 +148,21 @@ fn assert_final_transcript(rel: &str) {
 }
 
 #[test]
-fn debian12_final_transcript_has_required_fields() {
-    assert_final_transcript("docs/distribution-proofs/final/debian12/transcript.md");
+fn debian13_final_transcript_has_required_fields() {
+    assert_final_transcript("docs/distribution-proofs/final/debian13/transcript.md");
 }
 
 #[test]
-fn fedora39_final_transcript_has_required_fields() {
-    assert_final_transcript("docs/distribution-proofs/final/fedora39/transcript.md");
+fn ubuntu2604_final_transcript_has_required_fields() {
+    assert_final_transcript("docs/distribution-proofs/final/ubuntu2604/transcript.md");
 }
 
 #[test]
-fn arch_final_transcript_has_required_fields() {
-    assert_final_transcript("docs/distribution-proofs/final/arch/transcript.md");
+fn fedora44_final_transcript_has_required_fields() {
+    assert_final_transcript("docs/distribution-proofs/final/fedora44/transcript.md");
+}
+
+#[test]
+fn cachyos_final_transcript_has_required_fields() {
+    assert_final_transcript("docs/distribution-proofs/final/cachyos/transcript.md");
 }

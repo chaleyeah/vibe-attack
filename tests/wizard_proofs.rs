@@ -1,5 +1,7 @@
 // Static tests asserting the wizard UAT transcript structure — no VM required.
 //
+// Supported distros (M011): Debian 13, Ubuntu 26.04, Fedora 44, CachyOS
+//
 // Transcripts may carry any of these valid STATUS values:
 //   STATUS: ok                    (full VM run succeeded)
 //   STATUS: pending VM run        (placeholder until VM run is executed in S06)
@@ -60,18 +62,23 @@ fn assert_transcript(rel: &str) {
 }
 
 #[test]
-fn debian12_wizard_transcript_has_required_fields() {
-    assert_transcript("docs/distribution-proofs/wizard/debian12/transcript.md");
+fn debian13_wizard_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/wizard/debian13/transcript.md");
 }
 
 #[test]
-fn fedora39_wizard_transcript_has_required_fields() {
-    assert_transcript("docs/distribution-proofs/wizard/fedora39/transcript.md");
+fn ubuntu2604_wizard_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/wizard/ubuntu2604/transcript.md");
 }
 
 #[test]
-fn arch_wizard_transcript_has_required_fields() {
-    assert_transcript("docs/distribution-proofs/wizard/arch/transcript.md");
+fn fedora44_wizard_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/wizard/fedora44/transcript.md");
+}
+
+#[test]
+fn cachyos_wizard_transcript_has_required_fields() {
+    assert_transcript("docs/distribution-proofs/wizard/cachyos/transcript.md");
 }
 
 #[test]

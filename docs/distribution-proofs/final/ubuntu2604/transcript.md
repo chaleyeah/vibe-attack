@@ -9,8 +9,8 @@ INSTALL_METHOD: appimage
 
 ## Reproduction Notes
 
-- Boot a Fedora 39 VM or bare-metal installation with a full desktop session (GNOME or KDE) so that polkit dialogs render correctly.
-- Install the FUSE2 runtime dependency: `sudo dnf install -y fuse-libs`
+- Boot an Ubuntu 26.04 LTS VM or bare-metal installation with a full desktop session (GNOME or KDE) so that polkit dialogs render correctly.
+- Install the FUSE2 runtime dependency: `sudo apt-get install -y libfuse2`
 - Download the AppImage from the GitHub Releases page: `wget https://github.com/<owner>/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage`
 - Make it executable: `chmod +x vibe-attack-x86_64.AppImage`
 - Confirm it launches: `./vibe-attack-x86_64.AppImage --version`

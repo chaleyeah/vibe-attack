@@ -7,12 +7,14 @@ This directory contains structured transcripts proving the complete end-user loo
 ```
 docs/distribution-proofs/final/
 ├── README.md          ← this file
-├── debian12/
-│   └── transcript.md  ← Debian 12 final UAT transcript
-├── fedora39/
-│   └── transcript.md  ← Fedora 39 final UAT transcript
-└── arch/
-    └── transcript.md  ← Arch Linux final UAT transcript
+├── debian13/
+│   └── transcript.md  ← Debian 13 final UAT transcript
+├── ubuntu2604/
+│   └── transcript.md  ← Ubuntu 26.04 final UAT transcript
+├── fedora44/
+│   └── transcript.md  ← Fedora 44 final UAT transcript
+└── cachyos/
+    └── transcript.md  ← CachyOS final UAT transcript
 ```
 
 ## Transcript Format
@@ -54,7 +56,7 @@ Transcripts with `STATUS: pending VM run` are **acceptable** — they preserve s
 
 ## Per-Distro Reproduction
 
-### Debian 12
+### Debian 13
 
 ```bash
 # Install FUSE2 dependency required by AppImage runtime
@@ -79,7 +81,27 @@ APPIMAGE_SIZE_BYTES=$(stat -c %s vibe-attack-x86_64.AppImage)
 # Fill transcript.md with observed results
 ```
 
-### Fedora 39
+### Ubuntu 26.04
+
+```bash
+# Install FUSE2 dependency required by AppImage runtime
+sudo apt-get install -y libfuse2
+
+# Download AppImage from the GitHub Releases page
+wget https://github.com/<owner>/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
+chmod +x vibe-attack-x86_64.AppImage
+
+# Verify it launches
+./vibe-attack-x86_64.AppImage --version
+
+# Run the full wizard end-to-end
+./vibe-attack-x86_64.AppImage
+# Step through all wizard steps; fire a stratagem by voice after wizard completes
+
+# Capture field values (same commands as Debian 13 above)
+```
+
+### Fedora 44
 
 ```bash
 # Install FUSE2 dependency required by AppImage runtime
@@ -96,10 +118,10 @@ chmod +x vibe-attack-x86_64.AppImage
 ./vibe-attack-x86_64.AppImage
 # Step through all wizard steps; fire a stratagem by voice after wizard completes
 
-# Capture field values (same commands as Debian 12 above)
+# Capture field values (same commands as Debian 13 above)
 ```
 
-### Arch Linux
+### CachyOS
 
 ```bash
 # Install FUSE2 dependency required by AppImage runtime
@@ -116,9 +138,9 @@ chmod +x vibe-attack-x86_64.AppImage
 ./vibe-attack-x86_64.AppImage
 # Step through all wizard steps; fire a stratagem by voice after wizard completes
 
-# Capture field values (same commands as Debian 12 above)
+# Capture field values (same commands as Debian 13 above)
 ```
 
 ## Policy: Pending Transcripts
 
-Transcripts with `STATUS: pending VM run` count as structural proof — all 8 metadata fields are present with `pending` placeholders (except `INSTALL_METHOD` which is always `appimage`), allowing `tests/distribution_proofs.rs` to assert field presence. Per MEM079 policy, full `STATUS: ok` runs must be completed by a human operator with real VMs before the milestone is closed.
+Transcripts with `STATUS: pending VM run` count as structural proof — all 8 metadata fields are present with `pending` placeholders (except `INSTALL_METHOD` which is always `appimage`), allowing `tests/distribution_proofs.rs` to assert field presence. Full `STATUS: ok` runs must be completed by a human operator with real VMs before the milestone is closed.

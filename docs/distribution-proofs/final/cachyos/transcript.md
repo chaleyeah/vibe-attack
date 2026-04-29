@@ -9,8 +9,8 @@ INSTALL_METHOD: appimage
 
 ## Reproduction Notes
 
-- Boot a Debian 12 (Bookworm) VM or bare-metal installation with a full desktop session (GNOME or KDE) so that polkit dialogs render correctly.
-- Install the FUSE2 runtime dependency: `sudo apt-get install -y libfuse2`
+- Boot a CachyOS VM or bare-metal installation with a full desktop session (GNOME or KDE) so that polkit dialogs render correctly.
+- Install the FUSE2 runtime dependency: `sudo pacman -Sy --noconfirm fuse2`
 - Download the AppImage from the GitHub Releases page: `wget https://github.com/<owner>/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage`
 - Make it executable: `chmod +x vibe-attack-x86_64.AppImage`
 - Confirm it launches: `./vibe-attack-x86_64.AppImage --version`

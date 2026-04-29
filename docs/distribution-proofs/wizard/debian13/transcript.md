@@ -11,7 +11,7 @@ STRATAGEM_FIRED: pending
 
 ## Reproduction Notes
 
-- Boot a Debian 12 (Bookworm) VM or bare-metal installation with a full desktop session (GNOME or KDE) so that polkit dialogs render correctly.
+- Boot a Debian 13 (Trixie) VM or bare-metal installation with a full desktop session (GNOME or KDE) so that polkit dialogs render correctly.
 - Install dependencies: `sudo apt-get install -y libasound2-dev libclang-dev librsvg2-bin libfuse2 wget`
 - Clone the repo and build: `cargo build --release --bin vibe-attack-config`
 - Add the binary to PATH: `export PATH="$PWD/target/release:$PATH"`

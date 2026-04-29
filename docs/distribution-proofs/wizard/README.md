@@ -7,12 +7,14 @@ This directory contains structured transcripts proving that the first-run wizard
 ```
 docs/distribution-proofs/wizard/
 ├── README.md          ← this file
-├── debian12/
-│   └── transcript.md  ← Debian 12 wizard UAT transcript
-├── fedora39/
-│   └── transcript.md  ← Fedora 39 wizard UAT transcript
-└── arch/
-    └── transcript.md  ← Arch Linux wizard UAT transcript
+├── debian13/
+│   └── transcript.md  ← Debian 13 wizard UAT transcript
+├── ubuntu2604/
+│   └── transcript.md  ← Ubuntu 26.04 wizard UAT transcript
+├── fedora44/
+│   └── transcript.md  ← Fedora 44 wizard UAT transcript
+└── cachyos/
+    └── transcript.md  ← CachyOS wizard UAT transcript
 ```
 
 ## Transcript Format
@@ -43,7 +45,7 @@ STRATAGEM_FIRED: <yes|no|pending>
 | `failed:scenario-C` | Scenario C (relaunch skips wizard) failed |
 | `failed:scenario-D` | Scenario D (--skip-wizard flag) failed |
 
-Transcripts with `STATUS: pending VM run` are **acceptable** — they preserve structural completeness so tests can assert field presence regardless of whether the real VM run has occurred. Full `STATUS: ok` runs are completed in milestone S06.
+Transcripts with `STATUS: pending VM run` are **acceptable** — they preserve structural completeness so tests can assert field presence regardless of whether the real VM run has occurred. Full `STATUS: ok` runs are completed in milestone S02.
 
 ## UAT Scenarios
 
@@ -104,7 +106,7 @@ Expected: `SCENARIO_D: ok`
 
 ## Per-Distro Reproduction
 
-### Debian 12
+### Debian 13
 
 ```bash
 # System packages
@@ -118,7 +120,21 @@ export PATH="$PWD/target/release:$PATH"
 # Fill in transcript.md fields with observed results
 ```
 
-### Fedora 39
+### Ubuntu 26.04
+
+```bash
+# System packages
+sudo apt-get install -y libasound2-dev libclang-dev librsvg2-bin libfuse2 wget
+
+# Build the binary
+cargo build --release --bin vibe-attack-config
+export PATH="$PWD/target/release:$PATH"
+
+# Run UAT scenarios A–D per the steps above
+# Fill in transcript.md fields with observed results
+```
+
+### Fedora 44
 
 ```bash
 # System packages
@@ -132,7 +148,7 @@ export PATH="$PWD/target/release:$PATH"
 # Fill in transcript.md fields with observed results
 ```
 
-### Arch Linux
+### CachyOS
 
 ```bash
 # System packages
@@ -148,7 +164,7 @@ export PATH="$PWD/target/release:$PATH"
 
 ## Policy: Pending Transcripts
 
-Transcripts with `STATUS: pending VM run` count as structural proof — all metadata fields are present with `pending` placeholders, allowing `tests/distribution_proofs.rs` to assert field presence. The policy (from milestone M010 S06) is that full `STATUS: ok` runs must be completed before the milestone is closed, but intermediate tasks may commit pending-state transcripts.
+Transcripts with `STATUS: pending VM run` count as structural proof — all metadata fields are present with `pending` placeholders, allowing `tests/distribution_proofs.rs` to assert field presence. Full `STATUS: ok` runs must be completed before the milestone is closed, but intermediate tasks may commit pending-state transcripts.
 
 ## Common Pitfalls
 

@@ -7,12 +7,14 @@ This directory contains structured transcripts proving that `vibe-attack-x86_64.
 ```
 docs/distribution-proofs/appimage/
 ├── README.md          ← this file
-├── debian12/
-│   └── transcript.md  ← Debian 12 proof transcript
-├── fedora39/
-│   └── transcript.md  ← Fedora 39 proof transcript
-└── arch/
-    └── transcript.md  ← Arch Linux proof transcript
+├── debian13/
+│   └── transcript.md  ← Debian 13 proof transcript
+├── ubuntu2604/
+│   └── transcript.md  ← Ubuntu 26.04 proof transcript
+├── fedora44/
+│   └── transcript.md  ← Fedora 44 proof transcript
+└── cachyos/
+    └── transcript.md  ← CachyOS proof transcript
 ```
 
 ## Transcript Format
@@ -42,7 +44,7 @@ FAILURE_REASON: <human-readable failure description>   ← only present on non-o
 | `failed:version-check-failed` | `--version` run failed (non-zero exit) |
 | `pending VM run` | Transcript seeded; full run not yet executed on this distro |
 
-Transcripts with `STATUS: pending VM run` or `STATUS: skipped:tools-missing` are **acceptable** — they preserve structural completeness so tests can assert field presence regardless of whether the real VM run has occurred. The full VM runs are completed in milestone S06.
+Transcripts with `STATUS: pending VM run` or `STATUS: skipped:tools-missing` are **acceptable** — they preserve structural completeness so tests can assert field presence regardless of whether the real VM run has occurred. The full VM runs are completed in milestone S02.
 
 ## Generating a Transcript
 
@@ -61,7 +63,7 @@ The script:
 
 ## Per-Distro Reproduction
 
-### Debian 12
+### Debian 13
 
 ```bash
 # System packages (mirrors release.yml)
@@ -75,10 +77,27 @@ sudo mv linuxdeploy-x86_64.AppImage /usr/local/bin/linuxdeploy
 sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
 
 # Capture transcript
-bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/debian12/transcript.md
+bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/debian13/transcript.md
 ```
 
-### Fedora 39
+### Ubuntu 26.04
+
+```bash
+# System packages
+sudo apt-get install -y libasound2-dev libclang-dev librsvg2-bin libfuse2 wget
+
+# Install packaging tools (same as above)
+wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+chmod +x linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage
+sudo mv linuxdeploy-x86_64.AppImage /usr/local/bin/linuxdeploy
+sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
+
+# Capture transcript
+bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/ubuntu2604/transcript.md
+```
+
+### Fedora 44
 
 ```bash
 # System packages
@@ -92,10 +111,10 @@ sudo mv linuxdeploy-x86_64.AppImage /usr/local/bin/linuxdeploy
 sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
 
 # Capture transcript
-bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/fedora39/transcript.md
+bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/fedora44/transcript.md
 ```
 
-### Arch Linux
+### CachyOS
 
 ```bash
 # System packages
@@ -109,9 +128,9 @@ sudo mv linuxdeploy-x86_64.AppImage /usr/local/bin/linuxdeploy
 sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
 
 # Capture transcript
-bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/arch/transcript.md
+bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/cachyos/transcript.md
 ```
 
 ## Policy: Pending Transcripts
 
-Transcripts with `STATUS: pending VM run` count as structural proof — all metadata fields are present with `pending` placeholders, allowing `tests/distribution_proofs.rs` to assert field presence. The policy (from milestone M010 S06) is that full `STATUS: ok` runs must be completed before the milestone is closed, but intermediate tasks may commit pending-state transcripts.
+Transcripts with `STATUS: pending VM run` count as structural proof — all metadata fields are present with `pending` placeholders, allowing `tests/distribution_proofs.rs` to assert field presence. The policy is that full `STATUS: ok` runs must be completed before the milestone is closed, but intermediate tasks may commit pending-state transcripts.

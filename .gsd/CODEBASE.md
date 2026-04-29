@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-28T11:22:44Z | Files: 154 | Described: 0/154
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-28T11:22:44Z","fingerprint":"3101a3a7400d536017d891a992d9a3fd271008a5","fileCount":154,"truncated":false} -->
+Generated: 2026-04-29T01:10:29Z | Files: 145 | Described: 0/145
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-29T01:10:29Z","fingerprint":"4f6c0624e2521fc38ec8a82909a3507eda3f9851","fileCount":145,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -31,41 +31,14 @@ Generated: 2026-04-28T11:22:44Z | Files: 154 | Described: 0/154
 ### docs/distribution-proofs/appimage/
 - `docs/distribution-proofs/appimage/README.md`
 
-### docs/distribution-proofs/appimage/arch/
-- `docs/distribution-proofs/appimage/arch/transcript.md`
-
-### docs/distribution-proofs/appimage/debian12/
-- `docs/distribution-proofs/appimage/debian12/transcript.md`
-
-### docs/distribution-proofs/appimage/fedora39/
-- `docs/distribution-proofs/appimage/fedora39/transcript.md`
-
 ### docs/distribution-proofs/aur/
 - `docs/distribution-proofs/aur/README.md`
 
 ### docs/distribution-proofs/final/
 - `docs/distribution-proofs/final/README.md`
 
-### docs/distribution-proofs/final/arch/
-- `docs/distribution-proofs/final/arch/transcript.md`
-
-### docs/distribution-proofs/final/debian12/
-- `docs/distribution-proofs/final/debian12/transcript.md`
-
-### docs/distribution-proofs/final/fedora39/
-- `docs/distribution-proofs/final/fedora39/transcript.md`
-
 ### docs/distribution-proofs/wizard/
 - `docs/distribution-proofs/wizard/README.md`
-
-### docs/distribution-proofs/wizard/arch/
-- `docs/distribution-proofs/wizard/arch/transcript.md`
-
-### docs/distribution-proofs/wizard/debian12/
-- `docs/distribution-proofs/wizard/debian12/transcript.md`
-
-### docs/distribution-proofs/wizard/fedora39/
-- `docs/distribution-proofs/wizard/fedora39/transcript.md`
 
 ### docs/latency-proofs/phase-02-target-hardware/
 - `docs/latency-proofs/phase-02-target-hardware/error.txt`
