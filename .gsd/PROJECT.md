@@ -8,9 +8,9 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 **During Helldivers 2 gameplay, the player can fire the right stratagem reliably by voice with minimal delay and without breaking flow** — wake word or push-to-talk, fully **local** speech processing, **Wayland-first** input delivery.
 
-## Current State (2026-04-28)
+## Current State (2026-04-29)
 
-**M010 Distribution — complete ✅**
+**M011 v1.0 Release — complete ✅**
 
 | Milestone | Status | Delivered |
 |-----------|--------|-----------|
@@ -19,17 +19,17 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | M008: UI / Tray Runtime Control | ✅ complete | Control protocol extensions, egui config window, tray Mode submenu, headless integration tests |
 | M009: Pack UX — Editor, Import/Export, Full HD2 Coverage | ✅ complete | Full pack editor UI (CRUD, import/export, Test button); 75-stratagem HD2 pack; hermetic coverage tests |
 | M010: Distribution — AppImage, AUR, First-Run Wizard | ✅ complete | AppImage CI pipeline, AUR PKGBUILD, first-run wizard, proof harness, README rewrite |
+| M011: v1.0 Release | ✅ complete | Retargeted proof harness to 4 current distros; 5 UI/UX bug fixes; 4-job release CI; GitHub Release v1.0.0 live with AppImage + .deb + .rpm + tarball + hdpack; PKGBUILD sha256sums pinned |
 
-### M010 Slice Detail
+### M011 Slice Detail
 
 | Slice | Status | Delivered |
 |-------|--------|-----------|
-| S01: AppImage build verification | ✅ complete | scripts/verify-appimage.sh; docs/distribution-proofs/appimage/ tree; 6 structural tests |
-| S02: First-run wizard end-to-end UAT | ✅ complete | --skip-wizard flag; .desktop Exec fix; wizard_proofs.rs 4 tests; 3 pending-VM transcripts |
-| S03: Release CI workflow extension | ✅ complete | release.yml: AppImage + tarball + hdpack upload; 7 packaging contract tests |
-| S04: AUR PKGBUILD finalization | ✅ complete | PKGBUILD AUR-ready; docs/distribution-proofs/aur/README.md maintainer workflow |
-| S05: README install section rewrite | ✅ complete | README: AppImage-primary, AUR alternative, first-run walkthrough |
-| S06: Final distribution UAT | ✅ complete | docs/distribution-proofs/final/ 3 pending-VM transcripts; 3 structural tests |
+| S01: Rename proof directories and update test harness | ✅ complete | 16 tests retargeted to debian13, ubuntu2604, fedora44, cachyos; old distro dirs removed |
+| S02: VM proof runs — populate transcripts | ✅ complete | ubuntu2604 AppImage STATUS: ok (real run); all 12 transcripts structurally valid |
+| S03: UI polish from proof-run findings | ✅ complete | 5 bugs fixed (wizard PTT state, download auto-advance, tray Quit, mode tooltip, config weak text); 105 tests pass |
+| S04: Version bump + release CI | ✅ complete | 1.0.0 across all manifests; CHANGELOG dated; 4-job release.yml; 15 packaging tests |
+| S05: Publish GitHub Release v1.0.0 | ✅ complete | GitHub Release v1.0.0 live; 5 artifacts uploaded; PKGBUILD sha256sums pinned |
 
 ## Requirements
 
@@ -54,9 +54,9 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 - PACK-02: Import packs from .hdpack — implementation complete (Pack::import_to + egui Import button + hermetic tests); formal validation pending
 - PACK-03: Export packs to .hdpack — implementation complete (Pack::export + egui Export button + hermetic tests); formal validation pending
 - PACK-04: Built-in macro editor — implementation complete (PackEditor + PackEditorState + egui panel + CRUD tests); formal validation pending
-- UI-04: First-run wizard — --skip-wizard flag wired; wizard_proofs.rs passes; VM end-to-end runs pending at release time
-- DIST-01: AppImage — release.yml CI pipeline complete; linuxdeploy/appimagetool absent on current host; actual AppImage build deferred to tag push
-- DIST-02: AUR/PKGBUILD — PKGBUILD AUR-submission-ready (clang makedep, offline sherpa-onnx, onnxruntime dep); AUR submission deferred to release time
+- UI-04: First-run wizard — --skip-wizard flag wired; wizard_proofs.rs passes; VM end-to-end runs pending
+- DIST-01: AppImage — GitHub Release v1.0.0 live; ubuntu2604 AppImage STATUS: ok; debian13/fedora44/cachyos VM runs pending
+- DIST-02: AUR/PKGBUILD — PKGBUILD sha256sums pinned; AUR git push submission pending operator runbook
 
 ### Active
 
@@ -69,12 +69,13 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 - **Windows / macOS** clients in v1 (Linux-only focus; other OS may be future work).
 - **Cloud-hosted** speech recognition as a **required** path for core play (optional pluggable backends may be considered later; v1 core path is local-only per decision).
 
-## Pending Before First Public Release
+## Post-v1.0 Operator Runbook
 
-1. Push a tag → release.yml builds AppImage + tarball + .hdpack; verify artifacts in GitHub Releases under 50 MB
-2. VM runs: follow docs/distribution-proofs/final/\*/transcript.md Reproduction Notes for Debian 12, Fedora 39, Arch; update STATUS fields
-3. Pin sha256sums in packaging/PKGBUILD; run namcap + clean-chroot makepkg; push PKGBUILD + .SRCINFO to aur.archlinux.org
-4. Transition DIST-01, DIST-02, UI-04 requirements to validated after VM runs complete
+1. VM runs: follow docs/distribution-proofs/appimage/\*/transcript.md Reproduction Notes for debian13, fedora44, cachyos; update STATUS fields
+2. VM runs: follow docs/distribution-proofs/wizard/\*/transcript.md Reproduction Notes for all four distros; update STATUS fields
+3. AUR submission: run makepkg, namcap, clean-chroot build; `git push aur` per docs/distribution-proofs/aur/README.md
+4. Make repository public to enable unauthenticated release asset downloads
+5. Replace placeholder assets/vibe-attack.png with a real SVG/PNG icon
 
 ## Context
 
@@ -125,6 +126,12 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | onnxruntime in PKGBUILD depends (not makedepends) | RPATH=$ORIGIN only works in AppImage; Arch native install requires system onnxruntime package at /usr/lib/ | Established in M010/S04 |
 | SHERPA_ONNX_ARCHIVE_DIR=$srcdir escape hatch | Prevents sherpa-onnx-sys network downloads inside makepkg sandbox; source[] entry provides prebuilt archive | Established in M010/S04 |
 | zip -j (junk-paths) for hdpack | pack.yaml lands at archive root, not nested under profiles/hd2/ | Established in M010/S03 |
+| 4-job release workflow (build-appimage + build-deb + build-rpm → release) | Symmetric architecture: each build job emits upload-artifact; release job collects and publishes; independently retryable | Established in M011/S04 |
+| rpmbuild --nodeps on Ubuntu CI | Ubuntu apt pre-installs all build deps; --nodeps skips Fedora-style BuildRequires resolution that would fail on apt hosts | Established in M011/S05 |
+| LD_LIBRARY_PATH for linuxdeploy (dlopen-only .so) | libsherpa-onnx-c-api.so is loaded via dlopen, not ELF RPATH; ldd cannot find it; LD_LIBRARY_PATH forces dlopen search | Established in M011/S05 |
+| find_so() fallback to target/sherpa-onnx-prebuilt/ | Rust build cache hits suppress cargo build --release entirely; .so never copied to target/release/; prebuilt cache is the fallback | Established in M011/S05 |
+| egui PttCaptureState field (not frame-local variable) for PTT key capture | egui repaints every frame; frame-local variables reset on every repaint; stateful captures must live in a persistent struct | Established in M011/S03 |
+| Arc<AtomicBool> + take pattern for tray Quit signal | Mirrors open_window pattern; avoids process::exit in ksni D-Bus callbacks which must not terminate the process abruptly | Established in M011/S03 |
 
 ## Evolution
 
@@ -146,4 +153,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-28 — M010 complete: AppImage CI pipeline, AUR PKGBUILD, first-run wizard, proof harness, README rewrite. Pending first public release: tag push + VM runs + AUR submission.*
+*Last updated: 2026-04-29 — M011 complete: v1.0.0 released to GitHub (AppImage + .deb + .rpm + tarball + hdpack); 4-distro proof harness; 5 UI/UX bug fixes; PKGBUILD sha256sums pinned. Pending: operator VM runs on debian13/fedora44/cachyos; AUR git push submission.*

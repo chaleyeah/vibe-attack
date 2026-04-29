@@ -9,8 +9,8 @@
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:planning",
-      "label": "Phase: planning",
+      "id": "concept:phase:validating-milestone",
+      "label": "Phase: validating-milestone",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -263,6 +263,42 @@
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M002/M002-ROADMAP.md"
+    },
+    {
+      "id": "slice:M002:S01",
+      "label": "M002/S01",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S02",
+      "label": "M002/S02",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S03",
+      "label": "M002/S03",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S04",
+      "label": "M002/S04",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S05",
+      "label": "M002/S05",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S06",
+      "label": "M002/S06",
+      "type": "slice",
+      "confidence": "EXTRACTED"
     },
     {
       "id": "milestone:M003",
@@ -1018,7 +1054,7 @@
     },
     {
       "id": "milestone:M010",
-      "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
+      "label": "M010: Distribution - AppImage, AUR, First-Run Wizard",
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M010/M010-ROADMAP.md"
@@ -1234,6 +1270,25 @@
     {
       "id": "task:M011:S04:T03",
       "label": "T03: Extend tests/packaging.rs to assert release.yml declares build-deb, build-rpm, and matching artifact globs",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M011:S05",
+      "label": "S05: Publish GitHub Release v1.0.0",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/slices/S05/S05-PLAN.md"
+    },
+    {
+      "id": "task:M011:S05:T01",
+      "label": "T01: Push v1.0.0 tag and verify GitHub Release publishes all artifacts",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M011:S05:T02",
+      "label": "T02: Pin packaging/PKGBUILD sha256sums to real v1.0.0 release hashes",
       "type": "task",
       "confidence": "EXTRACTED"
     },
@@ -3548,6 +3603,42 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "milestone:M002",
+      "to": "slice:M002:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M003",
       "to": "slice:M003:S01",
       "type": "contains",
@@ -4768,6 +4859,24 @@
     {
       "from": "slice:M011:S04",
       "to": "task:M011:S04:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "slice:M011:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M011:S05",
+      "to": "task:M011:S05:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M011:S05",
+      "to": "task:M011:S05:T02",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -7244,5 +7353,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-29T01:58:53.526Z"
+  "builtAt": "2026-04-29T11:47:29.203Z"
 }

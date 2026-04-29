@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-29T01:55:51Z | Files: 167 | Described: 0/167
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-29T01:55:51Z","fingerprint":"c1307f00c668ce21c31daa016f0e9df328dbbb8e","fileCount":167,"truncated":false} -->
+Generated: 2026-04-29T11:43:52Z | Files: 166 | Described: 0/166
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-29T11:43:52Z","fingerprint":"09206a802a3fb93e30599c20c94752a2935725ba","fileCount":166,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -177,7 +177,6 @@ Generated: 2026-04-29T01:55:51Z | Files: 167 | Described: 0/167
 
 ### packaging/debian/
 - `packaging/debian/changelog`
-- `packaging/debian/compat`
 - `packaging/debian/control`
 - `packaging/debian/copyright`
 - `packaging/debian/rules`
