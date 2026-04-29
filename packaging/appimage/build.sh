@@ -46,12 +46,21 @@ else
     echo "WARNING: No icon PNG found at $ICON_PNG — AppImage will lack an icon." >&2
 fi
 
-# Discover libonnxruntime.so.
-# Priority: target/release/ -> $ORT_DYLIB_PATH -> ldconfig -> /usr search.
+# Discover a shared library by name.
+# Priority: target/release/ -> sherpa prebuilt cache -> $ORT_DYLIB_PATH
+#           -> ldconfig -> /usr search.
+# The sherpa prebuilt cache is checked because a full Rust cache hit means
+# cargo build --release is a no-op and the ort build script never runs,
+# so the .so is never copied to target/release/.
 find_so() {
     local name="$1"
     if [ -f "target/release/$name" ]; then
         echo "target/release/$name"; return
+    fi
+    local prebuilt
+    prebuilt="$(find target/sherpa-onnx-prebuilt -name "$name" 2>/dev/null | head -1)"
+    if [ -n "$prebuilt" ] && [ -f "$prebuilt" ]; then
+        echo "$prebuilt"; return
     fi
     local ldp
     ldp="$(ldconfig -p 2>/dev/null | awk -v n="$name" '$0 ~ n {print $NF}' | head -1)"
