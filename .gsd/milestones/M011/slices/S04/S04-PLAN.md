@@ -43,7 +43,7 @@ Why: every other task in this slice and S05 depends on the manifests reading 1.0
   - Files: `Cargo.toml`, `packaging/vibe-attack.spec`, `packaging/PKGBUILD`, `packaging/debian/changelog`, `CHANGELOG.md`
   - Verify: grep -rn "0\.1\.0" Cargo.toml packaging/ CHANGELOG.md | grep -v 'sherpa-onnx' | grep -v 'silero' ; test $? -ne 0 && grep -q '^version = "1.0.0"' Cargo.toml && grep -q '^Version:        1.0.0' packaging/vibe-attack.spec && grep -q '^pkgver=1.0.0' packaging/PKGBUILD && head -1 packaging/debian/changelog | grep -q '1.0.0-1' && grep -q '## \[1.0.0\] - 2026-04-28' CHANGELOG.md
 
-- [ ] **T02: Add build-deb and build-rpm jobs to release.yml and extend artifact upload globs** `est:1h30m`
+- [x] **T02: Add build-deb and build-rpm jobs to release.yml and extend artifact upload globs** `est:1h30m`
   Add two new jobs to `.github/workflows/release.yml`, parallel to the existing `build-appimage` job. Both run on `ubuntu-22.04`, both reuse the exact sherpa-onnx cache block (path: `target/sherpa-onnx-prebuilt`, key: `sherpa-onnx-1.12.39-linux-x64`) per MEM089 — copy the block verbatim from `build-appimage`. Then extend the existing upload step (or migrate it into a small `release` job that depends on all three build jobs).
 
 Approach for the .deb job (`build-deb`):

@@ -74,6 +74,135 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           zip -j "hd2-${TAG}.hdpack" profiles/hd2/pack.yaml
 
+      - name: Upload AppImage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: appimage
+          path: |
+            vibe-attack-*-x86_64.AppImage
+            vibe-attack-*.tar.gz
+            hd2-*.hdpack
+
+  build-deb:
+    name: Build Debian package
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Cache sherpa-onnx prebuilt libs
+        id: sherpa-cache
+        uses: actions/cache@v4
+        with:
+          path: target/sherpa-onnx-prebuilt
+          key: sherpa-onnx-1.12.39-linux-x64
+
+      - name: Rebuild sherpa-onnx-sys if prebuilt cache missed
+        if: steps.sherpa-cache.outputs.cache-hit != 'true'
+        run: cargo build -p sherpa-onnx-sys
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libasound2-dev \
+            libclang-dev \
+            devscripts \
+            debhelper \
+            dh-cargo
+
+      - name: Build .deb package
+        run: |
+          dpkg-buildpackage -uc -us -b
+          mv ../vibe-attack_*.deb .
+
+      - name: Upload deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb
+          path: vibe-attack_*.deb
+
+  build-rpm:
+    name: Build RPM package
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Cache sherpa-onnx prebuilt libs
+        id: sherpa-cache
+        uses: actions/cache@v4
+        with:
+          path: target/sherpa-onnx-prebuilt
+          key: sherpa-onnx-1.12.39-linux-x64
+
+      - name: Rebuild sherpa-onnx-sys if prebuilt cache missed
+        if: steps.sherpa-cache.outputs.cache-hit != 'true'
+        run: cargo build -p sherpa-onnx-sys
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libasound2-dev \
+            libclang-dev \
+            rpm
+
+      - name: Set up rpmbuild tree
+        run: mkdir -p ~/rpmbuild/{SOURCES,SPECS,BUILD,RPMS,SRPMS}
+
+      - name: Create source tarball for rpmbuild
+        run: |
+          git archive --format=tar.gz --prefix=vibe-attack-1.0.0/ HEAD \
+            -o ~/rpmbuild/SOURCES/vibe-attack-1.0.0.tar.gz
+          cp packaging/vibe-attack.spec ~/rpmbuild/SPECS/
+
+      - name: Build RPM package
+        run: |
+          rpmbuild -bb ~/rpmbuild/SPECS/vibe-attack.spec
+          cp ~/rpmbuild/RPMS/x86_64/vibe-attack-*.x86_64.rpm .
+
+      - name: Upload rpm artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm
+          path: vibe-attack-*.x86_64.rpm
+
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-22.04
+    needs: [build-appimage, build-deb, build-rpm]
+
+    steps:
+      - name: Download AppImage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: appimage
+
+      - name: Download deb artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deb
+
+      - name: Download rpm artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: rpm
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
@@ -81,6 +210,8 @@ jobs:
             vibe-attack-*-x86_64.AppImage
             vibe-attack-*.tar.gz
             hd2-*.hdpack
+            vibe-attack_*.deb
+            vibe-attack-*.x86_64.rpm
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
