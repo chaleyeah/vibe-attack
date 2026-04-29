@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-29T01:12:41Z | Files: 157 | Described: 0/157
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-29T01:12:41Z","fingerprint":"ba934c090c0855fd98df9a94868437c703bdca8a","fileCount":157,"truncated":false} -->
+Generated: 2026-04-29T01:24:19Z | Files: 167 | Described: 0/167
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-29T01:24:19Z","fingerprint":"c1307f00c668ce21c31daa016f0e9df328dbbb8e","fileCount":167,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -17,10 +17,28 @@ Generated: 2026-04-29T01:12:41Z | Files: 157 | Described: 0/157
 - `LICENSE`
 - `LICENSES.md`
 - `README.md`
+- `Vibe_Attack-x86_64.AppImage`
+- `vibe-attack-x86_64.AppImage`
 
 ### .github/workflows/
 - `.github/workflows/ci.yml`
 - `.github/workflows/release.yml`
+
+### AppDir/
+- `AppDir/.DirIcon`
+- `AppDir/AppRun`
+- `AppDir/vibe-attack.desktop`
+
+### AppDir/usr/bin/
+- `AppDir/usr/bin/vibe-attack`
+- `AppDir/usr/bin/vibe-attack-config`
+
+### AppDir/usr/lib/
+- `AppDir/usr/lib/libonnxruntime.so`
+- `AppDir/usr/lib/libsherpa-onnx-c-api.so`
+
+### AppDir/usr/share/applications/
+- `AppDir/usr/share/applications/vibe-attack.desktop`
 
 ### docs/
 - `docs/configuration.md`
