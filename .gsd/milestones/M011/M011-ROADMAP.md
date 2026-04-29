@@ -4,10 +4,10 @@
 
 ## Slices
 
-- [ ] **S01: S01** `risk:high` `depends:[]`
+- [x] **S01: S01** `risk:high` `depends:[]`
   > After this: `cargo test --test distribution_proofs --test-threads=1` passes with the new four-distro names; old three-distro directories are removed; test function names and README per-distro sections updated.
 
-- [ ] **S02: VM proof runs — populate transcripts** `risk:high` `depends:[S01]`
+- [ ] **S02: S02** `risk:high` `depends:[]`
   > After this: all 12 transcripts (appimage + wizard + final × 4 distros) carry `STATUS: ok`; proof trees are complete.
 
 - [ ] **S03: UI polish from proof-run findings** `risk:medium` `depends:[S02]`

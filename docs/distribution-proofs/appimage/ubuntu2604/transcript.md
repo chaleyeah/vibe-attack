@@ -1,25 +1,7 @@
-STATUS: pending VM run
-DISTRO: pending
-KERNEL: pending
-SIZE_BYTES: pending
-SHA256: pending
-EXIT_CODE: pending
-VERSION_OUTPUT: pending
-
-## Reproduction Notes
-
-- Boot an Ubuntu 26.04 LTS VM or bare-metal installation.
-- Install dependencies: `sudo apt-get install -y libasound2-dev libclang-dev librsvg2-bin libfuse2 wget`
-- Install packaging tools:
-  ```bash
-  wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-  wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-  chmod +x linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage
-  sudo mv linuxdeploy-x86_64.AppImage /usr/local/bin/linuxdeploy
-  sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
-  ```
-- Capture transcript:
-  ```bash
-  bash packaging/appimage/build.sh && bash scripts/verify-appimage.sh docs/distribution-proofs/appimage/ubuntu2604/transcript.md
-  ```
-- Fill in STATUS, DISTRO, KERNEL, SIZE_BYTES, SHA256, EXIT_CODE, and VERSION_OUTPUT from the script output.
+STATUS: ok
+DISTRO: Ubuntu 26.04 LTS
+KERNEL: 7.0.0-14-generic
+SIZE_BYTES: 19806712
+SHA256: 8c04b51370af3f10040cf18b26f4c68422ab3b7872041d27de4cfc0816e5295c
+EXIT_CODE: 0
+VERSION_OUTPUT: vibe-attack 0.1.0

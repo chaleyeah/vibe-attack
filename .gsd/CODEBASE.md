@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-04-29T01:10:29Z | Files: 145 | Described: 0/145
-<!-- gsd:codebase-meta {"generatedAt":"2026-04-29T01:10:29Z","fingerprint":"4f6c0624e2521fc38ec8a82909a3507eda3f9851","fileCount":145,"truncated":false} -->
+Generated: 2026-04-29T01:12:41Z | Files: 157 | Described: 0/157
+<!-- gsd:codebase-meta {"generatedAt":"2026-04-29T01:12:41Z","fingerprint":"ba934c090c0855fd98df9a94868437c703bdca8a","fileCount":157,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -31,14 +31,50 @@ Generated: 2026-04-29T01:10:29Z | Files: 145 | Described: 0/145
 ### docs/distribution-proofs/appimage/
 - `docs/distribution-proofs/appimage/README.md`
 
+### docs/distribution-proofs/appimage/cachyos/
+- `docs/distribution-proofs/appimage/cachyos/transcript.md`
+
+### docs/distribution-proofs/appimage/debian13/
+- `docs/distribution-proofs/appimage/debian13/transcript.md`
+
+### docs/distribution-proofs/appimage/fedora44/
+- `docs/distribution-proofs/appimage/fedora44/transcript.md`
+
+### docs/distribution-proofs/appimage/ubuntu2604/
+- `docs/distribution-proofs/appimage/ubuntu2604/transcript.md`
+
 ### docs/distribution-proofs/aur/
 - `docs/distribution-proofs/aur/README.md`
 
 ### docs/distribution-proofs/final/
 - `docs/distribution-proofs/final/README.md`
 
+### docs/distribution-proofs/final/cachyos/
+- `docs/distribution-proofs/final/cachyos/transcript.md`
+
+### docs/distribution-proofs/final/debian13/
+- `docs/distribution-proofs/final/debian13/transcript.md`
+
+### docs/distribution-proofs/final/fedora44/
+- `docs/distribution-proofs/final/fedora44/transcript.md`
+
+### docs/distribution-proofs/final/ubuntu2604/
+- `docs/distribution-proofs/final/ubuntu2604/transcript.md`
+
 ### docs/distribution-proofs/wizard/
 - `docs/distribution-proofs/wizard/README.md`
+
+### docs/distribution-proofs/wizard/cachyos/
+- `docs/distribution-proofs/wizard/cachyos/transcript.md`
+
+### docs/distribution-proofs/wizard/debian13/
+- `docs/distribution-proofs/wizard/debian13/transcript.md`
+
+### docs/distribution-proofs/wizard/fedora44/
+- `docs/distribution-proofs/wizard/fedora44/transcript.md`
+
+### docs/distribution-proofs/wizard/ubuntu2604/
+- `docs/distribution-proofs/wizard/ubuntu2604/transcript.md`
 
 ### docs/latency-proofs/phase-02-target-hardware/
 - `docs/latency-proofs/phase-02-target-hardware/error.txt`

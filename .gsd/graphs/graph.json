@@ -1,16 +1,16 @@
 {
   "nodes": [
     {
-      "id": "milestone:M010",
-      "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
+      "id": "milestone:M011",
+      "label": "M011: v1.0 Release",
       "type": "milestone",
-      "description": "Active milestone: M010",
+      "description": "Active milestone: M011",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:validating-milestone",
-      "label": "Phase: validating-milestone",
+      "id": "concept:phase:planning",
+      "label": "Phase: planning",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -263,42 +263,6 @@
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M002/M002-ROADMAP.md"
-    },
-    {
-      "id": "slice:M002:S01",
-      "label": "M002/S01",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S02",
-      "label": "M002/S02",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S03",
-      "label": "M002/S03",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S04",
-      "label": "M002/S04",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S05",
-      "label": "M002/S05",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S06",
-      "label": "M002/S06",
-      "type": "slice",
-      "confidence": "EXTRACTED"
     },
     {
       "id": "milestone:M003",
@@ -1053,6 +1017,13 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "milestone:M010",
+      "label": "M010: Distribution — AppImage, AUR, First-Run Wizard",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-ROADMAP.md"
+    },
+    {
       "id": "slice:M010:S01",
       "label": "S01: AppImage build verification",
       "type": "slice",
@@ -1185,11 +1156,23 @@
       "confidence": "EXTRACTED"
     },
     {
-      "id": "milestone:M011",
-      "label": "M011: M011",
-      "type": "milestone",
+      "id": "slice:M011:S01",
+      "label": "S01: Rename proof directories and update test harness",
+      "type": "slice",
       "confidence": "EXTRACTED",
-      "sourceFile": "milestones/M011/M011-ROADMAP.md"
+      "sourceFile": "milestones/M011/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M011:S01:T01",
+      "label": "T01: Rewrite wizard_proofs.rs per-distro tests for the four new M011 distros",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M011:S04",
+      "label": "M011/S04",
+      "type": "slice",
+      "confidence": "EXTRACTED"
     },
     {
       "id": "decision:M001:1",
@@ -2902,6 +2885,374 @@
       "description": "Source: S04-SUMMARY.md/Key decisions",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M009/M009-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:1",
+      "label": "**STATUS: skipped:tools-missing (exit 0) for verify-appimage.sh**: When linuxdeploy/appimagetool are absent, the script exits 0 with STATUS: skipped:tools-missing and writes a partial transcript including FAILURE_REASON. CI structure tests pass; execution completeness is deferred to VM runs. Chose this over exit 1 because the harness itself is the deliverable at CI time — the transcript format and reproduction instructions are what need to be correct.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:2",
+      "label": "**Transcript written unconditionally even on failure**: Partial proof stays inspectable with STATUS: failed:<reason>. Chose unconditional write over skip-on-failure so the next human operator always has a file to examine regardless of which step failed.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:3",
+      "label": "**Pending-VM-run transcript pattern (MEM079)**: All transcript fields present as 'pending' placeholders plus reproduction instructions; structural CI tests pass before real VM runs. Chose this over blocking CI on VM availability because VM runs require hardware and human operator time that cannot be automated.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:4",
+      "label": "**onnxruntime in PKGBUILD depends (not makedepends)**: RPATH=$ORIGIN resolves in AppImage (co-located .so files) but not in Arch native install where only binaries land in /usr/bin/; system onnxruntime package required at runtime. Alternative of bundling onnxruntime in the package was rejected due to license/packaging complexity.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:5",
+      "label": "**SHERPA_ONNX_ARCHIVE_DIR=$srcdir escape hatch**: Add prebuilt archive as source[] entry and export this env var in build() to prevent sherpa-onnx-sys from attempting network downloads inside the makepkg sandbox. This is the documented upstream escape hatch for offline Arch builds.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:6",
+      "label": "**zip -j (junk-paths) for hdpack**: pack.yaml lands at archive root rather than nested under profiles/hd2/. Chose junk-paths so the consumer can unzip and find pack.yaml directly without path traversal logic.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:7",
+      "label": "**Separate REQUIRED_FIELDS constants per proof level**: assert_transcript for AppImage (7 fields), assert_wizard_transcript for wizard (10 fields), assert_final_transcript for final UAT (8 fields) — each level independently extensible without coupling. Alternative of a single shared constant was rejected because the field sets differ by design.",
+      "type": "decision",
+      "description": "Source: S06-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:8",
+      "label": "**PKGBUILD makedepends require cross-checking against Debian/RPM build deps**: bindgen/clang-sys transitive dependencies of sherpa-onnx-sys do not appear in Cargo.toml directly, so they are easy to miss. clang was missing from makedepends until S04. Cross-checking against Debian Build-Depends and RPM BuildRequires catches these gaps.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:9",
+      "label": "**Binary spawn tests in Rust require LD_LIBRARY_PATH guard**: When spawning the built binary from integration tests (env!(CARGO_BIN_EXE_...)), LD_LIBRARY_PATH=target/debug/ must be set explicitly so the binary finds .so files at runtime. The rpath-relative resolution that works in production does not apply during test execution.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:10",
+      "label": "**AppImage and AUR are different RPATH worlds**: AppImage co-locates .so files so $ORIGIN rpath works without system packages. Arch native installs only put binaries in /usr/bin/ so runtime .so resolution requires system packages. This distinction must be explicit in packaging docs.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:11",
+      "label": "**Copying sherpa cache block verbatim from ci.yml to release.yml is correct**: Using a reusable workflow would require maintaining the reusable workflow's cache keys in sync; verbatim copy maintains key/path/conditional parity with zero merge risk. The intentional duplication is better than DRY indirection that could silently diverge.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:12",
+      "label": "**The .desktop Exec= field must exactly match the binary name**: The initial .desktop had Exec=vibe-attack (the daemon) instead of Exec=vibe-attack-config (the GUI). Test assertion uses exact match (not substring) to catch this class of silent regression early.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:13",
+      "label": "**assert Exec=value exactly, not as substring**: Substring assertions on .desktop fields allow typos and partial matches to pass silently. Exact equality is the correct assertion for fields with a single expected value.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:14",
+      "label": "**Distribution proof transcript format**: 7-field minimum (STATUS, DISTRO, KERNEL, SIZE_BYTES, SHA256, EXIT_CODE, VERSION_OUTPUT) written unconditionally; STATUS line is the health signal. Pending-VM-run transcripts use 'pending' as placeholder for all fields except statically-known ones (e.g. INSTALL_METHOD: appimage). Tests assert all required fields are present regardless of STATUS value.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:15",
+      "label": "**Proof directory scaffold pattern (MEM079)**: Seed transcripts with STATUS: pending VM run and structural tests at slice time; human operators convert to ok after real VM runs. Applied consistently across appimage/, wizard/, and final/ proof levels. This allows CI to gate on structure without requiring VM hardware.",
+      "type": "decision",
+      "description": "Source: S06-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:16",
+      "label": "**Offline Arch builds via SHERPA_ONNX_ARCHIVE_DIR**: Add prebuilt archive as source[] entry in PKGBUILD; export SHERPA_ONNX_ARCHIVE_DIR=$srcdir in build() to bypass cargo-time network calls. Generalizes to any sherpa-onnx-sys consumer in an airgapped build environment.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:17",
+      "label": "**Packaging cross-check pattern**: Compare makedepends across Debian Build-Depends, RPM spec BuildRequires, and PKGBUILD makedepends before finalizing any packaging format. Catches transitive build deps that are absent from Cargo.toml but required at compile time (e.g. clang for bindgen).",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:18",
+      "label": "**Release workflow artifact contract tests**: Structural assertions in tests/packaging.rs verify the release.yml YAML references correct artifact globs (with fail_on_unmatched_files: true) before any tag push. This catches broken upload steps at PR-review time instead of at release time when artifacts are expected.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:19",
+      "label": "**clippy not available in the project's system cargo environment**: /usr/bin/cargo does not have the clippy component installed (no rustup on this host). The `cargo clippy -D warnings clean` success criterion could not be mechanically verified at milestone close. cargo check passes clean; all 27 test suites pass. This is an environment gap to address before the first release.",
+      "type": "decision",
+      "description": "Source: M010-ROADMAP.md/Success Criteria (verified at milestone close)",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:20",
+      "label": "**linuxdeploy and appimagetool are absent on the current build host (Ubuntu 26.04)**: Despite Ubuntu being Debian-derived and meeting the Debian 12 distro target in spirit, the AppImage packaging tools are not pre-installed. The verify-appimage.sh STATUS: skipped:tools-missing design absorbed this gracefully, but it means no AppImage binary has been produced yet — only the CI workflow to produce one.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M010:21",
+      "label": "**AUR sha256sums must be SKIP placeholders in the repo**: The real hashes can only be computed after the release tarball exists (which requires the tag push). This means the PKGBUILD in-repo always has SKIP placeholders; the release workflow or human maintainer pins them at tag time. This is normal AUR practice but was not obvious at the start of S04.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:1",
+      "label": "**PKGBUILD makedepends require cross-checking against Debian/RPM build deps**: bindgen/clang-sys transitive dependencies of sherpa-onnx-sys do not appear in Cargo.toml directly, so they are easy to miss. clang was missing from makedepends until S04. Cross-checking against Debian Build-Depends and RPM BuildRequires catches these gaps.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:2",
+      "label": "**Binary spawn tests in Rust require LD_LIBRARY_PATH guard**: When spawning the built binary from integration tests (env!(CARGO_BIN_EXE_...)), LD_LIBRARY_PATH=target/debug/ must be set explicitly so the binary finds .so files at runtime. The rpath-relative resolution that works in production does not apply during test execution.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:3",
+      "label": "**AppImage and AUR are different RPATH worlds**: AppImage co-locates .so files so $ORIGIN rpath works without system packages. Arch native installs only put binaries in /usr/bin/ so runtime .so resolution requires system packages. This distinction must be explicit in packaging docs.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:4",
+      "label": "**Copying sherpa cache block verbatim from ci.yml to release.yml is correct**: Using a reusable workflow would require maintaining the reusable workflow's cache keys in sync; verbatim copy maintains key/path/conditional parity with zero merge risk. The intentional duplication is better than DRY indirection that could silently diverge.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:5",
+      "label": "**The .desktop Exec= field must exactly match the binary name**: The initial .desktop had Exec=vibe-attack (the daemon) instead of Exec=vibe-attack-config (the GUI). Test assertion uses exact match (not substring) to catch this class of silent regression early.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:6",
+      "label": "**assert Exec=value exactly, not as substring**: Substring assertions on .desktop fields allow typos and partial matches to pass silently. Exact equality is the correct assertion for fields with a single expected value.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:7",
+      "label": "**Distribution proof transcript format**: 7-field minimum (STATUS, DISTRO, KERNEL, SIZE_BYTES, SHA256, EXIT_CODE, VERSION_OUTPUT) written unconditionally; STATUS line is the health signal. Pending-VM-run transcripts use 'pending' as placeholder for all fields except statically-known ones (e.g. INSTALL_METHOD: appimage). Tests assert all required fields are present regardless of STATUS value.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:8",
+      "label": "**Proof directory scaffold pattern (MEM079)**: Seed transcripts with STATUS: pending VM run and structural tests at slice time; human operators convert to ok after real VM runs. Applied consistently across appimage/, wizard/, and final/ proof levels. This allows CI to gate on structure without requiring VM hardware.",
+      "type": "lesson",
+      "description": "Source: S06-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:9",
+      "label": "**Offline Arch builds via SHERPA_ONNX_ARCHIVE_DIR**: Add prebuilt archive as source[] entry in PKGBUILD; export SHERPA_ONNX_ARCHIVE_DIR=$srcdir in build() to bypass cargo-time network calls. Generalizes to any sherpa-onnx-sys consumer in an airgapped build environment.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:10",
+      "label": "**Packaging cross-check pattern**: Compare makedepends across Debian Build-Depends, RPM spec BuildRequires, and PKGBUILD makedepends before finalizing any packaging format. Catches transitive build deps that are absent from Cargo.toml but required at compile time (e.g. clang for bindgen).",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:11",
+      "label": "**Release workflow artifact contract tests**: Structural assertions in tests/packaging.rs verify the release.yml YAML references correct artifact globs (with fail_on_unmatched_files: true) before any tag push. This catches broken upload steps at PR-review time instead of at release time when artifacts are expected.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:12",
+      "label": "**clippy not available in the project's system cargo environment**: /usr/bin/cargo does not have the clippy component installed (no rustup on this host). The `cargo clippy -D warnings clean` success criterion could not be mechanically verified at milestone close. cargo check passes clean; all 27 test suites pass. This is an environment gap to address before the first release.",
+      "type": "lesson",
+      "description": "Source: M010-ROADMAP.md/Success Criteria (verified at milestone close)",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:13",
+      "label": "**linuxdeploy and appimagetool are absent on the current build host (Ubuntu 26.04)**: Despite Ubuntu being Debian-derived and meeting the Debian 12 distro target in spirit, the AppImage packaging tools are not pre-installed. The verify-appimage.sh STATUS: skipped:tools-missing design absorbed this gracefully, but it means no AppImage binary has been produced yet — only the CI workflow to produce one.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M010:14",
+      "label": "**AUR sha256sums must be SKIP placeholders in the repo**: The real hashes can only be computed after the release tarball exists (which requires the tag push). This means the PKGBUILD in-repo always has SKIP placeholders; the release workflow or human maintainer pins them at tag time. This is normal AUR practice but was not obvious at the start of S04.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:1",
+      "label": "**Distribution proof transcript format**: 7-field minimum (STATUS, DISTRO, KERNEL, SIZE_BYTES, SHA256, EXIT_CODE, VERSION_OUTPUT) written unconditionally; STATUS line is the health signal. Pending-VM-run transcripts use 'pending' as placeholder for all fields except statically-known ones (e.g. INSTALL_METHOD: appimage). Tests assert all required fields are present regardless of STATUS value.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:2",
+      "label": "**Proof directory scaffold pattern (MEM079)**: Seed transcripts with STATUS: pending VM run and structural tests at slice time; human operators convert to ok after real VM runs. Applied consistently across appimage/, wizard/, and final/ proof levels. This allows CI to gate on structure without requiring VM hardware.",
+      "type": "pattern",
+      "description": "Source: S06-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:3",
+      "label": "**Offline Arch builds via SHERPA_ONNX_ARCHIVE_DIR**: Add prebuilt archive as source[] entry in PKGBUILD; export SHERPA_ONNX_ARCHIVE_DIR=$srcdir in build() to bypass cargo-time network calls. Generalizes to any sherpa-onnx-sys consumer in an airgapped build environment.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:4",
+      "label": "**Packaging cross-check pattern**: Compare makedepends across Debian Build-Depends, RPM spec BuildRequires, and PKGBUILD makedepends before finalizing any packaging format. Catches transitive build deps that are absent from Cargo.toml but required at compile time (e.g. clang for bindgen).",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:5",
+      "label": "**Release workflow artifact contract tests**: Structural assertions in tests/packaging.rs verify the release.yml YAML references correct artifact globs (with fail_on_unmatched_files: true) before any tag push. This catches broken upload steps at PR-review time instead of at release time when artifacts are expected.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:6",
+      "label": "**clippy not available in the project's system cargo environment**: /usr/bin/cargo does not have the clippy component installed (no rustup on this host). The `cargo clippy -D warnings clean` success criterion could not be mechanically verified at milestone close. cargo check passes clean; all 27 test suites pass. This is an environment gap to address before the first release.",
+      "type": "pattern",
+      "description": "Source: M010-ROADMAP.md/Success Criteria (verified at milestone close)",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:7",
+      "label": "**linuxdeploy and appimagetool are absent on the current build host (Ubuntu 26.04)**: Despite Ubuntu being Debian-derived and meeting the Debian 12 distro target in spirit, the AppImage packaging tools are not pre-installed. The verify-appimage.sh STATUS: skipped:tools-missing design absorbed this gracefully, but it means no AppImage binary has been produced yet — only the CI workflow to produce one.",
+      "type": "pattern",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M010:8",
+      "label": "**AUR sha256sums must be SKIP placeholders in the repo**: The real hashes can only be computed after the release tarball exists (which requires the tag push). This means the PKGBUILD in-repo always has SKIP placeholders; the release workflow or human maintainer pins them at tag time. This is normal AUR practice but was not obvious at the start of S04.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M010:1",
+      "label": "**clippy not available in the project's system cargo environment**: /usr/bin/cargo does not have the clippy component installed (no rustup on this host). The `cargo clippy -D warnings clean` success criterion could not be mechanically verified at milestone close. cargo check passes clean; all 27 test suites pass. This is an environment gap to address before the first release.",
+      "type": "lesson",
+      "description": "Source: M010-ROADMAP.md/Success Criteria (verified at milestone close)",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M010:2",
+      "label": "**linuxdeploy and appimagetool are absent on the current build host (Ubuntu 26.04)**: Despite Ubuntu being Debian-derived and meeting the Debian 12 distro target in spirit, the AppImage packaging tools are not pre-installed. The verify-appimage.sh STATUS: skipped:tools-missing design absorbed this gracefully, but it means no AppImage binary has been produced yet — only the CI workflow to produce one.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M010:3",
+      "label": "**AUR sha256sums must be SKIP placeholders in the repo**: The real hashes can only be computed after the release tarball exists (which requires the tag push). This means the PKGBUILD in-repo always has SKIP placeholders; the release workflow or human maintainer pins them at tag time. This is normal AUR practice but was not obvious at the start of S04.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M010/M010-LEARNINGS.md"
     }
   ],
   "edges": [
@@ -3130,42 +3481,6 @@
     {
       "from": "slice:M001:S07",
       "to": "task:M001:S07:T03",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S01",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S02",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S03",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S04",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S05",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S06",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -4312,6 +4627,24 @@
     {
       "from": "slice:M010:S06",
       "to": "task:M010:S06:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "slice:M011:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M011:S01",
+      "to": "task:M011:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "slice:M011:S04",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -6234,7 +6567,559 @@
       "to": "surprise:M009:3",
       "type": "relates_to",
       "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "surprise:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "surprise:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "surprise:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "decision:M010:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "lesson:M010:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "pattern:M010:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "surprise:M010:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "surprise:M010:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M010",
+      "to": "surprise:M010:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-28T11:24:20.593Z"
+  "builtAt": "2026-04-29T01:13:38.366Z"
 }
