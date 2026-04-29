@@ -1214,8 +1214,27 @@
     },
     {
       "id": "slice:M011:S04",
-      "label": "M011/S04",
+      "label": "S04: Version bump + release CI (.deb / .rpm jobs)",
       "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/slices/S04/S04-PLAN.md"
+    },
+    {
+      "id": "task:M011:S04:T01",
+      "label": "T01: Bump version to 1.0.0 across Cargo.toml, spec, PKGBUILD, debian/changelog, and CHANGELOG.md",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M011:S04:T02",
+      "label": "T02: Add build-deb and build-rpm jobs to release.yml and extend artifact upload globs",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M011:S04:T03",
+      "label": "T03: Extend tests/packaging.rs to assert release.yml declares build-deb, build-rpm, and matching artifact globs",
+      "type": "task",
       "confidence": "EXTRACTED"
     },
     {
@@ -4735,6 +4754,24 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "slice:M011:S04",
+      "to": "task:M011:S04:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M011:S04",
+      "to": "task:M011:S04:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M011:S04",
+      "to": "task:M011:S04:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M001",
       "to": "decision:M001:1",
       "type": "relates_to",
@@ -7207,5 +7244,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-29T01:48:26.148Z"
+  "builtAt": "2026-04-29T01:58:53.526Z"
 }
