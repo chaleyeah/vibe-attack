@@ -7,6 +7,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+---
+
+## [1.0.0] - 2026-04-28
+
 ### Added
 - **AppImage packaging**: `packaging/appimage/build.sh` now discovers `libonnxruntime.so`
   via a four-stage fallback (`target/release/` → `ORT_DYLIB_PATH` env var → `ldconfig`
@@ -44,10 +48,3 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   socket path, `.desktop` file, PKGBUILD, README, docs, and all source references
   updated. Historical benchmark artifacts in `docs/latency-proofs/` retain original
   content for reproducibility.
-
----
-
-## Notes on versioning
-
-vibe-attack has not yet cut a numbered release. Once v1.0 ships, entries above will move
-to a versioned section and this file will track releases going forward.

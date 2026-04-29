@@ -10,10 +10,10 @@
 - [x] **S02: S02** `risk:high` `depends:[]`
   > After this: all 12 transcripts (appimage + wizard + final × 4 distros) carry `STATUS: ok`; proof trees are complete.
 
-- [ ] **S03: S03** `risk:medium` `depends:[]`
+- [x] **S03: S03** `risk:medium` `depends:[]`
   > After this: wizard flow, config screen, and tray menu issues found during VM runs are fixed; changes verified in the four distro environments.
 
-- [ ] **S04: Version bump + release CI (.deb / .rpm jobs)** `risk:medium` `depends:[]`
+- [ ] **S04: S04** `risk:medium` `depends:[]`
   > After this: `Cargo.toml`, `vibe-attack.spec`, and `PKGBUILD` read `1.0.0`; `CHANGELOG.md` has a dated `[1.0.0]` block; `release.yml` builds and uploads AppImage + .deb + .rpm + source tarball on a real test-tag push.
 
 - [ ] **S05: Publish GitHub Release v1.0.0** `risk:low` `depends:[S02,S03,S04]`

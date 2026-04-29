@@ -1,5 +1,5 @@
 Name:           vibe-attack
-Version:        0.1.0
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Voice macro daemon for Helldivers 2 on Linux
 
@@ -52,5 +52,8 @@ install -Dm644 README.md %{buildroot}%{_docdir}/%{name}/README.md
 %{_datadir}/icons/hicolor/scalable/apps/vibe-attack.svg
 
 %changelog
+* Tue Apr 28 2026 Chris Chale <chrischale@gmail.com> - 1.0.0-1
+- Version 1.0.0 release
+
 * Sun Apr 26 2026 Chris Chale <chrischale@gmail.com> - 0.1.0-1
 - Initial packaging
