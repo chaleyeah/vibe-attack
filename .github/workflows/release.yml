@@ -187,6 +187,8 @@ jobs:
     name: Publish GitHub Release
     runs-on: ubuntu-22.04
     needs: [build-appimage, build-deb, build-rpm]
+    permissions:
+      contents: write
 
     steps:
       - name: Download AppImage artifacts
