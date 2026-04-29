@@ -104,14 +104,12 @@ echo "AppDir prepared at ./$APPDIR"
 # Assemble the final AppImage if tools are available.
 if command -v linuxdeploy > /dev/null 2>&1 && command -v appimagetool > /dev/null 2>&1; then
     echo "Running linuxdeploy..."
-    # Pass bundled .so files via --library so linuxdeploy doesn't fail when
-    # they are loaded via dlopen and therefore absent from the binary's RPATH.
-    LINUXDEPLOY_EXTRA=""
-    for so in "$APPDIR/usr/lib/"*.so; do
-        [ -f "$so" ] && LINUXDEPLOY_EXTRA="$LINUXDEPLOY_EXTRA --library $so"
-    done
-    # shellcheck disable=SC2086
-    linuxdeploy --appdir "$APPDIR" $LINUXDEPLOY_EXTRA
+    # Expose bundled .so files to ldd/linuxdeploy dependency resolution.
+    # libsherpa-onnx-c-api and libonnxruntime are dlopen'd at runtime and not
+    # in the binary's RPATH, so linuxdeploy cannot find them via ldd alone.
+    # Adding the AppDir lib path to LD_LIBRARY_PATH makes ldd resolve them.
+    export LD_LIBRARY_PATH="$(pwd)/$APPDIR/usr/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+    linuxdeploy --appdir "$APPDIR"
     echo "Running appimagetool..."
     appimagetool "$APPDIR" "${PKGNAME}-x86_64.AppImage"
     echo "Done: ${PKGNAME}-x86_64.AppImage"

@@ -38,8 +38,6 @@ install -Dm644 packaging/appimage/vibe-attack.desktop \
     %{buildroot}%{_datadir}/applications/vibe-attack.desktop
 install -Dm644 assets/vibe-attack.svg \
     %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/vibe-attack.svg
-install -Dm644 README.md %{buildroot}%{_docdir}/%{name}/README.md
-
 %check
 # Audio hardware not available in build env — skip runtime tests
 
