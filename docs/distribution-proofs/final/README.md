@@ -63,7 +63,7 @@ Transcripts with `STATUS: pending VM run` are **acceptable** — they preserve s
 sudo apt-get install -y libfuse2
 
 # Download AppImage from the GitHub Releases page
-wget https://github.com/<owner>/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
+wget https://github.com/chaleyeah/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
 chmod +x vibe-attack-x86_64.AppImage
 
 # Verify it launches
@@ -88,7 +88,7 @@ APPIMAGE_SIZE_BYTES=$(stat -c %s vibe-attack-x86_64.AppImage)
 sudo apt-get install -y libfuse2
 
 # Download AppImage from the GitHub Releases page
-wget https://github.com/<owner>/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
+wget https://github.com/chaleyeah/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
 chmod +x vibe-attack-x86_64.AppImage
 
 # Verify it launches
@@ -108,7 +108,7 @@ chmod +x vibe-attack-x86_64.AppImage
 sudo dnf install -y fuse-libs
 
 # Download AppImage from the GitHub Releases page
-wget https://github.com/<owner>/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
+wget https://github.com/chaleyeah/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
 chmod +x vibe-attack-x86_64.AppImage
 
 # Verify it launches
@@ -128,7 +128,7 @@ chmod +x vibe-attack-x86_64.AppImage
 sudo pacman -Sy --noconfirm fuse2
 
 # Download AppImage from the GitHub Releases page
-wget https://github.com/<owner>/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
+wget https://github.com/chaleyeah/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage
 chmod +x vibe-attack-x86_64.AppImage
 
 # Verify it launches
