@@ -7,10 +7,10 @@
 - [x] **S01: S01** `risk:high` `depends:[]`
   > After this: `cargo test --test distribution_proofs --test-threads=1` passes with the new four-distro names; old three-distro directories are removed; test function names and README per-distro sections updated.
 
-- [ ] **S02: S02** `risk:high` `depends:[]`
+- [x] **S02: S02** `risk:high` `depends:[]`
   > After this: all 12 transcripts (appimage + wizard + final × 4 distros) carry `STATUS: ok`; proof trees are complete.
 
-- [ ] **S03: UI polish from proof-run findings** `risk:medium` `depends:[S02]`
+- [ ] **S03: S03** `risk:medium` `depends:[]`
   > After this: wizard flow, config screen, and tray menu issues found during VM runs are fixed; changes verified in the four distro environments.
 
 - [ ] **S04: Version bump + release CI (.deb / .rpm jobs)** `risk:medium` `depends:[]`

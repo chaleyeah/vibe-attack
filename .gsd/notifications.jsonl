@@ -1,7 +1,3 @@
-{"id":"3ffa6585-d25a-4792-91dd-9aa425dc6295","ts":"2026-04-25T20:10:14.320Z","severity":"info","message":"Verification gate: 3/3 checks passed","source":"notify","read":false}
-{"id":"4b07d44a-2fa0-455a-9ff4-c1952c070199","ts":"2026-04-25T20:10:14.324Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
-{"id":"7012f362-ec3d-46bf-bfe2-3b589b4a1255","ts":"2026-04-25T20:11:25.004Z","severity":"info","message":"Committed: feat: Replaced stale ORT dual-instance conflict warnings with shared .s…","source":"notify","read":false}
-{"id":"3cfd6615-8e4b-4510-b6dc-5c09ef68557f","ts":"2026-04-25T20:11:25.009Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
 {"id":"222d8375-9995-481a-a086-ee2d127c0c0a","ts":"2026-04-25T20:11:25.009Z","severity":"warning","message":"Safety: task T03 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"0feaf9ac-cc2a-4323-a0bb-917b62484e0b","ts":"2026-04-25T20:11:25.022Z","severity":"info","message":"Verification gate: 4/4 checks passed","source":"notify","read":false}
 {"id":"deebde8a-7c48-464b-8ace-c528628aa14d","ts":"2026-04-25T20:11:25.026Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
@@ -498,3 +494,7 @@
 {"id":"9b5e20c3-3fba-490e-8577-3d3732367ba3","ts":"2026-04-29T01:28:25.840Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
 {"id":"b300a657-f3f9-4a5f-9cc0-6789fd59d487","ts":"2026-04-29T01:28:25.842Z","severity":"warning","message":"Safety: task T02 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"b1dfcc8f-854a-4332-a3c4-bda0d26bafa8","ts":"2026-04-29T01:28:25.850Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"89978e04-dea9-421e-b7c1-a4ec80ebfd26","ts":"2026-04-29T01:30:44.834Z","severity":"info","message":"Committed: test: T03 BLOCKED: S04 AppImage release not shipped — owner placeholder…","source":"notify","read":false}
+{"id":"34e76d93-daa0-48f0-b543-64650f5c021d","ts":"2026-04-29T01:30:44.843Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"deab65d7-e5b3-4a86-9110-fc5d45de97a4","ts":"2026-04-29T01:30:44.844Z","severity":"warning","message":"Safety: task T03 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"af4a9c17-2afd-4af4-b8c9-a7f8ffd444f6","ts":"2026-04-29T01:30:44.852Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

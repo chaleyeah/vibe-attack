@@ -132,6 +132,8 @@ mod inner {
         pub handle: Option<std::thread::JoinHandle<()>>,
         /// Last capture error message, shown in the wizard UI.
         pub error: Option<String>,
+        /// Manual key name typed by the user; persisted across frames so edits are not lost.
+        pub manual_key: String,
     }
 
     impl PttCaptureState {
@@ -142,6 +144,7 @@ mod inner {
                 captured_key: Arc::new(Mutex::new(None)),
                 handle: None,
                 error: None,
+                manual_key: String::new(),
             }
         }
 
@@ -382,6 +385,9 @@ mod inner {
                 ui.ctx().request_repaint_after(std::time::Duration::from_millis(250));
             }
             DownloadStatus::Done => {
+                // Re-probe on every frame while Done so the wizard advances automatically
+                // when the user re-enters this step after the download handle was already reaped.
+                *state = probe::run();
                 ui.colored_label(egui::Color32::GREEN, "Download complete.");
                 ui.add_space(4.0);
                 if ui.button("Re-check").clicked() {
@@ -420,7 +426,10 @@ mod inner {
             Err(e) => {
                 error!(reason = %e, "model download request failed");
                 if let Ok(mut g) = status.lock() {
-                    *g = DownloadStatus::Failed(e.to_string());
+                    *g = DownloadStatus::Failed(format!(
+                        "HuggingFace serves a 302 redirect to a CDN — if your network blocks the CDN this will fail.\n{}",
+                        e
+                    ));
                 }
                 return;
             }
@@ -567,10 +576,15 @@ mod inner {
         copy_command_row(ui, "newgrp input");
         ui.add_space(8.0);
 
-        ui.colored_label(
-            egui::Color32::YELLOW,
-            "Note (systemd v258+ / CachyOS 2025+): use the 'input' group, not 'uinput'.",
-        );
+        egui::Frame::NONE
+            .fill(egui::Color32::from_rgb(64, 50, 0))
+            .inner_margin(egui::Margin::same(6))
+            .show(ui, |ui| {
+                ui.colored_label(
+                    egui::Color32::from_rgb(255, 200, 60),
+                    "Note (systemd v258+ / CachyOS 2025+): use the 'input' group, not 'uinput'.",
+                );
+            });
 
         ui.add_space(12.0);
         if ui.button("Re-check").clicked() {
@@ -650,14 +664,14 @@ mod inner {
 
         ui.add_space(8.0);
         ui.label("Or enter a key name manually (e.g. KEY_GRAVE, KEY_F13):");
-        let mut manual_key = String::new();
-        let resp = ui.text_edit_singleline(&mut manual_key);
+        let resp = ui.text_edit_singleline(&mut ptt.manual_key);
         if resp.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
-            let key_name = manual_key.trim().to_string();
+            let key_name = ptt.manual_key.trim().to_string();
             if !key_name.is_empty() {
                 match write_ptt_key_to_config(&key_name) {
                     Ok(()) => {
                         info!(key = %key_name, "PTT key written to config (manual entry)");
+                        ptt.manual_key.clear();
                         *state = probe::run();
                     }
                     Err(e) => {
@@ -782,7 +796,7 @@ mod inner {
 #[cfg(test)]
 mod tests {
     #[cfg(feature = "gui")]
-    use super::inner::rewrite_ptt_key;
+    use super::inner::{rewrite_ptt_key, PttCaptureState};
 
     #[test]
     #[cfg(feature = "gui")]
@@ -808,5 +822,19 @@ mod tests {
         let result = rewrite_ptt_key(cfg, "KEY_GRAVE");
         assert!(result.contains("ptt:"), "should append ptt section");
         assert!(result.contains("key: KEY_GRAVE"), "should contain new key");
+    }
+
+    #[test]
+    #[cfg(feature = "gui")]
+    fn manual_key_persists_in_state() {
+        let mut ptt = PttCaptureState::new();
+        ptt.manual_key.push_str("KEY_F13");
+        assert_eq!(ptt.manual_key, "KEY_F13");
+    }
+
+    #[test]
+    #[cfg(feature = "gui")]
+    fn manual_key_default_empty() {
+        assert!(PttCaptureState::default().manual_key.is_empty());
     }
 }
