@@ -74,7 +74,7 @@ New wiring inside vibe-attack-config.rs is two lines plus the early return; do n
   - Files: `src/ui/tray.rs`, `src/bin/vibe-attack-config.rs`
   - Verify: cargo test --features gui --lib ui::tray:: -- --test-threads=1 && cargo build --release --features gui --bin vibe-attack-config
 
-- [ ] **T03: Add config-screen PTT-key affordance and run dev-host smoke verification** `est:1h`
+- [x] **T03: Add config-screen PTT-key affordance and run dev-host smoke verification** `est:1h`
   Two parts.
 
 Part A — Config-screen affordance: in src/bin/vibe-attack-config.rs `show_main_config` PTT row (lines 387–390), the current label 'PTT key: KEY_F13' has no indication that this is set in the wizard and that re-entering requires the wizard. Replace the single-line label with a horizontal layout: keep `ui.label(format!("PTT key: {}", app.config.ptt_binding))` and add `ui.weak("(configured in wizard)")` next to it. Do not add a 'Reconfigure…' button — re-entering the wizard from main config is out of scope per M008's explicit deferral and would expand the slice. The weak-text affordance is the minimum disambiguation that resolves S03-RESEARCH's 'users don't know they can't change it' issue without scope creep.

@@ -393,6 +393,7 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
     // PTT binding (read-only display — live capture deferred to post-S01)
     ui.horizontal(|ui| {
         ui.label(format!("PTT key: {}", app.config.ptt_binding));
+        ui.weak("(configured in wizard)");
     });
 
     // Save button
