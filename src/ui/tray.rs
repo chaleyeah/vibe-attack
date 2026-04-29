@@ -34,6 +34,8 @@ struct TrayState {
 pub struct TrayHandle {
     /// Set to true by the tray "Open Config" action; cleared by the eframe loop.
     pub open_window: Arc<AtomicBool>,
+    /// Set to true by the tray "Quit" action; cleared by the eframe loop.
+    pub quit_window: Arc<AtomicBool>,
     _thread: std::thread::JoinHandle<()>,
 }
 
@@ -43,6 +45,8 @@ impl TrayHandle {
     pub fn spawn() -> Option<Self> {
         let open_window = Arc::new(AtomicBool::new(false));
         let open_window_clone = Arc::clone(&open_window);
+        let quit_window = Arc::new(AtomicBool::new(false));
+        let quit_window_clone = Arc::clone(&quit_window);
 
         let (tx, rx) = std::sync::mpsc::channel::<Result<(), String>>();
 
@@ -63,6 +67,7 @@ impl TrayHandle {
                 rt.block_on(async move {
                     let tray = VibeTray {
                         open_window: Arc::clone(&open_window_clone),
+                        quit_window: Arc::clone(&quit_window_clone),
                         state: Arc::new(Mutex::new(TrayState::default())),
                     };
                     let state_ref = Arc::clone(&tray.state);
@@ -121,6 +126,7 @@ impl TrayHandle {
         match rx.recv() {
             Ok(Ok(())) => Some(TrayHandle {
                 open_window,
+                quit_window,
                 _thread: thread,
             }),
             Ok(Err(e)) => {
@@ -134,6 +140,11 @@ impl TrayHandle {
     /// Returns true (and resets the flag) if the tray requested the window to open.
     pub fn take_open_request(&self) -> bool {
         self.open_window.swap(false, Ordering::AcqRel)
+    }
+
+    /// Returns true (and resets the flag) if the tray "Quit" item was clicked.
+    pub fn take_quit_request(&self) -> bool {
+        self.quit_window.swap(false, Ordering::AcqRel)
     }
 }
 
@@ -152,10 +163,32 @@ pub(crate) fn icon_name_for_state(state: Option<&DaemonState>) -> &'static str {
     }
 }
 
+/// Build the tooltip description string for a given daemon state and activation mode.
+///
+/// Extracted as a free function (mirroring [`icon_name_for_state`]) so it is unit-testable
+/// without constructing any tray state or D-Bus connection.
+pub(crate) fn tooltip_description_for(
+    state: Option<&DaemonState>,
+    mode: Option<&ActivationMode>,
+) -> String {
+    match state {
+        None => "Not running".into(),
+        Some(DaemonState::Idle) => match mode {
+            Some(ActivationMode::Ptt) => "Idle — waiting for PTT key".into(),
+            Some(ActivationMode::Wake) => "Idle — listening for wake word".into(),
+            None => "Idle".into(),
+        },
+        Some(DaemonState::Muted) => "Muted".into(),
+        Some(DaemonState::Listening) => "Listening\u{2026}".into(),
+        Some(DaemonState::Recording) => "Recording\u{2026}".into(),
+    }
+}
+
 // ── Tray impl ────────────────────────────────────────────────────────────────
 
 struct VibeTray {
     open_window: Arc<AtomicBool>,
+    quit_window: Arc<AtomicBool>,
     state: Arc<Mutex<TrayState>>,
 }
 
@@ -182,13 +215,9 @@ impl Tray for VibeTray {
     }
 
     fn tool_tip(&self) -> ksni::ToolTip {
-        let description = match self.current_state().daemon_state {
-            None => "Not running".into(),
-            Some(DaemonState::Idle) => "Idle — listening for wake word".into(),
-            Some(DaemonState::Muted) => "Muted".into(),
-            Some(DaemonState::Listening) => "Listening…".into(),
-            Some(DaemonState::Recording) => "Recording…".into(),
-        };
+        let s = self.current_state();
+        let description =
+            tooltip_description_for(s.daemon_state.as_ref(), s.active_mode.as_ref());
         ksni::ToolTip {
             title: "Vibe Attack".into(),
             description,
@@ -329,11 +358,15 @@ impl Tray for VibeTray {
 
         items.push(MenuItem::Separator);
 
+        let quit_flag = Arc::clone(&self.quit_window);
         items.push(
             StandardItem {
                 label: "Quit".into(),
                 icon_name: "application-exit".into(),
-                activate: Box::new(|_| std::process::exit(0)),
+                activate: Box::new(move |_this: &mut Self| {
+                    tracing::info!("Tray quit requested");
+                    quit_flag.store(true, Ordering::Release);
+                }),
                 ..Default::default()
             }
             .into(),
@@ -382,5 +415,44 @@ mod tests {
             icon_name_for_state(Some(&DaemonState::Muted)),
             "audio-input-microphone-muted"
         );
+    }
+
+    #[test]
+    fn tooltip_description_idle_ptt() {
+        let desc =
+            tooltip_description_for(Some(&DaemonState::Idle), Some(&ActivationMode::Ptt));
+        assert!(desc.contains("PTT"), "expected PTT in '{desc}'");
+    }
+
+    #[test]
+    fn tooltip_description_idle_wake() {
+        let desc =
+            tooltip_description_for(Some(&DaemonState::Idle), Some(&ActivationMode::Wake));
+        assert!(desc.contains("wake word"), "expected 'wake word' in '{desc}'");
+    }
+
+    #[test]
+    fn tooltip_description_idle_unknown() {
+        let desc = tooltip_description_for(Some(&DaemonState::Idle), None);
+        assert_eq!(desc, "Idle");
+    }
+
+    #[test]
+    fn tooltip_description_recording_unaffected_by_mode() {
+        let ptt = tooltip_description_for(Some(&DaemonState::Recording), Some(&ActivationMode::Ptt));
+        let wake =
+            tooltip_description_for(Some(&DaemonState::Recording), Some(&ActivationMode::Wake));
+        let none = tooltip_description_for(Some(&DaemonState::Recording), None);
+        assert_eq!(ptt, wake);
+        assert_eq!(ptt, none);
+    }
+
+    #[test]
+    fn tray_handle_take_quit_request_clears_flag() {
+        use std::sync::atomic::AtomicBool;
+        let flag = Arc::new(AtomicBool::new(true));
+        let returned = flag.swap(false, Ordering::AcqRel);
+        assert!(returned, "swap should have returned the original true value");
+        assert!(!flag.load(Ordering::Acquire), "flag should now be false");
     }
 }

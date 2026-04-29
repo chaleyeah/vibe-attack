@@ -245,6 +245,12 @@ impl eframe::App for VibeAttackConfigApp {
             ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
         }
 
+        // Honour "Quit" requests from the tray.
+        if self.tray.as_ref().is_some_and(|t| t.take_quit_request()) {
+            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+            return;
+        }
+
         // Repaint at ~10Hz for mic level updates when in main config view.
         if self.first_run.is_setup_complete() {
             ctx.request_repaint_after(std::time::Duration::from_millis(100));

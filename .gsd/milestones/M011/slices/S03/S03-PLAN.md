@@ -54,7 +54,7 @@ Must stay inside the `mod inner` block (wizard.rs:14) since PttCaptureState is e
   - Files: `src/ui/wizard.rs`
   - Verify: cargo test --features gui --lib ui::wizard:: -- --test-threads=1 && cargo build --release --features gui --bin vibe-attack-config
 
-- [ ] **T02: Fix tray Quit + tooltip and add active-mode awareness** `est:2h`
+- [x] **T02: Fix tray Quit + tooltip and add active-mode awareness** `est:2h`
   Address the two tray-side bugs identified in S03-RESEARCH.
 
 (1) Tray Quit using std::process::exit(0) — the current Quit handler at src/ui/tray.rs:336 is `Box::new(|_| std::process::exit(0))`. This bypasses eframe shutdown and can drop pending writes (per S03-RESEARCH and MEM042 — ksni callbacks must be non-blocking and must not jump out of the runtime). Add a new `quit_window: Arc<AtomicBool>` field to TrayHandle (line 33) and to VibeTray (line 157), initialize alongside open_window in TrayHandle::spawn() and the VibeTray construction (lines 44–66). Add a public method `pub fn take_quit_request(&self) -> bool { self.quit_window.swap(false, Ordering::AcqRel) }` mirroring take_open_request (line 135). In the Quit menu item (line 332–340), replace the `std::process::exit(0)` closure with `Box::new(move |_this: &mut Self| { tracing::info!("Tray quit requested"); quit_flag.store(true, Ordering::Release); })` — capture an `Arc::clone(&self.quit_window)` into the closure as `quit_flag`, mirroring the open_flag pattern at line 204.
