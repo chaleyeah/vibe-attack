@@ -18,8 +18,8 @@ makedepends=('rust' 'cargo' 'clang')
 #            sherpa-onnx-sys build script can skip its own network download (SHERPA_ONNX_ARCHIVE_DIR)
 source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
         "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.39/sherpa-onnx-v1.12.39-linux-x64-shared-lib.tar.bz2")
-sha256sums=('SKIP'
-            'SKIP')
+sha256sums=('da0a2427d4812c274ec5fbaf4fa5dd7e13d4fb0030a484f4e06753b8ff6f4c6c'
+            '1b95e49f889dee65310cab832d6181db619ea3ac77ecd60fe8b301028145781c')
 
 build() {
     cd "$pkgname-$pkgver"

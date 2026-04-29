@@ -28,7 +28,7 @@
 
 ## Tasks
 
-- [ ] **T01: Push v1.0.0 tag and verify GitHub Release publishes all artifacts** `est:20m`
+- [x] **T01: Push v1.0.0 tag and verify GitHub Release publishes all artifacts** `est:20m`
   Push annotated tag `v1.0.0` to origin to trigger `.github/workflows/release.yml`, monitor the run to completion, and verify the resulting GitHub Release contains all five expected artifacts.
 
 **Why:** This is the only action that fires the 4-job release pipeline (build-appimage, build-deb, build-rpm → release). Until the tag is on origin and the workflow succeeds, no v1.0.0 release exists, the AUR PKGBUILD source[0] URL returns 404, and M011/S02-T03's `releases/latest/download/` URL is unreachable.
@@ -57,7 +57,7 @@
   - Files: `.github/workflows/release.yml`, `Cargo.toml`, `packaging/vibe-attack.spec`, `packaging/debian/changelog`, `packaging/PKGBUILD`
   - Verify: git ls-remote --tags origin v1.0.0 prints a ref; gh release view v1.0.0 --json isDraft,assets --jq '.isDraft==false and (.assets|length)>=5' returns true; curl -sI -L https://github.com/chaleyeah/vibe-attack/releases/latest/download/vibe-attack-x86_64.AppImage | tail -1 contains '200'; gh run list --workflow=release.yml --limit=1 --json conclusion --jq '.[0].conclusion' returns 'success'.
 
-- [ ] **T02: Pin packaging/PKGBUILD sha256sums to real v1.0.0 release hashes** `est:15m`
+- [x] **T02: Pin packaging/PKGBUILD sha256sums to real v1.0.0 release hashes** `est:15m`
   Replace the two `'SKIP'` entries in `packaging/PKGBUILD`'s `sha256sums` array with real sha256 hex digests for source[0] (the project tarball at `https://github.com/chaleyeah/vibe-attack/archive/v1.0.0.tar.gz`) and source[1] (the sherpa-onnx 1.12.39 prebuilt linux-x64 shared-lib tarball at `https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.39/sherpa-onnx-v1.12.39-linux-x64-shared-lib.tar.bz2`).
 
 **Why:** AUR submissions cannot publish with `sha256sums=('SKIP','SKIP')` — `makepkg` requires real digests so downstream users get integrity verification on source fetch. This task closes the AUR-readiness gap left by S04 (which intentionally deferred this until a real tag was live, per MEM093). It is the final piece of M011's distribution-readiness goal.

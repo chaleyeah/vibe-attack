@@ -16,5 +16,5 @@
 - [x] **S04: S04** `risk:medium` `depends:[]`
   > After this: `Cargo.toml`, `vibe-attack.spec`, and `PKGBUILD` read `1.0.0`; `CHANGELOG.md` has a dated `[1.0.0]` block; `release.yml` builds and uploads AppImage + .deb + .rpm + source tarball on a real test-tag push.
 
-- [ ] **S05: Publish GitHub Release v1.0.0** `risk:low` `depends:[S02,S03,S04]`
+- [ ] **S05: S05** `risk:low` `depends:[]`
   > After this: GitHub Releases `v1.0.0` is live with all four artifacts; AUR PKGBUILD sha256sums pinned to real release hashes.

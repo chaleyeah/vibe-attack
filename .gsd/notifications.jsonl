@@ -1,7 +1,3 @@
-{"id":"7a0251cd-f09c-425c-a772-af4de0e34a05","ts":"2026-04-27T02:11:37.778Z","severity":"info","message":"Auto-mode started. Will loop through 2 milestones.","source":"notify","read":false}
-{"id":"61b45c3f-c5bf-4c07-b501-213f1bfd0540","ts":"2026-04-27T02:11:37.781Z","severity":"info","message":"Dynamic routing: disabled — all tasks will use claude-code/claude-sonnet-4-6","source":"notify","read":false}
-{"id":"93d11e68-2fd5-4d6a-b13d-c35bf0183f93","ts":"2026-04-27T02:11:37.781Z","severity":"info","message":"Pre-flight: 7 milestones queued. All have full context.","source":"notify","read":false}
-{"id":"32709d22-9cb9-465b-a7a1-fe93a53044c0","ts":"2026-04-27T02:11:37.793Z","severity":"error","message":"Auto-mode stopped: infrastructure error SQLITE_CORRUPT — database disk image is malformed","source":"notify","read":false}
 {"id":"8cd0d9a5-94ae-4102-90a0-6ddc428ee5fa","ts":"2026-04-27T02:11:37.803Z","severity":"info","message":"Auto-mode stopped — Infrastructure error (SQLITE_CORRUPT): not recoverable by retry. Session: $20.29 · 30.04M tokens · 28 units","source":"notify","read":false}
 {"id":"38bbbfef-38f5-4a1c-afa9-956b1957ab03","ts":"2026-04-27T11:05:50.606Z","severity":"error","message":"gsd recover: No database open. Run a GSD command first to initialize the DB.","source":"notify","read":false}
 {"id":"aa3e197b-01dc-4d1a-8286-244f4579fb7e","ts":"2026-04-27T11:06:42.859Z","severity":"info","message":"All slices are complete — nothing to discuss.","source":"notify","read":false}
@@ -498,3 +494,7 @@
 {"id":"22c90f8a-9c36-41b0-92e5-8b35451588ed","ts":"2026-04-29T02:32:10.956Z","severity":"warning","message":"Timeout recovery: steering execute-task M011/S05/T01 to finish durable output (attempt 1, session 1/1).","source":"notify","read":false}
 {"id":"22722b0d-45c3-42e6-b9c4-8b419af4ccdd","ts":"2026-04-29T02:32:40.778Z","severity":"warning","message":"Unit timed out for execute-task M011/S05/T01 (supervision may have failed). Pausing auto-mode.","source":"notify","read":false}
 {"id":"7c56bda0-2bfa-47d6-ab33-adf9ed6b58bc","ts":"2026-04-29T02:32:40.815Z","severity":"info","message":"Auto-mode paused (Escape). Type to interact, or /gsd auto to resume.","source":"notify","read":false}
+{"id":"c4eb7bd0-2157-4533-b840-d54deb1c0015","ts":"2026-04-29T02:32:40.872Z","severity":"info","message":"Committed: chore: auto-commit after execute-task","source":"notify","read":false}
+{"id":"cc0fa8f9-4973-4ae0-9ec3-9440e56095ee","ts":"2026-04-29T11:42:55.531Z","severity":"info","message":"Step-mode resumed.","source":"notify","read":false}
+{"id":"b71eae2a-d684-4a6d-a89b-3c0d532f9ff0","ts":"2026-04-29T11:42:56.073Z","severity":"info","message":"Resume: applied 11 fix(es) to state.","source":"notify","read":false}
+{"id":"b335e67c-2d6c-4fae-8eeb-e6c500c0a007","ts":"2026-04-29T11:42:56.085Z","severity":"info","message":"Recovered 136 tool calls from paused session. Resuming with context.","source":"notify","read":false}

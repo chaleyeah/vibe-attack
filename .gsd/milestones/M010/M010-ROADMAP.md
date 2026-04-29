@@ -1,4 +1,4 @@
-# M010: Distribution — AppImage, AUR, First-Run Wizard
+# M010: Distribution - AppImage, AUR, First-Run Wizard
 
 **Vision:** A stranger can download a single AppImage, mark it executable, run it on Debian, Fedora, or Arch, walk through the first-run wizard, and fire a Helldivers 2 stratagem by voice — without reading a wiki or asking anyone. AUR users get yay -S vibe-attack. The project ships.
 
