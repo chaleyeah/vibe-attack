@@ -120,6 +120,7 @@ jobs:
 
       - name: Build .deb package
         run: |
+          ln -s packaging/debian debian
           dpkg-buildpackage -uc -us -b
           mv ../vibe-attack_*.deb .
 
@@ -173,7 +174,7 @@ jobs:
 
       - name: Build RPM package
         run: |
-          rpmbuild -bb ~/rpmbuild/SPECS/vibe-attack.spec
+          rpmbuild -bb --nodeps ~/rpmbuild/SPECS/vibe-attack.spec
           cp ~/rpmbuild/RPMS/x86_64/vibe-attack-*.x86_64.rpm .
 
       - name: Upload rpm artifact

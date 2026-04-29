@@ -104,7 +104,14 @@ echo "AppDir prepared at ./$APPDIR"
 # Assemble the final AppImage if tools are available.
 if command -v linuxdeploy > /dev/null 2>&1 && command -v appimagetool > /dev/null 2>&1; then
     echo "Running linuxdeploy..."
-    linuxdeploy --appdir "$APPDIR" --output appimage
+    # Pass bundled .so files via --library so linuxdeploy doesn't fail when
+    # they are loaded via dlopen and therefore absent from the binary's RPATH.
+    LINUXDEPLOY_EXTRA=""
+    for so in "$APPDIR/usr/lib/"*.so; do
+        [ -f "$so" ] && LINUXDEPLOY_EXTRA="$LINUXDEPLOY_EXTRA --library $so"
+    done
+    # shellcheck disable=SC2086
+    linuxdeploy --appdir "$APPDIR" $LINUXDEPLOY_EXTRA
     echo "Running appimagetool..."
     appimagetool "$APPDIR" "${PKGNAME}-x86_64.AppImage"
     echo "Done: ${PKGNAME}-x86_64.AppImage"
