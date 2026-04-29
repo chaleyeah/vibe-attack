@@ -1,8 +1,3 @@
-{"id":"ebe4e770-c2f6-4f07-8380-f5d8491afd43","ts":"2026-04-25T23:34:40.978Z","severity":"success","message":"Added 999.1: \"list\"","source":"notify","read":false}
-{"id":"da5073ff-df8c-47c9-9777-776b648f80f3","ts":"2026-04-25T23:34:48.239Z","severity":"info","message":"Backlog:\n\n  ○ 999.1 — list (added 2026-04-25)\n\n1 pending, 0 promoted/done","source":"notify","read":false}
-{"id":"4eec1135-700b-458b-b491-be4d83d5aca7","ts":"2026-04-25T23:35:01.448Z","severity":"warning","message":"Usage: /gsd backlog remove <id>","source":"notify","read":false}
-{"id":"4ae822f9-c39d-43d6-bb1c-0a0972d05067","ts":"2026-04-25T23:35:05.978Z","severity":"success","message":"Removed 999.1: \"list\"","source":"notify","read":false}
-{"id":"8a96cec4-1030-4446-a007-3c89cca13411","ts":"2026-04-25T23:35:10.946Z","severity":"info","message":"Backlog is empty. Add items with /gsd backlog add <title>","source":"notify","read":false}
 {"id":"4df58585-3fd4-4e31-8a44-ca80d43723a5","ts":"2026-04-27T00:52:10.688Z","severity":"warning","message":"[reconcile] slice M006/S01 status reconciled from \"pending\" to \"complete\" (#3599)","source":"workflow-logger","read":false}
 {"id":"c81ca265-0565-45f1-a55d-a599ef2f278b","ts":"2026-04-27T02:02:22.364Z","severity":"info","message":"Using existing global GSD skill preferences at /home/chadmin/.gsd/PREFERENCES.md","source":"notify","read":false}
 {"id":"8b8e4e5e-03eb-4f9a-9a3b-7f422646f647","ts":"2026-04-27T02:02:22.365Z","severity":"info","message":"GSD preferences (global) — pick a category to configure.","source":"notify","read":false}
@@ -498,3 +493,8 @@
 {"id":"2829edb2-63be-44eb-8e65-b60dd8fc86b0","ts":"2026-04-29T01:53:20.665Z","severity":"warning","message":"Safety: task T01 has verification commands but no bash calls were recorded","source":"notify","read":false}
 {"id":"2dbb261c-45be-45c6-b077-ee56b1dac536","ts":"2026-04-29T01:53:20.676Z","severity":"info","message":"Verification gate: 4/4 checks passed","source":"notify","read":false}
 {"id":"f494ef38-b4ec-4ae7-9255-498874ccd016","ts":"2026-04-29T01:53:20.681Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
+{"id":"c7c157a9-fc49-41b7-a977-3e1af0d54e1f","ts":"2026-04-29T01:55:51.685Z","severity":"info","message":"Committed: feat: Added build-deb and build-rpm jobs to release.yml and refactored…","source":"notify","read":false}
+{"id":"cd4433b3-df90-4501-8f3b-de34ffb70f3d","ts":"2026-04-29T01:55:51.693Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
+{"id":"e15379fa-0789-4fae-ae13-8eb0d679ab0e","ts":"2026-04-29T01:55:51.695Z","severity":"warning","message":"Safety: task T02 has verification commands but no bash calls were recorded","source":"notify","read":false}
+{"id":"e7d5a3e7-5fe0-48c3-93e7-e7c601e063dd","ts":"2026-04-29T01:55:51.709Z","severity":"info","message":"Verification gate: 5/5 checks passed","source":"notify","read":false}
+{"id":"66af2abd-ffdc-4399-9de2-edeab733854a","ts":"2026-04-29T01:55:51.715Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}

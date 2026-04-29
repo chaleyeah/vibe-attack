@@ -108,3 +108,50 @@ fn release_yml_uploads_hd2_hdpack() {
         "release.yml must zip profiles/hd2/pack.yaml and reference a hd2-*.hdpack glob; got:\n{src}"
     );
 }
+
+#[test]
+fn release_yml_has_build_deb_job() {
+    let src = read_file(".github/workflows/release.yml");
+    assert!(
+        src.lines().any(|l| l == "  build-deb:"),
+        "release.yml must declare a 'build-deb:' job at column 2; got:\n{src}"
+    );
+}
+
+#[test]
+fn release_yml_has_build_rpm_job() {
+    let src = read_file(".github/workflows/release.yml");
+    assert!(
+        src.lines().any(|l| l == "  build-rpm:"),
+        "release.yml must declare a 'build-rpm:' job at column 2; got:\n{src}"
+    );
+}
+
+#[test]
+fn release_yml_uploads_deb_artifact() {
+    let src = read_file(".github/workflows/release.yml");
+    assert!(
+        src.contains("vibe-attack_*.deb"),
+        "release.yml must reference a vibe-attack_*.deb glob in the upload block; got:\n{src}"
+    );
+}
+
+#[test]
+fn release_yml_uploads_rpm_artifact() {
+    let src = read_file(".github/workflows/release.yml");
+    assert!(
+        src.contains("vibe-attack-*.x86_64.rpm"),
+        "release.yml must reference a vibe-attack-*.x86_64.rpm glob in the upload block; got:\n{src}"
+    );
+}
+
+#[test]
+fn release_yml_caches_sherpa_onnx_in_all_release_jobs() {
+    let src = read_file(".github/workflows/release.yml");
+    let count = src.matches("sherpa-onnx-1.12.39-linux-x64").count();
+    assert!(
+        count >= 3,
+        "release.yml must reference sherpa-onnx-1.12.39-linux-x64 cache key at least 3 times \
+         (once per build job: appimage, deb, rpm); found {count} occurrence(s)"
+    );
+}

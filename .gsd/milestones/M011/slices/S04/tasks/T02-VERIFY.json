@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T02",
+  "unitId": "M011/S04/T02",
+  "timestamp": 1777427751697,
+  "passed": true,
+  "discoverySource": "task-plan",
+  "checks": [
+    {
+      "command": "grep -q '^  build-deb:' .github/workflows/release.yml",
+      "exitCode": 0,
+      "durationMs": 1,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q '^  build-rpm:' .github/workflows/release.yml",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'vibe-attack_\\*\\.deb' .github/workflows/release.yml",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'vibe-attack-\\*\\.x86_64\\.rpm' .github/workflows/release.yml",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'fail_on_unmatched_files: true' .github/workflows/release.yml",
+      "exitCode": 0,
+      "durationMs": 2,
+      "verdict": "pass"
+    }
+  ]
+}

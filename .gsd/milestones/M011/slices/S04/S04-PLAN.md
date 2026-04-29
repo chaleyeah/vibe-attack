@@ -78,7 +78,7 @@ Negative tests (Q7): not exercised in this task — the unit-level assertion is 
   - Files: `.github/workflows/release.yml`
   - Verify: yamllint .github/workflows/release.yml 2>/dev/null || python3 -c 'import yaml; yaml.safe_load(open(".github/workflows/release.yml"))' && grep -q '^  build-deb:' .github/workflows/release.yml && grep -q '^  build-rpm:' .github/workflows/release.yml && grep -q 'vibe-attack_\*\.deb' .github/workflows/release.yml && grep -q 'vibe-attack-\*\.x86_64\.rpm' .github/workflows/release.yml && grep -q 'fail_on_unmatched_files: true' .github/workflows/release.yml && grep -c 'sherpa-onnx-1.12.39-linux-x64' .github/workflows/release.yml | awk '{ exit ($1 < 3) }'
 
-- [ ] **T03: Extend tests/packaging.rs to assert release.yml declares build-deb, build-rpm, and matching artifact globs** `est:30m`
+- [x] **T03: Extend tests/packaging.rs to assert release.yml declares build-deb, build-rpm, and matching artifact globs** `est:30m`
   Add new static assertions to `tests/packaging.rs` that mechanically verify the release.yml contract. These tests run with `cargo test --test packaging` and require no build tools — they read the YAML as a string and grep for required substrings. This pattern matches the existing `release_yml_uploads_source_tarball` and `release_yml_uploads_hd2_hdpack` tests and the precedent set by MEM103.
 
 Add these tests:
