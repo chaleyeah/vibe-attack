@@ -1,1 +1,9 @@
-usr/share/applications/vibe-attack.desktop
+[Desktop Entry]
+Name=Vibe Attack
+Exec=vibe-attack-config
+Type=Application
+Icon=vibe-attack
+Comment=Voice macro daemon for Helldivers 2
+Categories=Game;Utility;
+Terminal=false
+StartupWMClass=vibe-attack

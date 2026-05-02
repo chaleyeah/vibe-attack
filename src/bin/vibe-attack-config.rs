@@ -540,8 +540,11 @@ fn main() -> eframe::Result<()> {
     // Log channel: bounded to 500 entries; oldest are dropped under pressure.
     let (log_tx, log_rx) = mpsc::sync_channel(500);
 
+    let stderr_filter = tracing_subscriber::EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn"));
+
     tracing_subscriber::registry()
-        .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer().with_filter(stderr_filter))
         .with(ChannelLayer { tx: log_tx })
         .init();
 
