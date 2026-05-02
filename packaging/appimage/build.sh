@@ -108,7 +108,7 @@ cat > "$APPDIR/AppRun" << 'EOF'
 HERE="$(dirname "$(readlink -f "$0")")"
 export LD_LIBRARY_PATH="${HERE}/usr/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 export ORT_DYLIB_PATH="${HERE}/usr/lib/libonnxruntime.so"
-exec "${HERE}/usr/bin/vibe-attack" "$@"
+exec "${HERE}/usr/bin/vibe-attack-config" "$@"
 EOF
 chmod +x "$APPDIR/AppRun"
 
