@@ -287,10 +287,22 @@ pub fn spawn_pipeline(
     if std::env::var_os("ORT_DYLIB_PATH").is_none() {
         if let Ok(exe) = std::env::current_exe() {
             if let Some(exe_dir) = exe.parent() {
-                let so_path = exe_dir.join("libonnxruntime.so");
-                // SAFETY: single-threaded at this point — no pipeline threads spawned yet.
-                unsafe { std::env::set_var("ORT_DYLIB_PATH", &so_path) };
-                tracing::info!(path = %so_path.display(), "ORT_DYLIB_PATH auto-set to sherpa-onnx shared library");
+                // Check next to the binary first (dev/cargo build), then ../lib/
+                // (AppImage layout: binary in usr/bin/, .so in usr/lib/).
+                // Only set if the file actually exists — fall back to LD_LIBRARY_PATH otherwise.
+                let candidates = [
+                    exe_dir.join("libonnxruntime.so"),
+                    exe_dir.join("../lib/libonnxruntime.so"),
+                ];
+                if let Some(so_path) = candidates.iter().find(|p| p.exists()) {
+                    // Canonicalize to remove any ".." components — ort's load-dynamic
+                    // treats ORT_DYLIB_PATH as absolute and skips existence checks, so
+                    // a path with ".." can silently fail on some FUSE implementations.
+                    let resolved = so_path.canonicalize().unwrap_or_else(|_| so_path.clone());
+                    // SAFETY: single-threaded at this point — no pipeline threads spawned yet.
+                    unsafe { std::env::set_var("ORT_DYLIB_PATH", &resolved) };
+                    tracing::info!(path = %resolved.display(), "ORT_DYLIB_PATH auto-set to sherpa-onnx shared library");
+                }
             }
         }
     }

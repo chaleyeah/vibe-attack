@@ -97,13 +97,17 @@ else
     echo "WARNING: libsherpa-onnx-c-api.so not found — wake-word detection may fail at runtime." >&2
 fi
 
-# Write AppRun — sets LD_LIBRARY_PATH so dlopen finds both .so files inside
-# the FUSE mount before any system paths. Without this, inference startup fails
-# silently even though the .so files are present in the AppDir.
+# Write AppRun — sets LD_LIBRARY_PATH and ORT_DYLIB_PATH so both the dynamic
+# linker and ort's load-dynamic dlopen find libonnxruntime.so inside the FUSE
+# mount before any system paths.  ORT_DYLIB_PATH must be absolute with no ".."
+# components — ort resolves it via is_absolute() and skips existence checks,
+# so a path containing ".." can silently resolve to the wrong location on some
+# FUSE implementations.
 cat > "$APPDIR/AppRun" << 'EOF'
 #!/usr/bin/env bash
 HERE="$(dirname "$(readlink -f "$0")")"
 export LD_LIBRARY_PATH="${HERE}/usr/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+export ORT_DYLIB_PATH="${HERE}/usr/lib/libonnxruntime.so"
 exec "${HERE}/usr/bin/vibe-attack" "$@"
 EOF
 chmod +x "$APPDIR/AppRun"
