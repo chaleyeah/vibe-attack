@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-29T11:59:43.888Z",
+  "exported_at": "2026-05-03T18:15:21.376Z",
   "milestones": [
     {
       "id": "M001",
@@ -375,6 +375,63 @@
       "definition_of_done": [],
       "requirement_coverage": "",
       "boundary_map_markdown": ""
+    },
+    {
+      "id": "M012",
+      "title": "GUI Redesign — Tactical Field Equipment Aesthetic",
+      "status": "active",
+      "depends_on": [],
+      "created_at": "2026-05-03T18:14:37.705Z",
+      "completed_at": null,
+      "vision": "Replace the current ad-hoc egui UI with a cohesive dark-panel design (amber accent, JetBrains Mono, LED meter, status pill) across all three surfaces — ConfigApp, Wizard, and PackEditor — using a shared theme + widget layer. The redesign ships zero new heavy dependencies, degrades cleanly on egui limitations, and makes the daemon-disconnected error story a single Banner + Reconnect instead of wall-of-text.",
+      "success_criteria": [
+        "apply_theme(ctx) sets all Visuals/Style tokens; confirmed by visual diff against ui/screenshots/ reference renders",
+        "All shared widgets (app_header, side_nav, status_footer, section_header, field_row, primary_button, led_meter, status_pill, kbd, banner) exist in src/ui/widgets.rs and compile",
+        "ConfigApp renders all 5 nav panes (Devices, Voice, Packs, Hotkeys, Advanced) using the new primitives",
+        "Wizard renders all 6 steps including PTT drop-zone capture flow and animated LED mic-test step",
+        "PackEditor renders 3-column layout with category list, macro list with search, and detail panel",
+        "Daemon-disconnected banner replaces wall-of-text error display",
+        "Tray icons use palette-matched status dots (green/amber/red)",
+        "All existing functionality is preserved — no regressions to audio, STT, VAD, or input subsystems",
+        "App builds with cargo build --features gui and launches on X11 and Wayland"
+      ],
+      "key_risks": [
+        {
+          "risk": "egui letter-spacing not supported natively",
+          "whyItMatters": "Section titles and eyebrows use 0.08–0.20em tracking; must be simulated with character-spaced strings or accepted as tighter"
+        },
+        {
+          "risk": "Side-rail hover animation",
+          "whyItMatters": "CSS transitions don't exist in immediate-mode egui; lerp-based width or click-toggle must be chosen early as it affects layout math"
+        },
+        {
+          "risk": "PackEditor drag-reorder complexity",
+          "whyItMatters": "egui drag-and-drop for list reorder requires DragAndDrop API or manual pointer tracking; most complex slice"
+        },
+        {
+          "risk": "JetBrains Mono font bundling",
+          "whyItMatters": "Font must be embedded in the binary or bundled in AppDir; wrong approach bloats binary or breaks on AppImage"
+        },
+        {
+          "risk": "Tray icon rendering",
+          "whyItMatters": "ksni expects ARGB icon data; must generate 22px status dot PNGs at build time or runtime and ship in assets/tray/"
+        }
+      ],
+      "proof_strategy": [],
+      "verification_contract": "",
+      "verification_integration": "",
+      "verification_operational": "",
+      "verification_uat": "",
+      "definition_of_done": [
+        "cargo build --features gui succeeds with zero warnings",
+        "App launches and all 5 ConfigApp panes are navigable",
+        "Wizard runs to completion from a clean first-run state",
+        "PackEditor opens an existing pack and macro edits persist",
+        "Before/after screenshots captured for PR description",
+        "No regressions in cargo test --test-threads=1"
+      ],
+      "requirement_coverage": "Not provided.",
+      "boundary_map_markdown": "Not provided."
     }
   ],
   "slices": [
@@ -1597,6 +1654,175 @@
       "integration_closure": "- Upstream surfaces consumed: `.github/workflows/release.yml` (already complete from S04), `packaging/PKGBUILD` (sha256sums=SKIP from S04), `Cargo.toml` / `vibe-attack.spec` / `debian/changelog` / `CHANGELOG.md` (already at 1.0.0 from S04).\n- New wiring introduced in this slice: a real git tag `v1.0.0` on origin/main triggers the release workflow for the first time on this repository; this is the first end-to-end exercise of the 4-job release pipeline.\n- What remains before the milestone is truly usable end-to-end: M011/S02-T03 (final-distro UAT loop on debian13/ubuntu2604/fedora44/cachyos VMs) — human-bound, unblocked by S05's published release URL.",
       "observability_impact": "- Runtime signals: GitHub Actions workflow run logs (per-job stdout/stderr); release workflow `fail_on_unmatched_files: true` produces a loud failure with the missing glob name if any build job's artifact doesn't match.\n- Inspection surfaces: `gh run list --workflow=release.yml`, `gh run view <id> --log-failed`, `gh release view v1.0.0 --json assets`, `curl -sI <release-asset-url>`.\n- Failure visibility: workflow run id, failed job name, failed step name, and the exact missing glob (from action-gh-release error output) are all surfaced by `gh run view --log-failed`.\n- Redaction constraints: none — no secrets in release artifacts; GITHUB_TOKEN is automatic.",
       "sequence": 0,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S01",
+      "title": "Theme + Font Foundation",
+      "status": "pending",
+      "risk": "low",
+      "depends": [],
+      "demo": "Launch config app — dark background, amber accent on interactive elements, monospace font throughout.",
+      "created_at": "2026-05-03T18:15:21.361Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Establish the Rust palette struct, apply_theme() function, and JetBrains Mono font bundling that every subsequent slice depends on.",
+      "success_criteria": "apply_theme() sets all documented color tokens; JetBrainsMono-Regular and Medium load from assets/fonts/; app_header and status_footer render with new colors on existing layout.",
+      "proof_level": "visual — screenshot against 01-config-devices.png reference for color fidelity",
+      "integration_closure": "src/ui/theme.rs created; apply_theme called in app init; Cargo.toml assets include font files",
+      "observability_impact": "None — pure visual layer, no runtime behavior change",
+      "sequence": 1,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S02",
+      "title": "Shared Widget Library",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S01"
+      ],
+      "demo": "Isolated widget test page (or probe screen) showing each widget in its various states with the new theme.",
+      "created_at": "2026-05-03T18:15:21.361Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Implement all reusable widget functions in src/ui/widgets.rs: app_header, side_nav, status_footer, section_header, field_row, primary_button, led_meter, status_pill, kbd, banner.",
+      "success_criteria": "All 10 widget functions exist, compile, and render without panic for all documented state variants.",
+      "proof_level": "visual — each widget exercised in probe screen against design spec",
+      "integration_closure": "src/ui/widgets.rs with pub use in mod.rs; existing screens compile against it",
+      "observability_impact": "None",
+      "sequence": 2,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S03",
+      "title": "ConfigApp Rewrite",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S02"
+      ],
+      "demo": "Config app launches, all 5 panes navigable, disconnected banner appears when daemon is not running.",
+      "created_at": "2026-05-03T18:15:21.361Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Refactor config_app.rs to use the new primitives: app_header + side_nav rail + scrolling content + status_footer. Implement all 5 nav panes and the daemon-disconnected Banner error state.",
+      "success_criteria": "All 5 panes render correct fields; Banner replaces wall-of-text error; status pill shows correct daemon state.",
+      "proof_level": "visual + functional — compare against screenshots 01–05, exercise each pane",
+      "integration_closure": "config_app.rs fully rewritten on new primitives; existing config persistence unchanged",
+      "observability_impact": "Daemon-disconnected now surfaces socket error string in Banner body",
+      "sequence": 3,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S04",
+      "title": "Wizard Rewrite",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S02"
+      ],
+      "demo": "Wizard runs to completion from a clean state; PTT capture drop-zone captures a key; mic-test LED meter animates.",
+      "created_at": "2026-05-03T18:15:21.361Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Refactor wizard.rs to use the step indicator strip, new step bodies (Welcome, Audio, Mic test, PTT drop-zone, Model, Done), and Back/Skip/Continue footer.",
+      "success_criteria": "All 6 steps render; PTT capture flow works (dashed border → solid amber on listen → kbd display on bind); no regressions to first-run gating logic.",
+      "proof_level": "visual + functional — compare against screenshots 06–11, complete a full wizard run",
+      "integration_closure": "wizard.rs rewritten; first_run.rs flow unchanged",
+      "observability_impact": "None",
+      "sequence": 4,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S05",
+      "title": "PackEditor Rewrite",
+      "status": "pending",
+      "risk": "high",
+      "depends": [
+        "S02"
+      ],
+      "demo": "Pack editor opens existing pack; drag-reorder categories and macros; search filters macro list; edits persist on save.",
+      "created_at": "2026-05-03T18:15:21.361Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Refactor pack_editor.rs to the 3-column layout (categories | macros with search | detail panel) with drag-reorder and inline rename.",
+      "success_criteria": "3-column layout renders correctly; search filters live; drag-reorder works for both lists; detail panel reflects selected macro; edits persist.",
+      "proof_level": "visual + functional — compare against screenshot 12, test drag and search",
+      "integration_closure": "pack_editor.rs rewritten; pack load/save logic unchanged",
+      "observability_impact": "None",
+      "sequence": 5,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S06",
+      "title": "Tray Icon Update",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S01"
+      ],
+      "demo": "System tray icon changes color correctly when daemon state changes.",
+      "created_at": "2026-05-03T18:15:21.361Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Update tray.rs to use palette-matched status dot icons (green armed, grey standby, amber offline, red error) at 22px in ARGB format for ksni.",
+      "success_criteria": "Four status icons render in tray matching new palette; ksni receives correct ARGB data.",
+      "proof_level": "visual — screenshot tray area in each state",
+      "integration_closure": "assets/tray/ contains four PNG icons; tray.rs updated to select by status",
+      "observability_impact": "None",
+      "sequence": 6,
+      "replan_triggered_at": null,
+      "is_sketch": 0,
+      "sketch_scope": ""
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S07",
+      "title": "Integration + Screenshot Capture",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S03",
+        "S04",
+        "S05",
+        "S06"
+      ],
+      "demo": "Clean build, tests green, screenshot gallery showing all 12 screens vs reference renders.",
+      "created_at": "2026-05-03T18:15:21.361Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Full integration pass: build on X11 and Wayland, run the complete test suite, capture before/after screenshots for PR description, verify no regressions.",
+      "success_criteria": "cargo build --features gui clean; cargo test --test-threads=1 green; 12 before/after screenshot pairs captured.",
+      "proof_level": "CI + manual — build log + test output + screenshot gallery",
+      "integration_closure": "Full milestone integration verified; PR description includes screenshot gallery",
+      "observability_impact": "None",
+      "sequence": 7,
       "replan_triggered_at": null,
       "is_sketch": 0,
       "sketch_scope": ""

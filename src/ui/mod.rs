@@ -1,5 +1,11 @@
 /// Pure-logic state and profile loading helpers for the config window.
 pub mod config_app;
+/// Design-token palette and egui theme application.
+#[cfg(feature = "gui")]
+pub mod theme;
+/// Shared widget primitives used across all UI surfaces.
+#[cfg(feature = "gui")]
+pub mod widgets;
 /// Setup wizard state machine and step enum (feature-gate-free).
 pub mod first_run;
 /// Environment probe helpers that check for config file, model, and uinput readiness.

@@ -151,15 +151,70 @@ impl TrayHandle {
 // ── Icon mapping ─────────────────────────────────────────────────────────────
 
 /// Return the XDG/FreeDesktop icon name for a given daemon state.
-///
-/// `None` means the daemon is not running — treat the same as Muted so the
-/// tray icon makes it obvious the mic is inactive.  `Listening` gets a
-/// distinct "high" variant to distinguish the wake-word window from idle.
 pub(crate) fn icon_name_for_state(state: Option<&DaemonState>) -> &'static str {
     match state {
         None | Some(DaemonState::Muted) => "audio-input-microphone-muted",
         Some(DaemonState::Idle) | Some(DaemonState::Recording) => "audio-input-microphone",
         Some(DaemonState::Listening) => "audio-input-microphone-high",
+    }
+}
+
+/// Palette-matched ARGB32 status dot colors (network / big-endian byte order).
+/// Matched to the egui theme palette in `src/ui/theme.rs`.
+const DOT_GREEN:  (u8, u8, u8) = (0x4c, 0xaf, 0x50); // Idle / Recording
+const DOT_AMBER:  (u8, u8, u8) = (0xe8, 0xa3, 0x17); // Listening (matches ACCENT)
+const DOT_RED:    (u8, u8, u8) = (0xe5, 0x39, 0x35); // Muted
+const DOT_GRAY:   (u8, u8, u8) = (0x55, 0x5a, 0x60); // Daemon not running
+
+fn dot_color_for_state(state: Option<&DaemonState>) -> (u8, u8, u8) {
+    match state {
+        None => DOT_GRAY,
+        Some(DaemonState::Muted) => DOT_RED,
+        Some(DaemonState::Idle) | Some(DaemonState::Recording) => DOT_GREEN,
+        Some(DaemonState::Listening) => DOT_AMBER,
+    }
+}
+
+/// Build a 22×22 ARGB32 pixmap (network byte order) with a dark background
+/// and a filled circular status dot in the bottom-right corner.
+///
+/// The icon name is still provided as a theme fallback; the pixmap takes
+/// priority in KDE/SNI-compliant panels that support it.
+pub(crate) fn status_pixmap(state: Option<&DaemonState>) -> ksni::Icon {
+    const SIZE: usize = 22;
+    const BG_A: u8 = 0xff;
+    // Very dark background matching BG_WINDOW (#0e1012)
+    const BG_R: u8 = 0x0e;
+    const BG_G: u8 = 0x10;
+    const BG_B: u8 = 0x12;
+
+    let (dr, dg, db) = dot_color_for_state(state);
+
+    // Dot: 7px diameter circle centred at (17, 17) — bottom-right quadrant
+    let dot_cx = 16.5_f32;
+    let dot_cy = 16.5_f32;
+    let dot_r  =  3.0_f32;
+    let dot_r2 = dot_r * dot_r;
+
+    let mut data = Vec::with_capacity(SIZE * SIZE * 4);
+    for y in 0..SIZE {
+        for x in 0..SIZE {
+            let dx = x as f32 - dot_cx;
+            let dy = y as f32 - dot_cy;
+            let (a, r, g, b) = if dx * dx + dy * dy <= dot_r2 {
+                (0xff, dr, dg, db)
+            } else {
+                (BG_A, BG_R, BG_G, BG_B)
+            };
+            // ARGB32 network byte order = [A, R, G, B]
+            data.extend_from_slice(&[a, r, g, b]);
+        }
+    }
+
+    ksni::Icon {
+        width:  SIZE as i32,
+        height: SIZE as i32,
+        data,
     }
 }
 
@@ -208,6 +263,10 @@ impl Tray for VibeTray {
 
     fn icon_name(&self) -> String {
         icon_name_for_state(self.current_state().daemon_state.as_ref()).into()
+    }
+
+    fn icon_pixmap(&self) -> Vec<ksni::Icon> {
+        vec![status_pixmap(self.current_state().daemon_state.as_ref())]
     }
 
     fn title(&self) -> String {
@@ -445,6 +504,34 @@ mod tests {
         let none = tooltip_description_for(Some(&DaemonState::Recording), None);
         assert_eq!(ptt, wake);
         assert_eq!(ptt, none);
+    }
+
+    #[test]
+    fn status_pixmap_dimensions_and_channel_count() {
+        for state in [
+            None,
+            Some(DaemonState::Idle),
+            Some(DaemonState::Muted),
+            Some(DaemonState::Listening),
+            Some(DaemonState::Recording),
+        ] {
+            let icon = status_pixmap(state.as_ref());
+            assert_eq!(icon.width, 22);
+            assert_eq!(icon.height, 22);
+            assert_eq!(icon.data.len(), (22 * 22 * 4) as usize);
+        }
+    }
+
+    #[test]
+    fn status_pixmap_dot_color_amber_for_listening() {
+        let icon = status_pixmap(Some(&DaemonState::Listening));
+        // Centre of dot at (16,16) in row-major ARGB32 — pixel index 16*22+16 = 368
+        let off = (16 * 22 + 16) * 4;
+        // A R G B in network order
+        assert_eq!(icon.data[off],     0xff, "alpha");
+        assert_eq!(icon.data[off + 1], DOT_AMBER.0, "R");
+        assert_eq!(icon.data[off + 2], DOT_AMBER.1, "G");
+        assert_eq!(icon.data[off + 3], DOT_AMBER.2, "B");
     }
 
     #[test]

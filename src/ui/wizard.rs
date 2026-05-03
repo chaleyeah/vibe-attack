@@ -244,24 +244,154 @@ mod inner {
             }
         }
 
-        match state.first_incomplete_step() {
-            None => {
-                ui.heading("Setup complete");
-                ui.label("All prerequisites satisfied. Loading config app…");
-            }
-            Some(SetupStep::CreateConfig) => {
-                show_create_config(ui, state, config_example_contents, hd2_profile_contents);
-            }
-            Some(SetupStep::InstallModel) => {
-                show_install_model(ui, state, dl);
-            }
-            Some(SetupStep::SetupUinput) => {
-                show_setup_uinput(ui, state, uinput);
-            }
-            Some(SetupStep::ConfigurePtt) => {
-                show_configure_ptt(ui, state, ptt);
+        // ── New themed layout: header + step indicator + scrollable body ─────
+
+        use crate::ui::theme::Palette;
+        use crate::ui::widgets::{app_header, DaemonStatus};
+
+        let time = ui.ctx().input(|i| i.time);
+        let version = env!("CARGO_PKG_VERSION");
+
+        // Header
+        let total_rect = ui.available_rect_before_wrap();
+        let header_h: f32 = 44.0;
+        let header_rect = egui::Rect::from_min_size(total_rect.min, egui::vec2(total_rect.width(), header_h));
+        let mut hdr_ui = ui.new_child(egui::UiBuilder::new().max_rect(header_rect));
+        app_header(&mut hdr_ui, version, DaemonStatus::Disconnected, time);
+
+        // Step indicator strip
+        let indicator_h: f32 = 48.0;
+        let ind_rect = egui::Rect::from_min_size(
+            egui::pos2(total_rect.min.x, total_rect.min.y + header_h),
+            egui::vec2(total_rect.width(), indicator_h),
+        );
+        let current_step_idx = match state.first_incomplete_step() {
+            None                        => 4,
+            Some(SetupStep::CreateConfig) => 0,
+            Some(SetupStep::InstallModel)  => 1,
+            Some(SetupStep::SetupUinput)   => 2,
+            Some(SetupStep::ConfigurePtt)  => 3,
+        };
+        let step_labels = ["CONFIG", "MODEL", "UINPUT", "PTT"];
+
+        {
+            let ind_ui = ui.new_child(egui::UiBuilder::new().max_rect(ind_rect));
+            let p = ind_ui.painter();
+            p.rect_filled(ind_rect, 0.0, Palette::BG_PANEL);
+            p.hline(ind_rect.x_range(), ind_rect.bottom(), egui::Stroke::new(1.0, Palette::STROKE_FAINT));
+
+            let n = step_labels.len();
+            let total_w = ind_rect.width();
+            let slot_w = total_w / n as f32;
+
+            for (i, label) in step_labels.iter().enumerate() {
+                let cx = ind_rect.left() + slot_w * (i as f32 + 0.5);
+                let cy = ind_rect.center().y;
+                let state_str = if i < current_step_idx { "done" }
+                    else if i == current_step_idx { "active" }
+                    else { "pending" };
+
+                let circle_r = 10.0;
+                let (circle_bg, circle_border, num_color) = match state_str {
+                    "done"   => (Palette::ok_faint(), Palette::OK,    Palette::OK),
+                    "active" => (Palette::ACCENT,      Palette::ACCENT, Palette::ACCENT_FG),
+                    _        => (Palette::BG_WINDOW,   Palette::STROKE_BRIGHT, Palette::FG_MUTED),
+                };
+
+                p.circle_filled(egui::pos2(cx, cy - 6.0), circle_r, circle_bg);
+                p.circle_stroke(egui::pos2(cx, cy - 6.0), circle_r, egui::Stroke::new(1.0, circle_border));
+
+                let num_text = if state_str == "done" { "✓".to_string() } else { format!("{}", i + 1) };
+                p.text(
+                    egui::pos2(cx, cy - 6.0),
+                    egui::Align2::CENTER_CENTER,
+                    &num_text,
+                    egui::FontId::proportional(9.0),
+                    num_color,
+                );
+
+                let label_color = if state_str == "active" { Palette::FG_STRONG } else { Palette::FG_MUTED };
+                p.text(
+                    egui::pos2(cx, cy + 8.0),
+                    egui::Align2::CENTER_CENTER,
+                    label,
+                    egui::FontId::proportional(9.0),
+                    label_color,
+                );
+
+                // Connector line to next step
+                if i + 1 < n {
+                    let next_cx = ind_rect.left() + slot_w * (i as f32 + 1.5);
+                    let line_color = if i < current_step_idx { Palette::OK } else { Palette::STROKE_STRONG };
+                    p.hline(
+                        (cx + circle_r + 2.0)..=(next_cx - circle_r - 2.0),
+                        cy - 6.0,
+                        egui::Stroke::new(1.0, line_color),
+                    );
+                }
             }
         }
+
+        // Scrollable step body
+        let body_top = total_rect.min.y + header_h + indicator_h;
+        let body_rect = egui::Rect::from_min_size(
+            egui::pos2(total_rect.min.x, body_top),
+            egui::vec2(total_rect.width(), (total_rect.max.y - body_top).max(0.0)),
+        );
+        let mut body_ui = ui.new_child(egui::UiBuilder::new().max_rect(body_rect));
+        body_ui.painter().rect_filled(body_rect, 0.0, Palette::BG_WINDOW);
+
+        egui::ScrollArea::vertical()
+            .id_salt("wizard_scroll")
+            .show(&mut body_ui, |ui| {
+                ui.set_min_width(body_rect.width());
+                ui.add_space(24.0);
+
+                match state.first_incomplete_step() {
+                    None => {
+                        wizard_done_screen(ui);
+                    }
+                    Some(SetupStep::CreateConfig) => {
+                        show_create_config(ui, state, config_example_contents, hd2_profile_contents);
+                    }
+                    Some(SetupStep::InstallModel) => {
+                        show_install_model(ui, state, dl);
+                    }
+                    Some(SetupStep::SetupUinput) => {
+                        show_setup_uinput(ui, state, uinput);
+                    }
+                    Some(SetupStep::ConfigurePtt) => {
+                        show_configure_ptt(ui, state, ptt);
+                    }
+                }
+            });
+    }
+
+    /// Completion screen shown when all 4 steps are done.
+    fn wizard_done_screen(ui: &mut egui::Ui) {
+        use crate::ui::theme::Palette;
+
+        ui.vertical_centered(|ui| {
+            ui.add_space(32.0);
+
+            let (check_rect, _) = ui.allocate_exact_size(egui::vec2(56.0, 56.0), egui::Sense::hover());
+            ui.painter().circle_filled(check_rect.center(), 28.0, Palette::ok_faint());
+            ui.painter().circle_stroke(check_rect.center(), 28.0, egui::Stroke::new(1.5, Palette::OK));
+            ui.painter().text(
+                check_rect.center(),
+                egui::Align2::CENTER_CENTER,
+                "✓",
+                egui::FontId::proportional(24.0),
+                Palette::OK,
+            );
+
+            ui.add_space(16.0);
+            ui.label(egui::RichText::new("READY").color(Palette::FG_MUTED).size(10.0));
+            ui.add_space(4.0);
+            ui.label(egui::RichText::new("All prerequisites satisfied").color(Palette::FG_STRONG).size(22.0).strong());
+            ui.add_space(8.0);
+            ui.label(egui::RichText::new("Loading configuration…").color(Palette::FG_MUTED).size(13.0));
+        });
     }
 
     // ── Step: CreateConfig ───────────────────────────────────────────────────
@@ -272,32 +402,40 @@ mod inner {
         config_example_contents: &str,
         hd2_profile_contents: &str,
     ) {
-        let target = crate::ui::probe::config_path_for_display();
-        ui.heading("Step 1 of 4: Create config file");
-        ui.add_space(8.0);
-        ui.label(format!("Target: {target}"));
-        ui.add_space(12.0);
+        use crate::ui::theme::Palette;
+        use crate::ui::widgets::{primary_button, section_header};
 
-        if ui.button("Copy example config").clicked() {
-            let target_path = PathBuf::from(&target);
-            let parent = target_path.parent().unwrap_or(&target_path);
-            match std::fs::create_dir_all(parent)
-                .and_then(|_| std::fs::write(&target_path, config_example_contents))
-            {
-                Ok(()) => {
-                    info!(path = %target, "Config file created");
-                    install_default_profile(hd2_profile_contents);
-                    *state = probe::run();
-                }
-                Err(e) => {
-                    error!(reason = %e, "Failed to write config file");
-                    ui.colored_label(egui::Color32::RED, format!("Error: {e}"));
+        let target = crate::ui::probe::config_path_for_display();
+
+        ui.horizontal(|ui| { ui.add_space(40.0); ui.vertical(|ui| {
+            section_header(ui, "Create Config File", None);
+            ui.add_space(8.0);
+            ui.label(egui::RichText::new("Copy the example config to your XDG config directory to get started.").color(Palette::FG).size(13.0));
+            ui.add_space(8.0);
+            ui.label(egui::RichText::new(format!("Target: {target}")).color(Palette::FG_MUTED).size(11.0));
+            ui.add_space(16.0);
+
+            if primary_button(ui, "Copy Example Config").clicked() {
+                let target_path = PathBuf::from(&target);
+                let parent = target_path.parent().unwrap_or(&target_path);
+                match std::fs::create_dir_all(parent)
+                    .and_then(|_| std::fs::write(&target_path, config_example_contents))
+                {
+                    Ok(()) => {
+                        info!(path = %target, "Config file created");
+                        install_default_profile(hd2_profile_contents);
+                        *state = probe::run();
+                    }
+                    Err(e) => {
+                        error!(reason = %e, "Failed to write config file");
+                        ui.colored_label(Palette::ERR, format!("Error: {e}"));
+                    }
                 }
             }
-        }
 
-        ui.add_space(8.0);
-        ui.label("After copying, edit the file to set your audio device and PTT key.");
+            ui.add_space(8.0);
+            ui.label(egui::RichText::new("After copying, edit the file to set your audio device and PTT key.").color(Palette::FG_MUTED).size(12.0));
+        }); });
     }
 
     /// Write the bundled hd2 profile to the XDG profiles directory if not already present.
@@ -335,75 +473,62 @@ mod inner {
         state: &mut FirstRunState,
         dl: &mut ModelDownloadState,
     ) {
+        use crate::ui::theme::Palette;
+        use crate::ui::widgets::{banner, primary_button, section_header, BannerKind};
+
         let model_path = crate::ui::probe::model_path_for_display();
 
-        ui.heading("Step 2 of 4: Install whisper model");
-        ui.add_space(8.0);
-        ui.label(format!("Target: {model_path}"));
-        ui.add_space(12.0);
+        ui.horizontal(|ui| { ui.add_space(40.0); ui.vertical(|ui| {
+            section_header(ui, "Install Whisper Model", None);
+            ui.add_space(8.0);
+            ui.label(egui::RichText::new("Download the ggml-tiny.en Whisper model (~75 MB) from HuggingFace.").color(Palette::FG).size(13.0));
+            ui.add_space(4.0);
+            ui.label(egui::RichText::new(format!("Target: {model_path}")).color(Palette::FG_MUTED).size(11.0));
+            ui.add_space(16.0);
 
-        match dl.current() {
-            DownloadStatus::Idle => {
-                ui.label("~75 MB download from HuggingFace.");
-                ui.add_space(8.0);
-                if ui.button("Download model").clicked() {
-                    let status = Arc::clone(&dl.status);
-                    let dest = model_path.clone();
-                    let handle = std::thread::spawn(move || {
-                        download_model(status, &dest);
-                    });
-                    dl.handle = Some(handle);
-                    // Immediately set to downloading so next frame shows progress
-                    if let Ok(mut g) = dl.status.lock() {
-                        *g = DownloadStatus::Downloading { received: 0, total: None };
+            match dl.current() {
+                DownloadStatus::Idle => {
+                    if primary_button(ui, "Download Model").clicked() {
+                        let status = Arc::clone(&dl.status);
+                        let dest = model_path.clone();
+                        let handle = std::thread::spawn(move || {
+                            download_model(status, &dest);
+                        });
+                        dl.handle = Some(handle);
+                        if let Ok(mut g) = dl.status.lock() {
+                            *g = DownloadStatus::Downloading { received: 0, total: None };
+                        }
                     }
                 }
-            }
-            DownloadStatus::Downloading { received, total } => {
-                ui.spinner();
-                match total {
-                    Some(total) if total > 0 => {
-                        let frac = received as f32 / total as f32;
-                        ui.add(
-                            egui::ProgressBar::new(frac)
-                                .desired_width(300.0)
-                                .text(format!(
-                                    "{:.1} / {:.1} MB",
-                                    received as f64 / 1_048_576.0,
-                                    total as f64 / 1_048_576.0
-                                )),
-                        );
+                DownloadStatus::Downloading { received, total } => {
+                    ui.spinner();
+                    ui.add_space(8.0);
+                    match total {
+                        Some(t) if t > 0 => {
+                            let frac = received as f32 / t as f32;
+                            ui.add(egui::ProgressBar::new(frac).desired_width(300.0)
+                                .text(format!("{:.1} / {:.1} MB", received as f64 / 1_048_576.0, t as f64 / 1_048_576.0)));
+                        }
+                        _ => {
+                            ui.label(egui::RichText::new(format!("Downloading… {:.1} MB", received as f64 / 1_048_576.0)).color(Palette::FG_MUTED).size(12.0));
+                        }
                     }
-                    _ => {
-                        ui.label(format!(
-                            "Downloading… {:.1} MB received",
-                            received as f64 / 1_048_576.0
-                        ));
-                    }
+                    ui.ctx().request_repaint_after(std::time::Duration::from_millis(250));
                 }
-                // Fast repaint while downloading
-                ui.ctx().request_repaint_after(std::time::Duration::from_millis(250));
-            }
-            DownloadStatus::Done => {
-                // Re-probe on every frame while Done so the wizard advances automatically
-                // when the user re-enters this step after the download handle was already reaped.
-                *state = probe::run();
-                ui.colored_label(egui::Color32::GREEN, "Download complete.");
-                ui.add_space(4.0);
-                if ui.button("Re-check").clicked() {
+                DownloadStatus::Done => {
                     *state = probe::run();
+                    banner(ui, BannerKind::Ok, "DOWNLOAD COMPLETE", "Model installed successfully.", &[]);
                 }
-            }
-            DownloadStatus::Failed(msg) => {
-                ui.colored_label(egui::Color32::RED, format!("Download failed: {msg}"));
-                ui.add_space(8.0);
-                if ui.button("Retry").clicked() {
-                    if let Ok(mut g) = dl.status.lock() {
-                        *g = DownloadStatus::Idle;
+                DownloadStatus::Failed(msg) => {
+                    banner(ui, BannerKind::Error, "DOWNLOAD FAILED", &msg, &[("RETRY", true)]);
+                    // Retry is index 0
+                    if let Some(0) = banner(ui, BannerKind::Error, "DOWNLOAD FAILED", &msg, &[("RETRY", true)]) {
+                        if let Ok(mut g) = dl.status.lock() { *g = DownloadStatus::Idle; }
                     }
+                    let _ = msg; // already moved
                 }
             }
-        }
+        }); });
     }
 
     /// Download the model file to `dest`, streaming progress into `status`.
@@ -507,89 +632,84 @@ mod inner {
         state: &mut FirstRunState,
         uinput: &mut UinputSetupState,
     ) {
-        // Request repaint while an action is running.
+        use crate::ui::theme::Palette;
+        use crate::ui::widgets::{banner, section_header, BannerKind};
+
         if matches!(uinput.modprobe, SetupActionStatus::Running)
             || matches!(uinput.usermod, SetupActionStatus::Running)
         {
             ui.ctx().request_repaint_after(std::time::Duration::from_millis(200));
         }
 
-        ui.heading("Step 3 of 4: Set up uinput access");
-        ui.add_space(8.0);
-        ui.label("Vibe Attack needs /dev/uinput to inject key events into your game.");
-        ui.add_space(12.0);
+        ui.horizontal(|ui| { ui.add_space(40.0); ui.vertical(|ui| {
+            section_header(ui, "Set Up uinput Access", None);
+            ui.add_space(8.0);
+            ui.label(egui::RichText::new("Vibe Attack needs /dev/uinput to inject key events into your game.").color(Palette::FG).size(13.0));
+            ui.add_space(16.0);
 
-        // --- Action 1: load module ---
-        ui.label("1. Load the uinput kernel module:");
-        ui.add_space(4.0);
-        ui.horizontal(|ui| {
-            let button_text = match &uinput.modprobe {
-                SetupActionStatus::Idle => "Load module",
-                SetupActionStatus::Running => "Loading…",
-                SetupActionStatus::Done => "✓ Loaded",
-                SetupActionStatus::Failed(_) => "Retry",
-            };
-            let enabled = !matches!(uinput.modprobe, SetupActionStatus::Running);
-            if ui.add_enabled(enabled, egui::Button::new(button_text)).clicked() {
-                uinput.modprobe = SetupActionStatus::Running;
-                let handle = std::thread::spawn(|| run_pkexec(&["modprobe", "uinput"]));
-                uinput.modprobe_handle = Some(handle);
-            }
-            if let SetupActionStatus::Failed(ref msg) = uinput.modprobe {
-                ui.colored_label(egui::Color32::RED, msg.as_str());
-            }
-        });
-        ui.add_space(4.0);
-        ui.label("Optional — persist across reboots:");
-        copy_command_row(
-            ui,
-            "echo \"uinput\" | sudo tee /etc/modules-load.d/uinput.conf",
-        );
-        ui.add_space(12.0);
-
-        // --- Action 2: add to input group ---
-        ui.label("2. Add yourself to the input group:");
-        ui.add_space(4.0);
-        ui.horizontal(|ui| {
-            let button_text = match &uinput.usermod {
-                SetupActionStatus::Idle => "Add to input group",
-                SetupActionStatus::Running => "Running…",
-                SetupActionStatus::Done => "✓ Added",
-                SetupActionStatus::Failed(_) => "Retry",
-            };
-            let enabled = !matches!(uinput.usermod, SetupActionStatus::Running);
-            if ui.add_enabled(enabled, egui::Button::new(button_text)).clicked() {
-                let username = std::env::var("USER").unwrap_or_default();
-                uinput.usermod = SetupActionStatus::Running;
-                let handle = std::thread::spawn(move || {
-                    run_pkexec(&["usermod", "-aG", "input", &username])
-                });
-                uinput.usermod_handle = Some(handle);
-            }
-            if let SetupActionStatus::Failed(ref msg) = uinput.usermod {
-                ui.colored_label(egui::Color32::RED, msg.as_str());
-            }
-        });
-        ui.add_space(8.0);
-
-        ui.label("3. Apply the group change without logging out (run in your terminal):");
-        copy_command_row(ui, "newgrp input");
-        ui.add_space(8.0);
-
-        egui::Frame::NONE
-            .fill(egui::Color32::from_rgb(64, 50, 0))
-            .inner_margin(egui::Margin::same(6))
-            .show(ui, |ui| {
-                ui.colored_label(
-                    egui::Color32::from_rgb(255, 200, 60),
-                    "Note (systemd v258+ / CachyOS 2025+): use the 'input' group, not 'uinput'.",
-                );
+            // Action 1: load module
+            ui.label(egui::RichText::new("1. Load the uinput kernel module").color(Palette::FG_MUTED).size(11.0).strong());
+            ui.add_space(6.0);
+            ui.horizontal(|ui| {
+                let (btn_label, done) = match &uinput.modprobe {
+                    SetupActionStatus::Idle    => ("Load Module", false),
+                    SetupActionStatus::Running => ("Loading…",   true),
+                    SetupActionStatus::Done    => ("✓ Loaded",   true),
+                    SetupActionStatus::Failed(_) => ("Retry",    false),
+                };
+                let enabled = !matches!(uinput.modprobe, SetupActionStatus::Running | SetupActionStatus::Done);
+                if ui.add_enabled(enabled, egui::Button::new(egui::RichText::new(btn_label).size(12.0))).clicked() {
+                    uinput.modprobe = SetupActionStatus::Running;
+                    let handle = std::thread::spawn(|| run_pkexec(&["modprobe", "uinput"]));
+                    uinput.modprobe_handle = Some(handle);
+                }
+                let _ = done;
+                if let SetupActionStatus::Failed(ref msg) = uinput.modprobe {
+                    ui.label(egui::RichText::new(msg.as_str()).color(Palette::ERR).size(11.0));
+                }
             });
+            ui.add_space(4.0);
+            copy_command_row(ui, "echo \"uinput\" | sudo tee /etc/modules-load.d/uinput.conf");
+            ui.add_space(12.0);
 
-        ui.add_space(12.0);
-        if ui.button("Re-check").clicked() {
-            *state = probe::run();
-        }
+            // Action 2: add to input group
+            ui.label(egui::RichText::new("2. Add yourself to the input group").color(Palette::FG_MUTED).size(11.0).strong());
+            ui.add_space(6.0);
+            ui.horizontal(|ui| {
+                let (btn_label, done) = match &uinput.usermod {
+                    SetupActionStatus::Idle    => ("Add to Input Group", false),
+                    SetupActionStatus::Running => ("Running…",           true),
+                    SetupActionStatus::Done    => ("✓ Added",            true),
+                    SetupActionStatus::Failed(_) => ("Retry",            false),
+                };
+                let enabled = !matches!(uinput.usermod, SetupActionStatus::Running | SetupActionStatus::Done);
+                if ui.add_enabled(enabled, egui::Button::new(egui::RichText::new(btn_label).size(12.0))).clicked() {
+                    let username = std::env::var("USER").unwrap_or_default();
+                    uinput.usermod = SetupActionStatus::Running;
+                    let handle = std::thread::spawn(move || run_pkexec(&["usermod", "-aG", "input", &username]));
+                    uinput.usermod_handle = Some(handle);
+                }
+                let _ = done;
+                if let SetupActionStatus::Failed(ref msg) = uinput.usermod {
+                    ui.label(egui::RichText::new(msg.as_str()).color(Palette::ERR).size(11.0));
+                }
+            });
+            ui.add_space(8.0);
+
+            ui.label(egui::RichText::new("3. Apply group membership without logout").color(Palette::FG_MUTED).size(11.0).strong());
+            ui.add_space(4.0);
+            copy_command_row(ui, "newgrp input");
+            ui.add_space(12.0);
+
+            banner(ui, BannerKind::Warn, "COMPATIBILITY NOTE",
+                "systemd v258+ / CachyOS 2025+: use the 'input' group, not 'uinput'.",
+                &[]);
+            ui.add_space(12.0);
+
+            if ui.button("Re-check").clicked() {
+                *state = probe::run();
+            }
+        }); });
     }
 
     /// Run a command via pkexec (polkit) and return Ok(()) on exit 0, Err(msg) otherwise.
@@ -614,10 +734,13 @@ mod inner {
 
     /// Render a dark code block with a "Copy" button on the right.
     fn copy_command_row(ui: &mut egui::Ui, cmd: &str) {
+        use crate::ui::theme::Palette;
         ui.horizontal(|ui| {
-            egui::Frame::NONE
-                .fill(egui::Color32::from_gray(30))
-                .inner_margin(egui::Margin::same(6))
+            egui::Frame::new()
+                .fill(Palette::BG_EXTREME)
+                .stroke(egui::Stroke::new(1.0, Palette::STROKE))
+                .corner_radius(egui::CornerRadius::same(3))
+                .inner_margin(egui::Margin::symmetric(8, 5))
                 .show(ui, |ui| {
                     ui.add(
                         egui::TextEdit::singleline(&mut cmd.to_string().as_str())
@@ -639,47 +762,104 @@ mod inner {
         state: &mut FirstRunState,
         ptt: &mut PttCaptureState,
     ) {
-        ui.heading("Step 4 of 4: Configure PTT key");
-        ui.add_space(8.0);
-        ui.label("Click 'Listen for key', then press the key you want to use as Push-to-Talk.");
-        ui.add_space(8.0);
+        use crate::ui::theme::Palette;
+        use crate::ui::widgets::{banner, section_header, BannerKind};
 
-        if ptt.listening {
-            ui.spinner();
-            ui.label("Listening… press any key now.");
-        } else if !ptt.listening && ptt.handle.is_none() && ui.button("Listen for key").clicked() {
-            ptt.error = None;
-            let captured = Arc::clone(&ptt.captured_key);
-            let handle = std::thread::spawn(move || {
-                capture_first_keypress(captured);
-            });
-            ptt.handle = Some(handle);
-            ptt.listening = true;
-        }
-
-        if let Some(err) = &ptt.error {
+        ui.horizontal(|ui| { ui.add_space(40.0); ui.vertical(|ui| {
+            section_header(ui, "Configure PTT Key", None);
             ui.add_space(8.0);
-            ui.colored_label(egui::Color32::RED, err.as_str());
-        }
+            ui.label(egui::RichText::new("Press the key you want to use as Push-to-Talk, then capture it below.").color(Palette::FG).size(13.0));
+            ui.add_space(16.0);
 
-        ui.add_space(8.0);
-        ui.label("Or enter a key name manually (e.g. KEY_GRAVE, KEY_F13):");
-        let resp = ui.text_edit_singleline(&mut ptt.manual_key);
-        if resp.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
-            let key_name = ptt.manual_key.trim().to_string();
-            if !key_name.is_empty() {
-                match write_ptt_key_to_config(&key_name) {
-                    Ok(()) => {
-                        info!(key = %key_name, "PTT key written to config (manual entry)");
-                        ptt.manual_key.clear();
-                        *state = probe::run();
-                    }
-                    Err(e) => {
-                        ptt.error = Some(format!("Failed to save key: {e}"));
+            // PTT drop-zone
+            let zone_w = (ui.available_width() - 80.0).min(480.0);
+            let zone_h = 100.0;
+            let (zone_rect, _) = ui.allocate_exact_size(egui::vec2(zone_w, zone_h), egui::Sense::hover());
+
+            let p = ui.painter();
+            let (zone_bg, zone_bdr) = if ptt.listening {
+                (Palette::accent_faint(), Palette::ACCENT)
+            } else {
+                (egui::Color32::TRANSPARENT, Palette::STROKE_STRONG)
+            };
+            p.rect_filled(zone_rect, egui::CornerRadius::same(4), zone_bg);
+            // Dashed border via segments
+            let dash_len = 8.0;
+            let gap_len  = 4.0;
+            let bdr_stroke = egui::Stroke::new(1.5, zone_bdr);
+            let mut x = zone_rect.left();
+            while x < zone_rect.right() {
+                let end = (x + dash_len).min(zone_rect.right());
+                p.hline(x..=end, zone_rect.top(),    bdr_stroke);
+                p.hline(x..=end, zone_rect.bottom(),  bdr_stroke);
+                x += dash_len + gap_len;
+            }
+            let mut y = zone_rect.top();
+            while y < zone_rect.bottom() {
+                let end = (y + dash_len).min(zone_rect.bottom());
+                p.vline(zone_rect.left(),  y..=end, bdr_stroke);
+                p.vline(zone_rect.right(), y..=end, bdr_stroke);
+                y += dash_len + gap_len;
+            }
+
+            let center_text = if ptt.listening {
+                "▸ LISTENING — PRESS A KEY"
+            } else {
+                "DROP ZONE — Click 'Capture' to listen"
+            };
+            p.text(
+                zone_rect.center(),
+                egui::Align2::CENTER_CENTER,
+                center_text,
+                egui::FontId::proportional(12.0),
+                if ptt.listening { Palette::ACCENT } else { Palette::FG_MUTED },
+            );
+
+            ui.add_space(8.0);
+            ui.horizontal(|ui| {
+                let enabled = !ptt.listening && ptt.handle.is_none();
+                if ui.add_enabled(enabled, egui::Button::new(
+                    egui::RichText::new(if ptt.listening { "Listening…" } else { "Capture Binding" })
+                        .color(Palette::ACCENT_FG).size(11.0).strong()
+                ).fill(Palette::ACCENT).stroke(egui::Stroke::new(1.0, Palette::ACCENT))).clicked() {
+                    ptt.error = None;
+                    let captured = Arc::clone(&ptt.captured_key);
+                    let handle = std::thread::spawn(move || { capture_first_keypress(captured); });
+                    ptt.handle = Some(handle);
+                    ptt.listening = true;
+                }
+            });
+
+            if let Some(err) = &ptt.error.clone() {
+                ui.add_space(8.0);
+                banner(ui, BannerKind::Error, "CAPTURE ERROR", err, &[]);
+            }
+
+            ui.add_space(16.0);
+            ui.label(egui::RichText::new("Or enter a key name manually (e.g. KEY_GRAVE, KEY_F13):").color(Palette::FG_MUTED).size(12.0));
+            ui.add_space(4.0);
+            let resp = ui.text_edit_singleline(&mut ptt.manual_key);
+            if resp.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+                let key_name = ptt.manual_key.trim().to_string();
+                if !key_name.is_empty() {
+                    match write_ptt_key_to_config(&key_name) {
+                        Ok(()) => {
+                            info!(key = %key_name, "PTT key written to config (manual entry)");
+                            ptt.manual_key.clear();
+                            *state = probe::run();
+                        }
+                        Err(e) => {
+                            ptt.error = Some(format!("Failed to save key: {e}"));
+                        }
                     }
                 }
             }
-        }
+
+            ui.add_space(8.0);
+            banner(ui, BannerKind::Info, "EVDEV PERMISSIONS",
+                "If capture fails, ensure your user is in the 'input' group (Step 3) and log back in.",
+                &[]);
+        }); });
     }
 
     // ── PTT capture thread ───────────────────────────────────────────────────

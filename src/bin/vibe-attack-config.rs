@@ -10,6 +10,7 @@ use vibe_attack::ui::first_run::FirstRunState;
 use vibe_attack::ui::pack_editor::{show_pack_editor, PackEditorState};
 use vibe_attack::ui::probe;
 use vibe_attack::ui::tray::TrayHandle;
+use vibe_attack::ui::widgets::{DaemonStatus, NavId, NAV_ITEMS};
 use vibe_attack::ui::wizard::{show_wizard, ModelDownloadState, PttCaptureState, UinputSetupState};
 
 // ── Log channel ──────────────────────────────────────────────────────────────
@@ -185,6 +186,8 @@ struct VibeAttackConfigApp {
     pack_editor: Option<PackEditorState>,
     /// Tracks daemon start attempts so the UI can report progress/failure.
     daemon_start: DaemonStartState,
+    /// Active navigation pane in the main config window.
+    active_nav: NavId,
 }
 
 impl VibeAttackConfigApp {
@@ -248,6 +251,7 @@ impl VibeAttackConfigApp {
             device_names,
             pack_editor: None,
             daemon_start: DaemonStartState::Idle,
+            active_nav: NavId::Devices,
         }
     }
 }
@@ -339,14 +343,30 @@ impl eframe::App for VibeAttackConfigApp {
     }
 }
 
+fn daemon_status(app: &VibeAttackConfigApp) -> DaemonStatus {
+    if app.config.daemon_running {
+        DaemonStatus::Running
+    } else {
+        match &app.daemon_start {
+            DaemonStartState::Starting { .. } => DaemonStatus::Disconnected,
+            DaemonStartState::Failed(_)       => DaemonStatus::Error,
+            DaemonStartState::Idle            => DaemonStatus::Disconnected,
+        }
+    }
+}
+
 fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
-    // Poll daemon start state machine before rendering the status row.
+    use vibe_attack::ui::widgets::{
+        app_header, banner, side_nav, status_footer, BannerKind,
+    };
+    use vibe_attack::ui::theme::Palette;
+
+    // Poll daemon start state machine.
     if let DaemonStartState::Starting { deadline, .. } = &app.daemon_start {
         if app.config.daemon_running {
             app.daemon_start = DaemonStartState::Idle;
             app.config.set_status("Daemon started.");
         } else if std::time::Instant::now() > *deadline {
-            // Timed out — collect stderr from the daemon process for the error message.
             let stderr_output = if let DaemonStartState::Starting { stderr_thread, .. } = &mut app.daemon_start {
                 stderr_thread.take().and_then(|h| h.join().ok()).unwrap_or_default()
             } else {
@@ -356,205 +376,464 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
                 "Daemon failed to start (no output — check permissions and config)".to_string()
             } else {
                 let trimmed = stderr_output.trim();
-                let last_lines: String = trimmed.lines().rev().take(5).collect::<Vec<_>>().into_iter().rev().collect::<Vec<_>>().join("\n");
-                format!("Daemon failed to start:\n{last_lines}")
+                let last_lines: String = trimmed.lines().rev().take(3).collect::<Vec<_>>().into_iter().rev().collect::<Vec<_>>().join(" | ");
+                format!("Daemon failed to start: {last_lines}")
             };
             app.daemon_start = DaemonStartState::Failed(msg);
         }
     }
 
-    // Daemon status row
-    ui.horizontal(|ui| {
-        if app.config.daemon_running {
-            ui.colored_label(egui::Color32::GREEN, "● Daemon: running");
-            if ui.button("Stop Daemon").clicked() {
-                match vibe_attack::control::client::send_command(
-                    vibe_attack::control::protocol::ControlRequest::Shutdown,
-                ) {
-                    Ok(_) => app.config.set_status("Daemon stopping…"),
-                    Err(e) => app.config.set_status(format!("Failed to stop daemon: {e}")),
-                }
-            }
-        } else {
-            match &app.daemon_start {
-                DaemonStartState::Starting { .. } => {
-                    ui.colored_label(egui::Color32::YELLOW, "● Daemon: starting…");
-                    ui.ctx().request_repaint_after(std::time::Duration::from_millis(500));
-                }
-                DaemonStartState::Failed(_) => {
-                    ui.colored_label(egui::Color32::RED, "● Daemon: failed to start");
-                    if ui.button("Retry").clicked() {
-                        match start_daemon() {
-                            Ok(stderr_thread) => {
-                                app.daemon_start = DaemonStartState::Starting {
-                                    deadline: std::time::Instant::now() + std::time::Duration::from_secs(15),
-                                    stderr_thread: Some(stderr_thread),
-                                };
-                            }
-                            Err(e) => {
-                                app.daemon_start = DaemonStartState::Failed(format!("Failed to start daemon: {e}"));
-                            }
-                        }
-                    }
-                }
-                DaemonStartState::Idle => {
-                    ui.colored_label(
-                        egui::Color32::from_rgb(255, 165, 0),
-                        "● Daemon: not running",
-                    );
-                    if ui.button("Start Daemon").clicked() {
-                        match start_daemon() {
-                            Ok(stderr_thread) => {
-                                app.daemon_start = DaemonStartState::Starting {
-                                    deadline: std::time::Instant::now() + std::time::Duration::from_secs(15),
-                                    stderr_thread: Some(stderr_thread),
-                                };
-                            }
-                            Err(e) => {
-                                app.daemon_start = DaemonStartState::Failed(format!("Failed to start daemon: {e}"));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    });
+    let status = daemon_status(app);
+    let time   = ui.ctx().input(|i| i.time);
+    let version = env!("CARGO_PKG_VERSION");
 
-    // Show startup error details below the status row
-    if let DaemonStartState::Failed(msg) = &app.daemon_start {
-        ui.colored_label(egui::Color32::RED, msg.as_str());
-    }
+    // ── Layout: header / (rail + body) / footer ───────────────────────────────
+    let total_rect = ui.available_rect_before_wrap();
+    let footer_h: f32 = 30.0;
+    let header_h: f32 = 44.0;
+    let body_h = (total_rect.height() - header_h - footer_h).max(0.0);
 
-    ui.add_space(4.0);
+    // Header
+    let header_rect = egui::Rect::from_min_size(total_rect.min, egui::vec2(total_rect.width(), header_h));
+    let mut header_ui = ui.new_child(egui::UiBuilder::new().max_rect(header_rect));
+    app_header(&mut header_ui, version, status, time);
 
-    // Mic level row
-    ui.horizontal(|ui| {
-        ui.label("Mic:");
-        if app.config.mic_no_device {
-            ui.label("no device");
-        } else {
-            ui.add(
-                egui::ProgressBar::new(app.config.mic_level.clamp(0.0, 1.0))
-                    .desired_width(200.0)
-                    .show_percentage(),
-            );
-        }
-    });
-
-    ui.add_space(4.0);
-
-    // Activation mode
-    ui.horizontal(|ui| {
-        ui.label("Mode:");
-        ui.radio_value(&mut app.config.mode, ActivationMode::Ptt, "Push-to-talk");
-        ui.radio_value(&mut app.config.mode, ActivationMode::Wake, "Wake word");
-    });
-
-    // Confidence threshold slider
-    ui.add(
-        egui::Slider::new(&mut app.config.threshold_pct, 0u8..=100u8)
-            .text("Confidence threshold (%)"),
+    // Body: side nav + pane
+    let body_top = total_rect.min.y + header_h;
+    let body_rect = egui::Rect::from_min_size(
+        egui::pos2(total_rect.min.x, body_top),
+        egui::vec2(total_rect.width(), body_h),
     );
 
-    // Input device combo box
-    let current_device_label = app
-        .config
-        .input_device
-        .as_deref()
-        .unwrap_or("<system default>")
-        .to_string();
-    egui::ComboBox::from_label("Input device")
-        .selected_text(current_device_label)
-        .show_ui(ui, |ui| {
-            // Leading option: system default (maps to None)
-            let is_default = app.config.input_device.is_none();
-            if ui.selectable_label(is_default, "<system default>").clicked() {
-                app.config.input_device = None;
+    let rail_w: f32 = 52.0;
+    let rail_rect = egui::Rect::from_min_size(body_rect.min, egui::vec2(rail_w, body_h));
+    let pane_rect = egui::Rect::from_min_size(
+        egui::pos2(body_rect.min.x + rail_w, body_top),
+        egui::vec2(body_rect.width() - rail_w, body_h),
+    );
+
+    // Side nav
+    let mut rail_ui = ui.new_child(egui::UiBuilder::new().max_rect(rail_rect));
+    side_nav(&mut rail_ui, NAV_ITEMS, &mut app.active_nav);
+
+    // Pane content
+    let mut pane_ui = ui.new_child(egui::UiBuilder::new().max_rect(pane_rect));
+    pane_ui.painter().rect_filled(pane_rect, 0.0, Palette::BG_WINDOW);
+
+    egui::ScrollArea::vertical()
+        .id_salt("pane_scroll")
+        .show(&mut pane_ui, |ui| {
+            ui.set_min_width(pane_rect.width());
+
+            // Daemon error banner at top of pane
+            if matches!(status, DaemonStatus::Error | DaemonStatus::Disconnected) {
+                let (banner_title, banner_body) = match &app.daemon_start {
+                    DaemonStartState::Failed(msg) => ("DAEMON ERROR".to_string(), msg.clone()),
+                    DaemonStartState::Starting { .. } => ("DAEMON STARTING".to_string(), "Waiting for the daemon to become ready…".to_string()),
+                    DaemonStartState::Idle => ("DAEMON OFFLINE".to_string(), "The Vibe Attack daemon is not running. Start it to apply changes at runtime.".to_string()),
+                };
+
+                ui.add_space(16.0);
+                ui.horizontal(|ui| {
+                    ui.add_space(24.0);
+                    ui.vertical(|ui| {
+                        let action = banner(
+                            ui,
+                            BannerKind::Error,
+                            &banner_title,
+                            &banner_body,
+                            &[("RECONNECT", true), ("START DAEMON", false)],
+                        );
+                        match action {
+                            Some(0) => {
+                                // Reconnect: just re-check (daemon_running is polled each frame)
+                            }
+                            Some(1) => {
+                                match start_daemon() {
+                                    Ok(stderr_thread) => {
+                                        app.daemon_start = DaemonStartState::Starting {
+                                            deadline: std::time::Instant::now() + std::time::Duration::from_secs(15),
+                                            stderr_thread: Some(stderr_thread),
+                                        };
+                                    }
+                                    Err(e) => {
+                                        app.daemon_start = DaemonStartState::Failed(format!("Failed to start daemon: {e}"));
+                                    }
+                                }
+                            }
+                            _ => {}
+                        }
+                    });
+                    ui.add_space(24.0);
+                });
             }
-            for name in &app.device_names.clone() {
-                let is_selected = app.config.input_device.as_deref() == Some(name.as_str());
-                if ui.selectable_label(is_selected, name.as_str()).clicked() {
-                    app.config.input_device = Some(name.clone());
+
+            // Running: show stop-daemon button in a subtle row
+            if app.config.daemon_running {
+                ui.add_space(8.0);
+                ui.horizontal(|ui| {
+                    ui.add_space(24.0);
+                    if ui.small_button("Stop Daemon").clicked() {
+                        match vibe_attack::control::client::send_command(
+                            vibe_attack::control::protocol::ControlRequest::Shutdown,
+                        ) {
+                            Ok(_) => app.config.set_status("Daemon stopping…"),
+                            Err(e) => app.config.set_status(format!("Failed to stop daemon: {e}")),
+                        }
+                    }
+                });
+            }
+
+            ui.add_space(20.0);
+
+            match app.active_nav {
+                NavId::Devices  => pane_devices(ui, app),
+                NavId::Voice    => pane_voice(ui, app),
+                NavId::Packs    => pane_packs(ui, app),
+                NavId::Hotkeys  => pane_hotkeys(ui, app),
+                NavId::Advanced => pane_advanced(ui, app),
+            }
+
+            // Drain imported pack name
+            if let Some(editor_state) = app.pack_editor.as_mut() {
+                if editor_state.imported_pack_name.take().is_some() {
+                    app.config.profiles = load_profiles();
                 }
             }
         });
 
-    // PTT binding (read-only display — live capture deferred to post-S01)
-    ui.horizontal(|ui| {
-        ui.label(format!("PTT key: {}", app.config.ptt_binding));
-        ui.weak("(configured in wizard)");
+    // Footer
+    let footer_rect = egui::Rect::from_min_size(
+        egui::pos2(total_rect.min.x, total_rect.max.y - footer_h),
+        egui::vec2(total_rect.width(), footer_h),
+    );
+    let mut footer_ui = ui.new_child(egui::UiBuilder::new().max_rect(footer_rect));
+    let model_name = "tiny.en";
+    status_footer(&mut footer_ui, status, app.config.mic_level, model_name, None);
+}
+
+// ── Devices pane ──────────────────────────────────────────────────────────────
+
+fn pane_devices(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
+    use vibe_attack::ui::widgets::{field_row, led_meter, section_header};
+    use vibe_attack::ui::theme::Palette;
+
+    ui.horizontal(|ui| { ui.add_space(24.0); ui.vertical(|ui| {
+
+    section_header(ui, "INPUT DEVICE", None);
+    ui.add_space(12.0);
+
+    // Device select
+    field_row(ui, "Input Device", false, |ui| {
+        let current = app.config.input_device.as_deref().unwrap_or("<system default>").to_string();
+        egui::ComboBox::from_id_salt("device_combo")
+            .selected_text(&current)
+            .width(260.0)
+            .show_ui(ui, |ui| {
+                let is_default = app.config.input_device.is_none();
+                if ui.selectable_label(is_default, "<system default>").clicked() {
+                    app.config.input_device = None;
+                }
+                for name in &app.device_names.clone() {
+                    let selected = app.config.input_device.as_deref() == Some(name.as_str());
+                    if ui.selectable_label(selected, name.as_str()).clicked() {
+                        app.config.input_device = Some(name.clone());
+                    }
+                }
+            });
     });
-
-    // Save button
-    if ui.button("Save").clicked() {
-        handle_save(app);
-    }
-
-    // Status message
-    if let Some(msg) = &app.config.status_message.clone() {
-        ui.label(msg);
-    }
 
     ui.add_space(8.0);
 
-    // Profiles list
-    ui.label(format!("Profiles ({})", app.config.profile_count()));
+    // Live mic monitor
+    field_row(ui, "Mic Level", false, |ui| {
+        if app.config.mic_no_device {
+            ui.label(egui::RichText::new("No device").color(Palette::FG_MUTED).size(12.0));
+        } else {
+            led_meter(ui, app.config.mic_level, 40);
+            ui.add_space(8.0);
+            let db = if app.config.mic_level > 0.0 {
+                format!("{:.0} dB", 20.0 * app.config.mic_level.log10())
+            } else {
+                "—".to_string()
+            };
+            ui.label(egui::RichText::new(db).color(Palette::FG_MUTED).size(11.0));
+        }
+    });
+
+    ui.add_space(20.0);
+    section_header(ui, "VAD SETTINGS", None);
+    ui.add_space(12.0);
+
+    field_row(ui, "Sensitivity", false, |ui| {
+        ui.add(egui::Slider::new(&mut app.config.threshold_pct, 0u8..=100u8).suffix("%"));
+    });
+
+    ui.add_space(20.0);
+
+    // Save
+    ui.horizontal(|ui| {
+        use vibe_attack::ui::widgets::primary_button;
+        if primary_button(ui, "Save Changes").clicked() {
+            handle_save(app);
+        }
+        if let Some(msg) = &app.config.status_message.clone() {
+            ui.add_space(12.0);
+            ui.label(egui::RichText::new(msg).color(Palette::FG_MUTED).size(12.0));
+        }
+    });
+
+    }); });
+}
+
+// ── Voice pane ────────────────────────────────────────────────────────────────
+
+fn pane_voice(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
+    use vibe_attack::ui::widgets::{field_row, kbd, section_header};
+    use vibe_attack::ui::theme::Palette;
+
+    ui.horizontal(|ui| { ui.add_space(24.0); ui.vertical(|ui| {
+
+    section_header(ui, "TRIGGER MODE", None);
+    ui.add_space(12.0);
+
+    field_row(ui, "Mode", true, |ui| {
+        ui.radio_value(&mut app.config.mode, ActivationMode::Ptt, "Push-to-talk");
+        ui.add_space(16.0);
+        ui.radio_value(&mut app.config.mode, ActivationMode::Wake, "Wake word");
+    });
+
+    if app.config.mode == ActivationMode::Ptt {
+        ui.add_space(8.0);
+        field_row(ui, "PTT Key", true, |ui| {
+            kbd(ui, &app.config.ptt_binding);
+            ui.add_space(8.0);
+            ui.label(egui::RichText::new("(set in wizard)").color(Palette::FG_FAINT).size(11.0));
+        });
+    }
+
+    ui.add_space(20.0);
+    section_header(ui, "STT MODEL", None);
+    ui.add_space(12.0);
+
+    field_row(ui, "Confidence", false, |ui| {
+        ui.add(egui::Slider::new(&mut app.config.threshold_pct, 0u8..=100u8).suffix("%"));
+    });
+
+    ui.add_space(20.0);
+
+    ui.horizontal(|ui| {
+        use vibe_attack::ui::widgets::primary_button;
+        if primary_button(ui, "Save Changes").clicked() {
+            handle_save(app);
+        }
+        if let Some(msg) = &app.config.status_message.clone() {
+            ui.add_space(12.0);
+            ui.label(egui::RichText::new(msg).color(Palette::FG_MUTED).size(12.0));
+        }
+    });
+
+    }); });
+}
+
+// ── Packs pane ────────────────────────────────────────────────────────────────
+
+fn pane_packs(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
+    use vibe_attack::ui::widgets::section_header;
+    use vibe_attack::ui::theme::Palette;
+
+    ui.horizontal(|ui| { ui.add_space(24.0); ui.vertical(|ui| {
+
+    section_header(ui, "PROFILES", Some(&format!("{} loaded", app.config.profile_count())));
+    ui.add_space(12.0);
+
     if app.config.profiles.is_empty() {
-        ui.weak("No profiles found in ~/.config/vibe-attack/profiles/");
+        ui.label(
+            egui::RichText::new("No profiles found in ~/.config/vibe-attack/profiles/")
+                .color(Palette::FG_MUTED)
+                .size(12.0),
+        );
     } else {
-        for name in &app.config.profiles.clone() {
-            let is_active = app.config.active_profile.as_deref() == Some(name.as_str());
-            let is_editing = app
-                .pack_editor
-                .as_ref()
-                .map(|s| s.editor.pack().name == *name)
-                .unwrap_or(false);
-            if ui.selectable_label(is_active || is_editing, name.as_str()).clicked() {
-                match vibe_attack::pack::get_profiles_dir() {
-                    Ok(profiles_dir) => {
-                        let profile_dir = profiles_dir.join(name);
-                        match vibe_attack::pack::Pack::load_from_dir(&profile_dir) {
-                            Ok(pack) => {
-                                let editor = vibe_attack::pack::PackEditor::new(pack);
-                                app.pack_editor =
-                                    Some(PackEditorState::new(editor, profile_dir));
-                            }
-                            Err(e) => {
-                                tracing::warn!(profile = %name, reason = %e, "Failed to load pack for editor");
-                            }
-                        }
+        // Profile cards in a 2-column grid
+        let card_w = 200.0;
+        egui::Grid::new("profile_cards")
+            .spacing(egui::vec2(12.0, 12.0))
+            .show(ui, |ui| {
+                for (i, name) in app.config.profiles.clone().iter().enumerate() {
+                    let is_active = app.config.active_profile.as_deref() == Some(name.as_str());
+                    let is_editing = app.pack_editor.as_ref()
+                        .map(|s| s.editor.pack().name == *name)
+                        .unwrap_or(false);
+
+                    let (card_rect, resp) = ui.allocate_exact_size(
+                        egui::vec2(card_w, 72.0),
+                        egui::Sense::click(),
+                    );
+
+                    let bg = if is_active || is_editing { Palette::accent_faint() } else { Palette::BG_RAISED };
+                    let bdr = if is_active || is_editing { Palette::accent_line() } else { Palette::STROKE };
+                    let p = ui.painter();
+                    p.rect_filled(card_rect, egui::CornerRadius::same(4), bg);
+                    p.rect_stroke(card_rect, egui::CornerRadius::same(4), egui::Stroke::new(1.0, bdr), egui::StrokeKind::Inside);
+
+                    // Profile icon
+                    let icon_rect = egui::Rect::from_min_size(
+                        egui::pos2(card_rect.left() + 12.0, card_rect.top() + 12.0),
+                        egui::vec2(24.0, 24.0),
+                    );
+                    p.rect_filled(icon_rect, egui::CornerRadius::same(3), Palette::BG_WINDOW);
+                    p.text(icon_rect.center(), egui::Align2::CENTER_CENTER, "📦", egui::FontId::proportional(14.0), Palette::ACCENT);
+
+                    // Name
+                    p.text(
+                        egui::pos2(card_rect.left() + 44.0, card_rect.top() + 18.0),
+                        egui::Align2::LEFT_CENTER,
+                        name.as_str(),
+                        egui::FontId::proportional(13.0),
+                        Palette::FG_STRONG,
+                    );
+
+                    if is_active {
+                        // ACTIVE tag
+                        let tag_rect = egui::Rect::from_min_size(
+                            egui::pos2(card_rect.right() - 52.0, card_rect.top() + 8.0),
+                            egui::vec2(44.0, 16.0),
+                        );
+                        p.rect_filled(tag_rect, egui::CornerRadius::same(2), Palette::accent_faint());
+                        p.rect_stroke(tag_rect, egui::CornerRadius::same(2), egui::Stroke::new(1.0, Palette::accent_line()), egui::StrokeKind::Inside);
+                        p.text(tag_rect.center(), egui::Align2::CENTER_CENTER, "ACTIVE", egui::FontId::proportional(9.0), Palette::ACCENT);
                     }
-                    Err(e) => {
-                        tracing::warn!(reason = %e, "Failed to resolve profiles dir for pack editor");
+
+                    // Edit button area
+                    let edit_y = card_rect.bottom() - 20.0;
+                    let mut edit_ui = ui.new_child(egui::UiBuilder::new().max_rect(
+                        egui::Rect::from_min_size(
+                            egui::pos2(card_rect.left() + 12.0, edit_y - 4.0),
+                            egui::vec2(card_w - 24.0, 20.0),
+                        )
+                    ));
+                    if edit_ui.small_button("Open Editor").clicked() || resp.clicked() {
+                        open_pack_editor(app, name);
                     }
+
+                    if (i + 1) % 2 == 0 {
+                        ui.end_row();
+                    }
+                }
+            });
+    }
+
+    // Show pack editor inline below the cards if one is open
+    if let Some(editor_state) = app.pack_editor.as_mut() {
+        ui.add_space(16.0);
+        ui.separator();
+        ui.add_space(8.0);
+        show_pack_editor(ui, editor_state, app.config.daemon_running);
+    }
+
+    }); });
+}
+
+fn open_pack_editor(app: &mut VibeAttackConfigApp, name: &str) {
+    match vibe_attack::pack::get_profiles_dir() {
+        Ok(profiles_dir) => {
+            let profile_dir = profiles_dir.join(name);
+            match vibe_attack::pack::Pack::load_from_dir(&profile_dir) {
+                Ok(pack) => {
+                    let editor = vibe_attack::pack::PackEditor::new(pack);
+                    app.pack_editor = Some(PackEditorState::new(editor, profile_dir));
+                }
+                Err(e) => {
+                    tracing::warn!(profile = %name, reason = %e, "Failed to load pack for editor");
                 }
             }
         }
-    }
-
-    if let Some(editor_state) = app.pack_editor.as_mut() {
-        ui.add_space(8.0);
-        ui.separator();
-        show_pack_editor(ui, editor_state, app.config.daemon_running);
-
-        // Drain imported_pack_name: refresh the profiles list so the newly imported
-        // pack appears immediately. The editor itself was already swapped inside the
-        // import handler, so no further editor update is needed here.
-        if editor_state.imported_pack_name.take().is_some() {
-            app.config.profiles = load_profiles();
+        Err(e) => {
+            tracing::warn!(reason = %e, "Failed to resolve profiles dir for pack editor");
         }
     }
+}
 
-    ui.separator();
-    ui.label("Log:");
-    egui::ScrollArea::vertical()
-        .auto_shrink([false, false])
-        .stick_to_bottom(true)
-        .show(ui, |ui| {
-            for line in &app.config.log_lines.clone() {
-                ui.monospace(line.as_str());
+// ── Hotkeys pane ──────────────────────────────────────────────────────────────
+
+fn pane_hotkeys(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
+    use vibe_attack::ui::widgets::{field_row, kbd, section_header};
+    use vibe_attack::ui::theme::Palette;
+
+    ui.horizontal(|ui| { ui.add_space(24.0); ui.vertical(|ui| {
+
+    section_header(ui, "KEY BINDINGS", None);
+    ui.add_space(12.0);
+
+    let bindings: &[(&str, &str)] = &[
+        ("PTT Key",         &app.config.ptt_binding.clone()),
+        ("Mute",            "—"),
+        ("Cycle Profile",   "—"),
+        ("Pause Daemon",    "—"),
+        ("Open Config",     "—"),
+    ];
+
+    for (label, key) in bindings {
+        field_row(ui, label, false, |ui| {
+            if *key == "—" {
+                ui.label(egui::RichText::new("—").color(Palette::FG_FAINT).size(12.0));
+            } else {
+                kbd(ui, key);
             }
+            ui.add_space(8.0);
+            let _ = ui.small_button("Rebind");
         });
+        ui.add_space(4.0);
+    }
+
+    }); });
+}
+
+// ── Advanced pane ─────────────────────────────────────────────────────────────
+
+fn pane_advanced(ui: &mut egui::Ui, _app: &mut VibeAttackConfigApp) {
+    use vibe_attack::ui::widgets::{banner, field_row, section_header, BannerKind};
+    use vibe_attack::ui::theme::Palette;
+
+    ui.horizontal(|ui| { ui.add_space(24.0); ui.vertical(|ui| {
+
+    section_header(ui, "STARTUP", None);
+    ui.add_space(12.0);
+
+    field_row(ui, "Autostart", false, |ui| {
+        ui.label(egui::RichText::new("(via systemd unit — configure manually)").color(Palette::FG_FAINT).size(11.0));
+    });
+
+    field_row(ui, "Socket Path", false, |ui| {
+        let sock_path = std::env::var("XDG_RUNTIME_DIR")
+            .map(|r| format!("{r}/vibe-attack.sock"))
+            .unwrap_or_else(|_| "/run/user/<UID>/vibe-attack.sock".to_string());
+        ui.label(egui::RichText::new(sock_path).color(Palette::FG_MUTED).size(12.0));
+    });
+
+    ui.add_space(20.0);
+    section_header(ui, "DANGER ZONE", None);
+    ui.add_space(12.0);
+
+    banner(
+        ui,
+        BannerKind::Warn,
+        "DESTRUCTIVE ACTIONS",
+        "These actions cannot be undone. Wipe resets all configuration to factory defaults.",
+        &[],
+    );
+    ui.add_space(8.0);
+
+    ui.horizontal(|ui| {
+        let reset_btn = egui::Button::new(
+            egui::RichText::new("Reset Config").color(Palette::ERR).size(12.0),
+        )
+        .fill(Palette::err_faint())
+        .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgba_unmultiplied(0xe8, 0x5d, 0x3c, 77)));
+        ui.add(reset_btn);
+    });
+
+    }); });
 }
 
 /// Locate and spawn the daemon (`vibe-attack`) detached from this process.
@@ -695,6 +974,9 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "Vibe Attack Config",
         options,
-        Box::new(move |_cc| Ok(Box::new(VibeAttackConfigApp::new(log_rx, skip_wizard)))),
+        Box::new(move |cc| {
+            vibe_attack::ui::theme::apply_theme(&cc.egui_ctx);
+            Ok(Box::new(VibeAttackConfigApp::new(log_rx, skip_wizard)))
+        }),
     )
 }
