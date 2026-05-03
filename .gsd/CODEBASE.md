@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-05-03T20:28:24Z | Files: 176 | Described: 0/176
-<!-- gsd:codebase-meta {"generatedAt":"2026-05-03T20:28:24Z","fingerprint":"3132a3d9f419681fd863bd6aae73a8d8609c622b","fileCount":176,"truncated":false} -->
+Generated: 2026-05-03T20:29:59Z | Files: 178 | Described: 0/178
+<!-- gsd:codebase-meta {"generatedAt":"2026-05-03T20:29:59Z","fingerprint":"2464c7303505329ddf47753688a7569db190b494","fileCount":178,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -237,7 +237,9 @@ Generated: 2026-05-03T20:28:24Z | Files: 176 | Described: 0/176
 - `src/ui/mod.rs`
 - `src/ui/pack_editor.rs`
 - `src/ui/probe.rs`
+- `src/ui/theme.rs`
 - `src/ui/tray.rs`
+- `src/ui/widgets.rs`
 - `src/ui/wizard.rs`
 
 ### src/vad/
