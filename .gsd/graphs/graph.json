@@ -1,16 +1,16 @@
 {
   "nodes": [
     {
-      "id": "milestone:M011",
-      "label": "M011: v1.0 Release",
+      "id": "milestone:M013",
+      "label": "M013: CI Build Revamp & Package Distribution",
       "type": "milestone",
-      "description": "Active milestone: M011",
+      "description": "Active milestone: M013",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:validating-milestone",
-      "label": "Phase: validating-milestone",
+      "id": "concept:phase:planning",
+      "label": "Phase: planning",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -263,42 +263,6 @@
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M002/M002-ROADMAP.md"
-    },
-    {
-      "id": "slice:M002:S01",
-      "label": "M002/S01",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S02",
-      "label": "M002/S02",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S03",
-      "label": "M002/S03",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S04",
-      "label": "M002/S04",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S05",
-      "label": "M002/S05",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S06",
-      "label": "M002/S06",
-      "type": "slice",
-      "confidence": "EXTRACTED"
     },
     {
       "id": "milestone:M003",
@@ -1192,6 +1156,13 @@
       "confidence": "EXTRACTED"
     },
     {
+      "id": "milestone:M011",
+      "label": "M011: M011",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-ROADMAP.md"
+    },
+    {
       "id": "slice:M011:S01",
       "label": "S01: Rename proof directories and update test harness",
       "type": "slice",
@@ -1289,6 +1260,149 @@
     {
       "id": "task:M011:S05:T02",
       "label": "T02: Pin packaging/PKGBUILD sha256sums to real v1.0.0 release hashes",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "milestone:M012",
+      "label": "M012: GUI Redesign — Tactical Field Equipment Aesthetic",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/M012-ROADMAP.md"
+    },
+    {
+      "id": "slice:M012:S01",
+      "label": "S01: Theme + Font Foundation",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M012:S01:T01",
+      "label": "T01: Implement theme.rs with palette and apply_theme()",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M012:S02",
+      "label": "S02: Shared Widget Library",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/slices/S02/S02-PLAN.md"
+    },
+    {
+      "id": "task:M012:S02:T01",
+      "label": "T01: Implement shared widget library",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M012:S03",
+      "label": "S03: ConfigApp Rewrite",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/slices/S03/S03-PLAN.md"
+    },
+    {
+      "id": "task:M012:S03:T01",
+      "label": "T01: Rewrite show_main_config() with rail nav and panes",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M012:S04",
+      "label": "S04: Wizard Rewrite",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/slices/S04/S04-PLAN.md"
+    },
+    {
+      "id": "task:M012:S04:T01",
+      "label": "T01: Rewrite wizard.rs with themed steps and PTT drop-zone",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M012:S05",
+      "label": "S05: PackEditor Rewrite",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/slices/S05/S05-PLAN.md"
+    },
+    {
+      "id": "task:M012:S05:T01",
+      "label": "T01: Rewrite PackEditor with 3-column layout and amber accent rows",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M012:S06",
+      "label": "S06: Tray Icon Update",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/slices/S06/S06-PLAN.md"
+    },
+    {
+      "id": "task:M012:S06:T01",
+      "label": "T01: Implement palette-matched status dot tray icons",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M012:S07",
+      "label": "S07: Integration + Screenshot Capture",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M012/slices/S07/S07-PLAN.md"
+    },
+    {
+      "id": "task:M012:S07:T01",
+      "label": "T01: Release build, test suite, screenshot gallery",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M013:S01",
+      "label": "S01: Fix release versioning bugs",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M013/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M013:S01:T01",
+      "label": "T01: Fix RPM tarball prefix to use tag version",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M013:S01:T02",
+      "label": "T02: Fix deb changelog version stamping",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M013:S02",
+      "label": "S02: Add AUR PKGBUILD validation to CI",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M013/slices/S02/S02-PLAN.md"
+    },
+    {
+      "id": "task:M013:S02:T01",
+      "label": "T01: Add validate-pkgbuild job to ci.yml",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M013:S04",
+      "label": "S04: README badges and documentation cleanup",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M013/slices/S04/S04-PLAN.md"
+    },
+    {
+      "id": "task:M013:S04:T01",
+      "label": "T01: Add CI and Release badges to README",
       "type": "task",
       "confidence": "EXTRACTED"
     },
@@ -3371,6 +3485,502 @@
       "description": "Source: S04-SUMMARY.md/Known limitations",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M010/M010-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:1",
+      "label": "**4-job symmetric release workflow.** Chose a 3-parallel-build + 1-release-collector architecture over a single monolithic job. Each build job emits `upload-artifact`; the release job collects all three via `download-artifact`. Independently retryable and extensible to new package types.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:2",
+      "label": "**rpmbuild --nodeps on Ubuntu CI hosts.** Chose `--nodeps` over switching to a Fedora container. The workflow apt-get step pre-installs all real build deps; `--nodeps` only skips rpm's internal dependency resolution which rejects Fedora-style BuildRequires on apt hosts.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:3",
+      "label": "**LD_LIBRARY_PATH (not --library flags) for linuxdeploy dlopen resolution.** linuxdeploy's `--library` flag approach was tried first and failed. `libsherpa-onnx-c-api.so` is loaded via dlopen at runtime, not ELF RPATH — ldd cannot find it; setting `LD_LIBRARY_PATH=AppDir/usr/lib` before invoking linuxdeploy is the correct fix.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:4",
+      "label": "**find_so() fallback to target/sherpa-onnx-prebuilt/ for Rust cache hits.** When the Rust build cache is a full hit, `cargo build --release` is a no-op; build.rs and ort crate scripts never run and never copy .so files to `target/release/`. The AppImage build script must check `target/sherpa-onnx-prebuilt/` as a fallback path.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:5",
+      "label": "**egui PttCaptureState field (not frame-local variable) for PTT key capture.** egui repaints on every frame; frame-local variables reset each repaint. Stateful captures (TextEdit state, PTT key input) must be stored in a persistent struct field, not a frame-local variable.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:6",
+      "label": "**Arc<AtomicBool> + take pattern for tray Quit signal.** Chosen over process::exit in ksni D-Bus callbacks. The take pattern (swap false, AcqRel) mirrors the open_window flag pattern; the eframe main loop polls it each tick and exits cleanly.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:7",
+      "label": "**tooltip_description_for as free pub(crate) function.** Extracted state-derived display logic out of ksni callback closures so it can be unit-tested without D-Bus or ksni instantiation. Follows MEM045 convention from M008.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:8",
+      "label": "**probe::run() called per-frame in DownloadStatus::Done arm.** Idempotent filesystem read; calling it per-frame enables auto-advance on wizard re-entry without adding a separate trigger mechanism.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:9",
+      "label": "**v1.0.0 tag immutable post-publish.** Force-moving a published tag would invalidate PKGBUILD sha256sums and break any AUR installs that have already cached the digest. Tags must be treated as immutable once published.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:10",
+      "label": "**permissions: contents: write required explicitly on release job.** GITHUB_TOKEN defaults to read-only contents scope. Any job that calls `gh release create` or uploads release assets needs an explicit `permissions: contents: write` stanza.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:11",
+      "label": "**GITHUB_TOKEN is read-only by default — release jobs need explicit write permission.** The release job received a 403 on run 3. Root cause: `permissions: contents: write` must be declared on the job (or workflow) that publishes release assets. This is a silent footgun in GitHub Actions.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:12",
+      "label": "**Rust build cache hits suppress build.rs — AppImage .so discovery must have a prebuilt fallback.** A full Rust cache hit means `cargo build --release` exits immediately; no build.rs runs; the ort crate never copies `libonnxruntime.so` to `target/release/`. Any script that assumes `target/release/*.so` will exist must also check `target/sherpa-onnx-prebuilt/`.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:13",
+      "label": "**linuxdeploy cannot discover dlopen-only .so files — LD_LIBRARY_PATH is required.** linuxdeploy uses ldd to find transitive dependencies. dlopen-only libraries (like sherpa-onnx C API) don't appear in ELF RPATH and are invisible to ldd. Only LD_LIBRARY_PATH forces dlopen to find them.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:14",
+      "label": "**debian/compat and debhelper-compat in Build-Depends are mutually exclusive.** Having both causes `dh: error: debhelper compat level specified both in debian/compat and via build-dependency on debhelper-compat`. Delete the compat file; use only the modern build-dep form.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:15",
+      "label": "**RPM %install + %files both handling the same file causes an \"unpackaged file\" error.** If both `%install` (manual `install -Dm644`) and `%files` (`%doc README.md`) claim a file, rpmbuild fails with \"Installed (but unpackaged) file(s) found.\" Remove the manual install from `%install` and let `%doc` handle it.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:16",
+      "label": "**Wizard UAT cannot be automated in auto-mode.** Polkit + desktop GUI session with human observation is required for wizard scenario coverage. Structural tests (field presence, valid STATUS values) are the only CI-verifiable signal; STATUS: ok closure is operator-bound.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:17",
+      "label": "**Structural distribution proof tests with STATUS: pending VM run keep CI green during incremental transcript population.** VALID_STATUSES includes 'pending VM run', so tests pass before VM runs complete. This allows parallel human/agent work without blocking CI.",
+      "type": "decision",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:18",
+      "label": "**egui repaints every frame — stateful UI must live in persistent structs.** Any state that must survive between frames (TextEdit buffers, key captures, download progress) must be stored in a struct field, not a local variable inside the UI closure.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:19",
+      "label": "**Static YAML contract tests in packaging.rs catch CI job structural regressions at cargo test time.** String-contains checks on raw .yml content (job names, cache key counts, artifact globs) enforce CI structure without requiring a real tag push. This provides fast feedback on release.yml changes.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:20",
+      "label": "**4-job release pipeline: 3 parallel build jobs → 1 release collector.** Each build job emits `upload-artifact`; the release job uses `needs: [build-appimage, build-deb, build-rpm]` and `download-artifact` to collect all artifacts before publishing. `fail_on_unmatched_files: true` provides loud failure on missing globs.",
+      "type": "decision",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:21",
+      "label": "**AppImage .so discovery: target/release/ first, target/sherpa-onnx-prebuilt/ fallback.** The find_so() function in build.sh searches target/release/ (normal build) then falls back to the sherpa-onnx prebuilt cache hierarchy (Rust cache hit scenario). Both paths must be searched.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:22",
+      "label": "**CI cross-distro packaging on Ubuntu: --nodeps for RPM, symlinked debian/ for .deb.** Ubuntu CI hosts can build both RPM and Debian packages by pre-installing all deps via apt-get and using package-format-specific workarounds rather than per-distro containers.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:23",
+      "label": "**Pending-VM-run transcript pattern with structural validation.** Scaffolded transcripts carry STATUS: pending VM run. Structural tests accept this value, keeping CI green. Human operator updates STATUS to ok after running VM sessions. This separates structural correctness (auto-verifiable) from runtime correctness (human-bound).",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:24",
+      "label": "**Per-distro Reproduction Notes inlined in each transcript.md.** Each proof transcript includes self-contained operator instructions as Reproduction Notes — no external runbook lookup needed. Failed runs leave STATUS: failed:<reason> artifacts for post-mortem.",
+      "type": "decision",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:25",
+      "label": "**Free pub(crate) functions for state-derived display logic (icon, tooltip).** Extracting tray icon and tooltip computation out of ksni callbacks into free functions enables unit tests without D-Bus. Pattern established in M008 (icon_name_for_state) and extended in M011 (tooltip_description_for).",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:26",
+      "label": "**Five CI defects surfaced on the first real tag push.** The release pipeline had never been exercised end-to-end. Static packaging tests validated structure but not runtime behavior. Four workflow iterations were needed to clear all five defects: rpmbuild --nodeps, LD_LIBRARY_PATH, debian/compat conflict, rpm %install/%files conflict, GITHUB_TOKEN permissions.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:27",
+      "label": "**Rust cache hit caused build-appimage to fail on run 4 after three other jobs already succeeded.** The Rust build cache hit on run 4 was a full hit, causing cargo build --release to be a no-op and leaving no .so files in target/release/. This was not anticipated in the S04 plan; find_so() fallback was added reactively.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:28",
+      "label": "**unauthenticated GitHub release URL verification not applicable for private repos.** The S05 T01 plan included a `curl -I` HTTP 200 check against the release download URL. Private repos return 404 for unauthenticated requests even on published releases. gh API verification was used instead.",
+      "type": "decision",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "decision:M011:29",
+      "label": "**S03 UI polish work had no empirical wizard-run findings to act on.** S02 only captured one real AppImage run (ubuntu2604); all wizard transcripts remained STATUS: pending VM run. S03 fixed pre-existing bugs found via code review rather than VM-run-driven triage. The planned pipeline (VM runs → findings → polish) partially inverted: polish preceded VM evidence.",
+      "type": "decision",
+      "description": "Source: S03-SUMMARY.md/Follow-ups",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:1",
+      "label": "**GITHUB_TOKEN is read-only by default — release jobs need explicit write permission.** The release job received a 403 on run 3. Root cause: `permissions: contents: write` must be declared on the job (or workflow) that publishes release assets. This is a silent footgun in GitHub Actions.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:2",
+      "label": "**Rust build cache hits suppress build.rs — AppImage .so discovery must have a prebuilt fallback.** A full Rust cache hit means `cargo build --release` exits immediately; no build.rs runs; the ort crate never copies `libonnxruntime.so` to `target/release/`. Any script that assumes `target/release/*.so` will exist must also check `target/sherpa-onnx-prebuilt/`.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:3",
+      "label": "**linuxdeploy cannot discover dlopen-only .so files — LD_LIBRARY_PATH is required.** linuxdeploy uses ldd to find transitive dependencies. dlopen-only libraries (like sherpa-onnx C API) don't appear in ELF RPATH and are invisible to ldd. Only LD_LIBRARY_PATH forces dlopen to find them.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:4",
+      "label": "**debian/compat and debhelper-compat in Build-Depends are mutually exclusive.** Having both causes `dh: error: debhelper compat level specified both in debian/compat and via build-dependency on debhelper-compat`. Delete the compat file; use only the modern build-dep form.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:5",
+      "label": "**RPM %install + %files both handling the same file causes an \"unpackaged file\" error.** If both `%install` (manual `install -Dm644`) and `%files` (`%doc README.md`) claim a file, rpmbuild fails with \"Installed (but unpackaged) file(s) found.\" Remove the manual install from `%install` and let `%doc` handle it.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:6",
+      "label": "**Wizard UAT cannot be automated in auto-mode.** Polkit + desktop GUI session with human observation is required for wizard scenario coverage. Structural tests (field presence, valid STATUS values) are the only CI-verifiable signal; STATUS: ok closure is operator-bound.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:7",
+      "label": "**Structural distribution proof tests with STATUS: pending VM run keep CI green during incremental transcript population.** VALID_STATUSES includes 'pending VM run', so tests pass before VM runs complete. This allows parallel human/agent work without blocking CI.",
+      "type": "lesson",
+      "description": "Source: S01-SUMMARY.md/Known limitations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:8",
+      "label": "**egui repaints every frame — stateful UI must live in persistent structs.** Any state that must survive between frames (TextEdit buffers, key captures, download progress) must be stored in a struct field, not a local variable inside the UI closure.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Key decisions",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:9",
+      "label": "**Static YAML contract tests in packaging.rs catch CI job structural regressions at cargo test time.** String-contains checks on raw .yml content (job names, cache key counts, artifact globs) enforce CI structure without requiring a real tag push. This provides fast feedback on release.yml changes.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:10",
+      "label": "**4-job release pipeline: 3 parallel build jobs → 1 release collector.** Each build job emits `upload-artifact`; the release job uses `needs: [build-appimage, build-deb, build-rpm]` and `download-artifact` to collect all artifacts before publishing. `fail_on_unmatched_files: true` provides loud failure on missing globs.",
+      "type": "lesson",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:11",
+      "label": "**AppImage .so discovery: target/release/ first, target/sherpa-onnx-prebuilt/ fallback.** The find_so() function in build.sh searches target/release/ (normal build) then falls back to the sherpa-onnx prebuilt cache hierarchy (Rust cache hit scenario). Both paths must be searched.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:12",
+      "label": "**CI cross-distro packaging on Ubuntu: --nodeps for RPM, symlinked debian/ for .deb.** Ubuntu CI hosts can build both RPM and Debian packages by pre-installing all deps via apt-get and using package-format-specific workarounds rather than per-distro containers.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:13",
+      "label": "**Pending-VM-run transcript pattern with structural validation.** Scaffolded transcripts carry STATUS: pending VM run. Structural tests accept this value, keeping CI green. Human operator updates STATUS to ok after running VM sessions. This separates structural correctness (auto-verifiable) from runtime correctness (human-bound).",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:14",
+      "label": "**Per-distro Reproduction Notes inlined in each transcript.md.** Each proof transcript includes self-contained operator instructions as Reproduction Notes — no external runbook lookup needed. Failed runs leave STATUS: failed:<reason> artifacts for post-mortem.",
+      "type": "lesson",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:15",
+      "label": "**Free pub(crate) functions for state-derived display logic (icon, tooltip).** Extracting tray icon and tooltip computation out of ksni callbacks into free functions enables unit tests without D-Bus. Pattern established in M008 (icon_name_for_state) and extended in M011 (tooltip_description_for).",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:16",
+      "label": "**Five CI defects surfaced on the first real tag push.** The release pipeline had never been exercised end-to-end. Static packaging tests validated structure but not runtime behavior. Four workflow iterations were needed to clear all five defects: rpmbuild --nodeps, LD_LIBRARY_PATH, debian/compat conflict, rpm %install/%files conflict, GITHUB_TOKEN permissions.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:17",
+      "label": "**Rust cache hit caused build-appimage to fail on run 4 after three other jobs already succeeded.** The Rust build cache hit on run 4 was a full hit, causing cargo build --release to be a no-op and leaving no .so files in target/release/. This was not anticipated in the S04 plan; find_so() fallback was added reactively.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:18",
+      "label": "**unauthenticated GitHub release URL verification not applicable for private repos.** The S05 T01 plan included a `curl -I` HTTP 200 check against the release download URL. Private repos return 404 for unauthenticated requests even on published releases. gh API verification was used instead.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "lesson:M011:19",
+      "label": "**S03 UI polish work had no empirical wizard-run findings to act on.** S02 only captured one real AppImage run (ubuntu2604); all wizard transcripts remained STATUS: pending VM run. S03 fixed pre-existing bugs found via code review rather than VM-run-driven triage. The planned pipeline (VM runs → findings → polish) partially inverted: polish preceded VM evidence.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Follow-ups",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:1",
+      "label": "**4-job release pipeline: 3 parallel build jobs → 1 release collector.** Each build job emits `upload-artifact`; the release job uses `needs: [build-appimage, build-deb, build-rpm]` and `download-artifact` to collect all artifacts before publishing. `fail_on_unmatched_files: true` provides loud failure on missing globs.",
+      "type": "pattern",
+      "description": "Source: S04-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:2",
+      "label": "**AppImage .so discovery: target/release/ first, target/sherpa-onnx-prebuilt/ fallback.** The find_so() function in build.sh searches target/release/ (normal build) then falls back to the sherpa-onnx prebuilt cache hierarchy (Rust cache hit scenario). Both paths must be searched.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:3",
+      "label": "**CI cross-distro packaging on Ubuntu: --nodeps for RPM, symlinked debian/ for .deb.** Ubuntu CI hosts can build both RPM and Debian packages by pre-installing all deps via apt-get and using package-format-specific workarounds rather than per-distro containers.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:4",
+      "label": "**Pending-VM-run transcript pattern with structural validation.** Scaffolded transcripts carry STATUS: pending VM run. Structural tests accept this value, keeping CI green. Human operator updates STATUS to ok after running VM sessions. This separates structural correctness (auto-verifiable) from runtime correctness (human-bound).",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:5",
+      "label": "**Per-distro Reproduction Notes inlined in each transcript.md.** Each proof transcript includes self-contained operator instructions as Reproduction Notes — no external runbook lookup needed. Failed runs leave STATUS: failed:<reason> artifacts for post-mortem.",
+      "type": "pattern",
+      "description": "Source: S02-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:6",
+      "label": "**Free pub(crate) functions for state-derived display logic (icon, tooltip).** Extracting tray icon and tooltip computation out of ksni callbacks into free functions enables unit tests without D-Bus. Pattern established in M008 (icon_name_for_state) and extended in M011 (tooltip_description_for).",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Patterns established",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:7",
+      "label": "**Five CI defects surfaced on the first real tag push.** The release pipeline had never been exercised end-to-end. Static packaging tests validated structure but not runtime behavior. Four workflow iterations were needed to clear all five defects: rpmbuild --nodeps, LD_LIBRARY_PATH, debian/compat conflict, rpm %install/%files conflict, GITHUB_TOKEN permissions.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:8",
+      "label": "**Rust cache hit caused build-appimage to fail on run 4 after three other jobs already succeeded.** The Rust build cache hit on run 4 was a full hit, causing cargo build --release to be a no-op and leaving no .so files in target/release/. This was not anticipated in the S04 plan; find_so() fallback was added reactively.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:9",
+      "label": "**unauthenticated GitHub release URL verification not applicable for private repos.** The S05 T01 plan included a `curl -I` HTTP 200 check against the release download URL. Private repos return 404 for unauthenticated requests even on published releases. gh API verification was used instead.",
+      "type": "pattern",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "pattern:M011:10",
+      "label": "**S03 UI polish work had no empirical wizard-run findings to act on.** S02 only captured one real AppImage run (ubuntu2604); all wizard transcripts remained STATUS: pending VM run. S03 fixed pre-existing bugs found via code review rather than VM-run-driven triage. The planned pipeline (VM runs → findings → polish) partially inverted: polish preceded VM evidence.",
+      "type": "pattern",
+      "description": "Source: S03-SUMMARY.md/Follow-ups",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M011:1",
+      "label": "**Five CI defects surfaced on the first real tag push.** The release pipeline had never been exercised end-to-end. Static packaging tests validated structure but not runtime behavior. Four workflow iterations were needed to clear all five defects: rpmbuild --nodeps, LD_LIBRARY_PATH, debian/compat conflict, rpm %install/%files conflict, GITHUB_TOKEN permissions.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M011:2",
+      "label": "**Rust cache hit caused build-appimage to fail on run 4 after three other jobs already succeeded.** The Rust build cache hit on run 4 was a full hit, causing cargo build --release to be a no-op and leaving no .so files in target/release/. This was not anticipated in the S04 plan; find_so() fallback was added reactively.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/What Happened",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M011:3",
+      "label": "**unauthenticated GitHub release URL verification not applicable for private repos.** The S05 T01 plan included a `curl -I` HTTP 200 check against the release download URL. Private repos return 404 for unauthenticated requests even on published releases. gh API verification was used instead.",
+      "type": "lesson",
+      "description": "Source: S05-SUMMARY.md/Deviations",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
+    },
+    {
+      "id": "surprise:M011:4",
+      "label": "**S03 UI polish work had no empirical wizard-run findings to act on.** S02 only captured one real AppImage run (ubuntu2604); all wizard transcripts remained STATUS: pending VM run. S03 fixed pre-existing bugs found via code review rather than VM-run-driven triage. The planned pipeline (VM runs → findings → polish) partially inverted: polish preceded VM evidence.",
+      "type": "lesson",
+      "description": "Source: S03-SUMMARY.md/Follow-ups",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M011/M011-LEARNINGS.md"
     }
   ],
   "edges": [
@@ -3599,42 +4209,6 @@
     {
       "from": "slice:M001:S07",
       "to": "task:M001:S07:T03",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S01",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S02",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S03",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S04",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S05",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S06",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -4877,6 +5451,132 @@
     {
       "from": "slice:M011:S05",
       "to": "task:M011:S05:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M012",
+      "to": "slice:M012:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M012:S01",
+      "to": "task:M012:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M012",
+      "to": "slice:M012:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M012:S02",
+      "to": "task:M012:S02:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M012",
+      "to": "slice:M012:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M012:S03",
+      "to": "task:M012:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M012",
+      "to": "slice:M012:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M012:S04",
+      "to": "task:M012:S04:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M012",
+      "to": "slice:M012:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M012:S05",
+      "to": "task:M012:S05:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M012",
+      "to": "slice:M012:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M012:S06",
+      "to": "task:M012:S06:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M012",
+      "to": "slice:M012:S07",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M012:S07",
+      "to": "task:M012:S07:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M013",
+      "to": "slice:M013:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S01",
+      "to": "task:M013:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S01",
+      "to": "task:M013:S01:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M013",
+      "to": "slice:M013:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S02",
+      "to": "task:M013:S02:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M013",
+      "to": "slice:M013:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S04",
+      "to": "task:M013:S04:T01",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -7351,7 +8051,379 @@
       "to": "surprise:M010:3",
       "type": "relates_to",
       "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:20",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:21",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:22",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:23",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:24",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:25",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:26",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:27",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:28",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "decision:M011:29",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:11",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:12",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:13",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:14",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:15",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:16",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:17",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:18",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "lesson:M011:19",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:5",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:6",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:7",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:8",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:9",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "pattern:M011:10",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "surprise:M011:1",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "surprise:M011:2",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "surprise:M011:3",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M011",
+      "to": "surprise:M011:4",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-04-29T11:47:29.203Z"
+  "builtAt": "2026-05-03T20:46:45.017Z"
 }

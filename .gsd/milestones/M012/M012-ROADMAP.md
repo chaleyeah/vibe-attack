@@ -1,4 +1,4 @@
-# M012: GUI Redesign — Tactical Field Equipment Aesthetic
+# M012: GUI Redesign - Tactical Field Equipment Aesthetic
 
 **Vision:** Replace the current ad-hoc egui UI with a cohesive dark-panel design (amber accent, JetBrains Mono, LED meter, status pill) across all three surfaces — ConfigApp, Wizard, and PackEditor — using a shared theme + widget layer. The redesign ships zero new heavy dependencies, degrades cleanly on egui limitations, and makes the daemon-disconnected error story a single Banner + Reconnect instead of wall-of-text.
 
@@ -16,25 +16,25 @@
 
 ## Slices
 
-- [ ] **S01: Theme + Font Foundation** `risk:low` `depends:[]`
+- [x] **S01: S01** `risk:low` `depends:[]`
   > After this: Launch config app — dark background, amber accent on interactive elements, monospace font throughout.
 
-- [ ] **S02: Shared Widget Library** `risk:medium` `depends:[S01]`
+- [x] **S02: S02** `risk:medium` `depends:[]`
   > After this: Isolated widget test page (or probe screen) showing each widget in its various states with the new theme.
 
-- [ ] **S03: ConfigApp Rewrite** `risk:medium` `depends:[S02]`
+- [x] **S03: S03** `risk:medium` `depends:[]`
   > After this: Config app launches, all 5 panes navigable, disconnected banner appears when daemon is not running.
 
-- [ ] **S04: Wizard Rewrite** `risk:medium` `depends:[S02]`
+- [x] **S04: S04** `risk:medium` `depends:[]`
   > After this: Wizard runs to completion from a clean state; PTT capture drop-zone captures a key; mic-test LED meter animates.
 
-- [ ] **S05: PackEditor Rewrite** `risk:high` `depends:[S02]`
+- [x] **S05: S05** `risk:high` `depends:[]`
   > After this: Pack editor opens existing pack; drag-reorder categories and macros; search filters macro list; edits persist on save.
 
-- [ ] **S06: Tray Icon Update** `risk:low` `depends:[S01]`
+- [x] **S06: S06** `risk:low` `depends:[]`
   > After this: System tray icon changes color correctly when daemon state changes.
 
-- [ ] **S07: Integration + Screenshot Capture** `risk:low` `depends:[S03,S04,S05,S06]`
+- [x] **S07: S07** `risk:low` `depends:[]`
   > After this: Clean build, tests green, screenshot gallery showing all 12 screens vs reference renders.
 
 ## Boundary Map
