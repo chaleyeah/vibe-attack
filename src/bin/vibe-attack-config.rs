@@ -344,6 +344,7 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
     if let DaemonStartState::Starting { deadline, .. } = &app.daemon_start {
         if app.config.daemon_running {
             app.daemon_start = DaemonStartState::Idle;
+            app.config.set_status("Daemon started.");
         } else if std::time::Instant::now() > *deadline {
             // Timed out — collect stderr from the daemon process for the error message.
             let stderr_output = if let DaemonStartState::Starting { stderr_thread, .. } = &mut app.daemon_start {

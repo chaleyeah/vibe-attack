@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-05-03T18:04:50Z | Files: 166 | Described: 0/166
-<!-- gsd:codebase-meta {"generatedAt":"2026-05-03T18:04:50Z","fingerprint":"09206a802a3fb93e30599c20c94752a2935725ba","fileCount":166,"truncated":false} -->
+Generated: 2026-05-03T18:13:44Z | Files: 176 | Described: 0/176
+<!-- gsd:codebase-meta {"generatedAt":"2026-05-03T18:13:44Z","fingerprint":"3132a3d9f419681fd863bd6aae73a8d8609c622b","fileCount":176,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -251,3 +251,15 @@ Generated: 2026-05-03T18:04:50Z | Files: 166 | Described: 0/166
 
 ### uat/gui/
 - `uat/gui/builderror.txt`
+
+### ui/
+- `ui/ConfigApp.jsx`
+- `ui/design-canvas.jsx`
+- `ui/Icons.jsx`
+- `ui/PackEditor.jsx`
+- `ui/README.md`
+- `ui/Shell.jsx`
+- `ui/theme.css`
+- `ui/tweaks-panel.jsx`
+- `ui/Vibe Attack Redesign.html`
+- `ui/Wizard.jsx`
