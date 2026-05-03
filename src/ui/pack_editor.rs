@@ -1,8 +1,8 @@
-/// Pack editor panel for browsing and editing macro packs.
-///
-/// All egui code is gated to `gui` — the default build (no eframe) only compiles
-/// the pure-logic helpers (`parse_key_sequence`, `build_macro_config_from_form`)
-/// exposed by the tests below.
+//! Pack editor panel for browsing and editing macro packs.
+//!
+//! All egui code is gated to `gui` — the default build (no eframe) only compiles
+//! the pure-logic helpers (`parse_key_sequence`, `build_macro_config_from_form`)
+//! exposed by the tests below.
 
 #[cfg(feature = "gui")]
 pub use inner::*;
