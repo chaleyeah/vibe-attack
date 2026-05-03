@@ -33,9 +33,13 @@ pub fn query_status() -> Option<DaemonStatus> {
     }
 }
 
-/// Returns true if the daemon socket exists (daemon likely running).
+/// Returns true if the daemon socket exists AND accepts connections.
 pub fn is_daemon_running() -> bool {
-    get_socket_path().map(|p| p.exists()).unwrap_or(false)
+    let Ok(path) = get_socket_path() else { return false };
+    if !path.exists() { return false; }
+    // A stale socket file satisfies path.exists() but nothing listens on it.
+    // Try a real connection to distinguish live daemon from leftover socket.
+    UnixStream::connect(&path).is_ok()
 }
 
 // Client-side path resolution: uses find_runtime_file, which is read-only and returns an

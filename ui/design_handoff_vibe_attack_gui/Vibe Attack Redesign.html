@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Vibe Attack — UI Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css" />
+<style>
+  body { background: #0a0b0d; }
+  .design-context-note {
+    color: var(--fg-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 720px;
+    margin-bottom: 12px;
+  }
+  .dc-section-title-text, .dc-artboard-label {
+    font-family: "JetBrains Mono", monospace !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="Icons.jsx"></script>
+  <script type="text/babel" src="Shell.jsx"></script>
+  <script type="text/babel" src="ConfigApp.jsx"></script>
+  <script type="text/babel" src="Wizard.jsx"></script>
+  <script type="text/babel" src="PackEditor.jsx"></script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "accent": "amber",
+      "status": "running",
+      "density": "comfortable",
+      "iconSet": "svg"
+    }/*EDITMODE-END*/;
+
+    const ACCENT_PALETTES = {
+      amber:   { accent: "#e8a317", hover: "#f5b733", line: "rgba(232,163,23,0.42)", faint: "rgba(232,163,23,0.14)", fg: "#15110a" },
+      green:   { accent: "#5fd47a", hover: "#7be094", line: "rgba(95,212,122,0.42)", faint: "rgba(95,212,122,0.14)", fg: "#0a1810" },
+      cyan:    { accent: "#5fc8e8", hover: "#7ad6ef", line: "rgba(95,200,232,0.42)", faint: "rgba(95,200,232,0.14)", fg: "#08161c" },
+      red:     { accent: "#e85d3c", hover: "#ef7656", line: "rgba(232,93,60,0.42)",  faint: "rgba(232,93,60,0.14)",  fg: "#1a0904" },
+    };
+
+    const App = () => {
+      const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      const { accent, status, density, iconSet } = tweaks;
+
+      // apply accent live
+      React.useEffect(() => {
+        const p = ACCENT_PALETTES[accent] || ACCENT_PALETTES.amber;
+        const r = document.documentElement;
+        r.style.setProperty("--accent", p.accent);
+        r.style.setProperty("--accent-hover", p.hover);
+        r.style.setProperty("--accent-line", p.line);
+        r.style.setProperty("--accent-faint", p.faint);
+        r.style.setProperty("--accent-fg", p.fg);
+      }, [accent]);
+
+      React.useEffect(() => {
+        document.documentElement.setAttribute("data-density", density);
+      }, [density]);
+
+      return (
+        <>
+          <DesignCanvas title="Vibe Attack — UI Redesign" subtitle="egui-faithful tactical theme · explore screens, swap accent, preview daemon states">
+            <DCSection id="overview" title="01 · Foundations">
+              <DCArtboard id="brief" label="Design brief" width={680} height={560}>
+                <Brief iconSet={iconSet} />
+              </DCArtboard>
+              <DCArtboard id="theme" label="Theme tokens" width={680} height={560}>
+                <ThemeReference />
+              </DCArtboard>
+              <DCArtboard id="components" label="Component primitives" width={680} height={560}>
+                <ComponentRef iconSet={iconSet} />
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="screens" title="02 · Hi-fi screens — full prototype">
+              <DCArtboard id="config-main" label="config_app.rs · main" width={1040} height={720}>
+                <EguiWindow title="Vibe Attack Config" width={1040} height={720}>
+                  <ConfigApp status={status} iconSet={iconSet} initialNav="devices" />
+                </EguiWindow>
+              </DCArtboard>
+
+              <DCArtboard id="config-voice" label="config_app.rs · voice" width={1040} height={720}>
+                <EguiWindow title="Vibe Attack Config" width={1040} height={720}>
+                  <ConfigApp status={status} iconSet={iconSet} initialNav="voice" />
+                </EguiWindow>
+              </DCArtboard>
+
+              <DCArtboard id="config-packs" label="config_app.rs · packs" width={1040} height={720}>
+                <EguiWindow title="Vibe Attack Config" width={1040} height={720}>
+                  <ConfigApp status={status} iconSet={iconSet} initialNav="packs" />
+                </EguiWindow>
+              </DCArtboard>
+
+              <DCArtboard id="config-hotkeys" label="config_app.rs · hotkeys" width={1040} height={720}>
+                <EguiWindow title="Vibe Attack Config" width={1040} height={720}>
+                  <ConfigApp status={status} iconSet={iconSet} initialNav="hotkeys" />
+                </EguiWindow>
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="wizard" title="03 · Wizard flow">
+              <DCArtboard id="wizard-welcome" label="wizard.rs · welcome" width={960} height={680}>
+                <EguiWindow title="Vibe Attack — Setup" width={960} height={680}>
+                  <Wizard initialStep={0} iconSet={iconSet} />
+                </EguiWindow>
+              </DCArtboard>
+              <DCArtboard id="wizard-audio" label="wizard.rs · audio" width={960} height={680}>
+                <EguiWindow title="Vibe Attack — Setup" width={960} height={680}>
+                  <Wizard initialStep={1} iconSet={iconSet} />
+                </EguiWindow>
+              </DCArtboard>
+              <DCArtboard id="wizard-mic" label="wizard.rs · mic test" width={960} height={680}>
+                <EguiWindow title="Vibe Attack — Setup" width={960} height={680}>
+                  <Wizard initialStep={2} iconSet={iconSet} />
+                </EguiWindow>
+              </DCArtboard>
+              <DCArtboard id="wizard-ptt" label="wizard.rs · ptt" width={960} height={680}>
+                <EguiWindow title="Vibe Attack — Setup" width={960} height={680}>
+                  <Wizard initialStep={3} iconSet={iconSet} />
+                </EguiWindow>
+              </DCArtboard>
+              <DCArtboard id="wizard-model" label="wizard.rs · model" width={960} height={680}>
+                <EguiWindow title="Vibe Attack — Setup" width={960} height={680}>
+                  <Wizard initialStep={4} iconSet={iconSet} />
+                </EguiWindow>
+              </DCArtboard>
+              <DCArtboard id="wizard-done" label="wizard.rs · done" width={960} height={680}>
+                <EguiWindow title="Vibe Attack — Setup" width={960} height={680}>
+                  <Wizard initialStep={5} iconSet={iconSet} />
+                </EguiWindow>
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="editor" title="04 · Pack editor">
+              <DCArtboard id="pack-editor" label="pack_editor.rs" width={1200} height={780}>
+                <EguiWindow title="Vibe Attack — Pack Editor" width={1200} height={780}>
+                  <PackEditor iconSet={iconSet} />
+                </EguiWindow>
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="states" title="05 · Daemon states (use Tweaks → status to preview live)">
+              <DCArtboard id="state-error" label="state · daemon error" width={1040} height={720}>
+                <EguiWindow title="Vibe Attack Config" width={1040} height={720}>
+                  <ConfigApp status="error" iconSet={iconSet} initialNav="devices" />
+                </EguiWindow>
+              </DCArtboard>
+              <DCArtboard id="state-muted" label="state · muted" width={1040} height={720}>
+                <EguiWindow title="Vibe Attack Config" width={1040} height={720}>
+                  <ConfigApp status="muted" iconSet={iconSet} initialNav="devices" />
+                </EguiWindow>
+              </DCArtboard>
+              <DCArtboard id="state-disconnected" label="state · disconnected" width={1040} height={720}>
+                <EguiWindow title="Vibe Attack Config" width={1040} height={720}>
+                  <ConfigApp status="disconnected" iconSet={iconSet} initialNav="devices" />
+                </EguiWindow>
+              </DCArtboard>
+            </DCSection>
+          </DesignCanvas>
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection title="Daemon status">
+              <TweakRadio
+                value={status}
+                onChange={(v) => setTweak("status", v)}
+                options={[
+                  { value: "running",      label: "Running" },
+                  { value: "muted",        label: "Muted" },
+                  { value: "error",        label: "Error" },
+                  { value: "disconnected", label: "Offline" },
+                ]}
+              />
+            </TweakSection>
+            <TweakSection title="Accent color">
+              <TweakRadio
+                value={accent}
+                onChange={(v) => setTweak("accent", v)}
+                options={[
+                  { value: "amber", label: "Amber" },
+                  { value: "green", label: "Green" },
+                  { value: "cyan",  label: "Cyan" },
+                  { value: "red",   label: "Red" },
+                ]}
+              />
+            </TweakSection>
+            <TweakSection title="Density">
+              <TweakRadio
+                value={density}
+                onChange={(v) => setTweak("density", v)}
+                options={[
+                  { value: "comfortable", label: "Comfortable" },
+                  { value: "compact",     label: "Compact" },
+                ]}
+              />
+            </TweakSection>
+            <TweakSection title="Icon set">
+              <TweakRadio
+                value={iconSet}
+                onChange={(v) => setTweak("iconSet", v)}
+                options={[
+                  { value: "svg",     label: "Bundled SVG" },
+                  { value: "unicode", label: "egui Unicode" },
+                ]}
+              />
+            </TweakSection>
+          </TweaksPanel>
+        </>
+      );
+    };
+
+    /* ============= Foundations artboards ============= */
+    const Brief = ({ iconSet }) => (
+      <div style={{ padding: 28, height: "100%", overflowY: "auto", background: "var(--bg-window)", color: "var(--fg)", fontFamily: "var(--font-mono)" }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--accent)", marginBottom: 14 }}>▸ DESIGN BRIEF</div>
+        <h2 style={{ fontSize: 22, color: "var(--fg-strong)", margin: "0 0 18px", fontWeight: 500 }}>Tactical mission-control for a Linux daemon</h2>
+
+        <div className="design-context-note" style={{ color: "var(--fg)", marginBottom: 18 }}>
+          The current GUI dumps every config field into one scrolling pane and surfaces daemon failures as a wall of red text. The redesign reframes Vibe Attack as a piece of <strong style={{ color: "var(--fg-strong)" }}>field equipment</strong>: armed/standby states, LED-style level meters, monospace numerics, amber accents — but built entirely from primitives <code style={{ background: "var(--bg-extreme)", padding: "1px 5px", border: "1px solid var(--stroke)" }}>egui::Visuals</code> can actually draw.
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 18 }}>
+          {[
+            { k: "STACK",     v: "eframe 0.34 / egui glow renderer" },
+            { k: "FONTS",     v: "JetBrains Mono — single family" },
+            { k: "CHROME",    v: "1px strokes, 4px radii, no shadows" },
+            { k: "ACCENT",    v: "Amber #e8a317 (single hue)" },
+            { k: "STATUS",    v: "OK green · WARN amber · ERR red" },
+            { k: "ICONS",     v: "16px line · or unicode fallback" },
+          ].map((c) => (
+            <div key={c.k} style={{ padding: "10px 12px", background: "var(--bg-faint)", border: "1px solid var(--stroke)", borderRadius: 4 }}>
+              <div style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--accent)" }}>{c.k}</div>
+              <div style={{ fontSize: 11, color: "var(--fg)", marginTop: 4 }}>{c.v}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--fg-faint)", marginBottom: 8 }}>SHARED LAYOUT PRIMITIVES → src/ui/widgets.rs</div>
+        <div style={{ background: "var(--bg-extreme)", border: "1px solid var(--stroke)", borderRadius: 4, padding: "12px 14px", fontSize: 11, lineHeight: 1.7, color: "var(--fg-muted)" }}>
+          <div><span style={{ color: "var(--accent)" }}>fn</span> <span style={{ color: "var(--fg-strong)" }}>apply_theme</span>(ctx: &Context) — Visuals + spacing + fonts</div>
+          <div><span style={{ color: "var(--accent)" }}>fn</span> <span style={{ color: "var(--fg-strong)" }}>side_nav</span>(ui, items, active) — collapsible icon rail</div>
+          <div><span style={{ color: "var(--accent)" }}>fn</span> <span style={{ color: "var(--fg-strong)" }}>status_footer</span>(ui, daemon_state, mic_level)</div>
+          <div><span style={{ color: "var(--accent)" }}>fn</span> <span style={{ color: "var(--fg-strong)" }}>section_header</span>(ui, title, subtitle)</div>
+          <div><span style={{ color: "var(--accent)" }}>fn</span> <span style={{ color: "var(--fg-strong)" }}>field_row</span>(ui, label, required, body)</div>
+          <div><span style={{ color: "var(--accent)" }}>fn</span> <span style={{ color: "var(--fg-strong)" }}>led_meter</span>(ui, level, segments)</div>
+          <div><span style={{ color: "var(--accent)" }}>fn</span> <span style={{ color: "var(--fg-strong)" }}>primary_button</span>(ui, label, icon)</div>
+        </div>
+      </div>
+    );
+
+    const ThemeReference = () => {
+      const swatch = (name, varName, hex) => (
+        <div key={name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", borderBottom: "1px solid var(--stroke-faint)" }}>
+          <span style={{ width: 28, height: 28, background: hex, border: "1px solid var(--stroke)", borderRadius: 3, flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, color: "var(--fg-strong)" }}>{name}</div>
+            <div style={{ fontSize: 10, color: "var(--fg-faint)", letterSpacing: "0.06em" }}>{varName}</div>
+          </div>
+          <span style={{ fontSize: 11, color: "var(--fg-muted)", fontVariantNumeric: "tabular-nums" }}>{hex}</span>
+        </div>
+      );
+
+      return (
+        <div style={{ padding: 28, height: "100%", overflowY: "auto", background: "var(--bg-window)" }}>
+          <div style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--accent)", marginBottom: 14 }}>▸ TOKENS</div>
+          <h2 style={{ fontSize: 18, color: "var(--fg-strong)", margin: "0 0 18px", fontWeight: 500 }}>theme.rs — Visuals + spacing</h2>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            <div>
+              <div style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--fg-faint)", marginBottom: 10 }}>SURFACES</div>
+              {swatch("Window", "--bg-window", "#0e1012")}
+              {swatch("Panel",  "--bg-panel",  "#14171a")}
+              {swatch("Faint",  "--bg-faint",  "#1a1d20")}
+              {swatch("Raised", "--bg-raised", "#1f2327")}
+              {swatch("Extreme", "--bg-extreme", "#08090a")}
+            </div>
+            <div>
+              <div style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--fg-faint)", marginBottom: 10 }}>SEMANTIC</div>
+              {swatch("Accent", "--accent", "#e8a317")}
+              {swatch("OK",     "--ok",     "#5fd47a")}
+              {swatch("Warn",   "--warn",   "#e8a317")}
+              {swatch("Error",  "--err",    "#e85d3c")}
+              {swatch("Info",   "--info",   "#6ab8e8")}
+            </div>
+          </div>
+
+          <div style={{ marginTop: 24 }}>
+            <div style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--fg-faint)", marginBottom: 10 }}>TYPE — JetBrains Mono</div>
+            <div style={{ background: "var(--bg-extreme)", border: "1px solid var(--stroke)", borderRadius: 4, padding: "14px 16px" }}>
+              <div style={{ fontSize: 18, color: "var(--fg-strong)", marginBottom: 6 }}>Display 18 · Daemon armed</div>
+              <div style={{ fontSize: 13, color: "var(--fg)", marginBottom: 6 }}>Body 13 · Eagle airstrike fired in 84ms</div>
+              <div style={{ fontSize: 12, color: "var(--fg-muted)", marginBottom: 6 }}>Sub 12 · Confidence 0.91 · model ggml-tiny.en</div>
+              <div style={{ fontSize: 10, color: "var(--fg-faint)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Caps 10/0.16 · LISTENING</div>
+              <div style={{ fontSize: 11, color: "var(--fg)", fontVariantNumeric: "tabular-nums", marginTop: 8 }}>Numerics 11 · 1234567890 · −24 dB · 16 kHz · 75 ms</div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const ComponentRef = ({ iconSet }) => (
+      <div style={{ padding: 24, height: "100%", overflowY: "auto", background: "var(--bg-window)" }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--accent)", marginBottom: 14 }}>▸ PRIMITIVES</div>
+        <h2 style={{ fontSize: 18, color: "var(--fg-strong)", margin: "0 0 18px", fontWeight: 500 }}>Components</h2>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <Group title="STATUS PILLS">
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <StatusPill state="running" />
+              <StatusPill state="muted" />
+              <StatusPill state="error" />
+              <StatusPill state="disconnected" />
+            </div>
+          </Group>
+
+          <Group title="BUTTONS">
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button className="btn btn-primary"><Icon name="play" set={iconSet} size={12} />Primary</button>
+              <button className="btn">Secondary</button>
+              <button className="btn btn-ghost">Ghost</button>
+              <button className="btn btn-danger"><Icon name="trash" set={iconSet} size={12} />Danger</button>
+              <button className="btn btn-icon"><Icon name="edit" set={iconSet} /></button>
+            </div>
+          </Group>
+
+          <Group title="INPUTS">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <input className="input" placeholder="Text input" defaultValue="hey diver" />
+              <select className="select" defaultValue="2"><option>One</option><option value="2">Selected option</option></select>
+              <div style={{ gridColumn: "1 / -1" }}><Slider value={0.62} /></div>
+            </div>
+          </Group>
+
+          <Group title="LED METER">
+            <LedMeter level={0.55} segments={28} />
+          </Group>
+
+          <Group title="KEYBOARD">
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <span className="kbd">Ctrl</span>
+              <span style={{ color: "var(--fg-faint)" }}>+</span>
+              <span className="kbd">Alt</span>
+              <span style={{ color: "var(--fg-faint)" }}>+</span>
+              <span className="kbd">F12</span>
+            </div>
+          </Group>
+
+          <Group title="TAGS">
+            <div style={{ display: "flex", gap: 6 }}>
+              <span className="tag">DEFAULT</span>
+              <span className="tag" data-tone="accent">ACTIVE</span>
+              <span className="tag" data-tone="ok">RECOMMENDED</span>
+            </div>
+          </Group>
+        </div>
+      </div>
+    );
+
+    const Group = ({ title, children }) => (
+      <div>
+        <div style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--fg-faint)", marginBottom: 8 }}>{title}</div>
+        <div>{children}</div>
+      </div>
+    );
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

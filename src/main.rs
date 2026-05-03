@@ -269,7 +269,8 @@ async fn main() -> anyhow::Result<()> {
     // === 10b. Spawn UDS control listener (Phase 4) ===
     use vibe_attack::control::DaemonHandle;
     let daemon_handle = DaemonHandle::new(pipeline_handles.dispatcher.clone())
-        .with_runtime_tx(runtime_tx);
+        .with_runtime_tx(runtime_tx)
+        .with_shutdown(shutdown.clone());
     // Share muted flag with the pipeline (already passed above).
     // Replace the handle's default Arc with the one the pipeline is watching.
     let daemon_handle = DaemonHandle {
@@ -303,10 +304,16 @@ async fn main() -> anyhow::Result<()> {
     tokio::select! {
         _ = sigterm.recv() => tracing::info!("SIGTERM received"),
         _ = sigint.recv()  => tracing::info!("SIGINT received (Ctrl+C)"),
+        _ = shutdown.cancelled() => tracing::info!("Shutdown requested via control socket"),
     }
 
     // === 12. Graceful shutdown ===
     tracing::info!("Shutting down...");
+
+    // Remove the UDS socket so the config GUI correctly detects "not running".
+    if let Some(sock) = xdg::BaseDirectories::with_prefix("vibe-attack").find_runtime_file("vibe-attack.sock") {
+        let _ = std::fs::remove_file(sock);
+    }
 
     // Cancel PTT thread (checks is_cancelled() between event batches)
     shutdown.cancel();

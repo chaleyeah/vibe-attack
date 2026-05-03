@@ -11,6 +11,7 @@ use std::sync::{
 use anyhow::{Context, Result};
 use tokio::net::UnixListener;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio_util::sync::CancellationToken;
 use crate::control::protocol::{ActivationMode, ControlRequest, ControlResponse, DaemonState, DaemonStatus};
 use crate::pipeline::coordinator::RuntimeCommand;
 use crate::pipeline::dispatcher::Dispatcher;
@@ -37,6 +38,8 @@ pub struct DaemonHandle {
     /// Currently cached activation mode; updated by the SetMode handler before
     /// forwarding to the coordinator so Status responses stay coherent.
     pub active_mode: Arc<RwLock<ActivationMode>>,
+    /// Cancellation token for graceful shutdown; cancelled by the Shutdown command.
+    pub shutdown: Option<CancellationToken>,
 }
 
 impl DaemonHandle {
@@ -50,7 +53,15 @@ impl DaemonHandle {
             recording: Arc::new(AtomicBool::new(false)),
             runtime_cmd_tx: None,
             active_mode: Arc::new(RwLock::new(ActivationMode::Ptt)),
+            shutdown: None,
         }
+    }
+
+    /// Attach the shutdown cancellation token so the Shutdown control command
+    /// can trigger a graceful exit.
+    pub fn with_shutdown(mut self, token: CancellationToken) -> Self {
+        self.shutdown = Some(token);
+        self
     }
 
     /// Attach the runtime command sender produced by `spawn_pipeline`.
@@ -162,7 +173,10 @@ pub async fn spawn_control_listener(handle: DaemonHandle) -> Result<()> {
                                             }
                                         }
                                         ControlRequest::Shutdown => {
-                                            // TODO: wire to CancellationToken in a future slice
+                                            tracing::info!("Shutdown requested via control socket");
+                                            if let Some(token) = &h.shutdown {
+                                                token.cancel();
+                                            }
                                             ControlResponse::Ok
                                         }
                                         ControlRequest::SetMode { mode } => {

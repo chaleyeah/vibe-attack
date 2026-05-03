@@ -152,6 +152,19 @@ fn spawn_mic_level_thread() -> MicLevelState {
 
 // ── App ───────────────────────────────────────────────────────────────────────
 
+/// Tracks the state of a daemon start attempt so the UI can show progress and errors.
+enum DaemonStartState {
+    /// No start attempt in progress.
+    Idle,
+    /// Daemon was spawned; waiting for socket to appear. Holds the deadline and stderr reader.
+    Starting {
+        deadline: std::time::Instant,
+        stderr_thread: Option<std::thread::JoinHandle<String>>,
+    },
+    /// Start attempt failed; holds the error message for display.
+    Failed(String),
+}
+
 struct VibeAttackConfigApp {
     first_run: FirstRunState,
     config: ConfigApp,
@@ -170,6 +183,8 @@ struct VibeAttackConfigApp {
     device_names: Vec<String>,
     /// Active pack editor state; `None` until a profile is clicked.
     pack_editor: Option<PackEditorState>,
+    /// Tracks daemon start attempts so the UI can report progress/failure.
+    daemon_start: DaemonStartState,
 }
 
 impl VibeAttackConfigApp {
@@ -232,6 +247,7 @@ impl VibeAttackConfigApp {
             cached_config,
             device_names,
             pack_editor: None,
+            daemon_start: DaemonStartState::Idle,
         }
     }
 }
@@ -324,23 +340,89 @@ impl eframe::App for VibeAttackConfigApp {
 }
 
 fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
+    // Poll daemon start state machine before rendering the status row.
+    if let DaemonStartState::Starting { deadline, .. } = &app.daemon_start {
+        if app.config.daemon_running {
+            app.daemon_start = DaemonStartState::Idle;
+        } else if std::time::Instant::now() > *deadline {
+            // Timed out — collect stderr from the daemon process for the error message.
+            let stderr_output = if let DaemonStartState::Starting { stderr_thread, .. } = &mut app.daemon_start {
+                stderr_thread.take().and_then(|h| h.join().ok()).unwrap_or_default()
+            } else {
+                String::new()
+            };
+            let msg = if stderr_output.trim().is_empty() {
+                "Daemon failed to start (no output — check permissions and config)".to_string()
+            } else {
+                let trimmed = stderr_output.trim();
+                let last_lines: String = trimmed.lines().rev().take(5).collect::<Vec<_>>().into_iter().rev().collect::<Vec<_>>().join("\n");
+                format!("Daemon failed to start:\n{last_lines}")
+            };
+            app.daemon_start = DaemonStartState::Failed(msg);
+        }
+    }
+
     // Daemon status row
     ui.horizontal(|ui| {
         if app.config.daemon_running {
             ui.colored_label(egui::Color32::GREEN, "● Daemon: running");
+            if ui.button("Stop Daemon").clicked() {
+                match vibe_attack::control::client::send_command(
+                    vibe_attack::control::protocol::ControlRequest::Shutdown,
+                ) {
+                    Ok(_) => app.config.set_status("Daemon stopping…"),
+                    Err(e) => app.config.set_status(format!("Failed to stop daemon: {e}")),
+                }
+            }
         } else {
-            ui.colored_label(
-                egui::Color32::from_rgb(255, 165, 0),
-                "● Daemon: not running",
-            );
-            if ui.button("Start Daemon").clicked() {
-                match start_daemon() {
-                    Ok(()) => app.config.set_status("Daemon starting…"),
-                    Err(e) => app.config.set_status(format!("Failed to start daemon: {e}")),
+            match &app.daemon_start {
+                DaemonStartState::Starting { .. } => {
+                    ui.colored_label(egui::Color32::YELLOW, "● Daemon: starting…");
+                    ui.ctx().request_repaint_after(std::time::Duration::from_millis(500));
+                }
+                DaemonStartState::Failed(_) => {
+                    ui.colored_label(egui::Color32::RED, "● Daemon: failed to start");
+                    if ui.button("Retry").clicked() {
+                        match start_daemon() {
+                            Ok(stderr_thread) => {
+                                app.daemon_start = DaemonStartState::Starting {
+                                    deadline: std::time::Instant::now() + std::time::Duration::from_secs(15),
+                                    stderr_thread: Some(stderr_thread),
+                                };
+                            }
+                            Err(e) => {
+                                app.daemon_start = DaemonStartState::Failed(format!("Failed to start daemon: {e}"));
+                            }
+                        }
+                    }
+                }
+                DaemonStartState::Idle => {
+                    ui.colored_label(
+                        egui::Color32::from_rgb(255, 165, 0),
+                        "● Daemon: not running",
+                    );
+                    if ui.button("Start Daemon").clicked() {
+                        match start_daemon() {
+                            Ok(stderr_thread) => {
+                                app.daemon_start = DaemonStartState::Starting {
+                                    deadline: std::time::Instant::now() + std::time::Duration::from_secs(15),
+                                    stderr_thread: Some(stderr_thread),
+                                };
+                            }
+                            Err(e) => {
+                                app.daemon_start = DaemonStartState::Failed(format!("Failed to start daemon: {e}"));
+                            }
+                        }
+                    }
                 }
             }
         }
     });
+
+    // Show startup error details below the status row
+    if let DaemonStartState::Failed(msg) = &app.daemon_start {
+        ui.colored_label(egui::Color32::RED, msg.as_str());
+    }
 
     ui.add_space(4.0);
 
@@ -476,12 +558,9 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
 
 /// Locate and spawn the daemon (`vibe-attack`) detached from this process.
 ///
-/// Looks for the daemon binary next to the running `vibe-attack-config` executable,
-/// which covers the AppImage layout (both binaries land in `usr/bin/`) and a standard
-/// install (both in the same `bin/`). Falls back to searching `$PATH` if the sibling
-/// isn't found.
-fn start_daemon() -> Result<(), String> {
-    // Find sibling binary next to current exe.
+/// Captures stderr on a background thread so startup failures can be surfaced
+/// in the UI. Returns a join handle that collects stderr output.
+fn start_daemon() -> Result<std::thread::JoinHandle<String>, String> {
     let daemon_path = std::env::current_exe()
         .ok()
         .and_then(|p| p.parent().map(|d| d.join("vibe-attack")))
@@ -490,19 +569,28 @@ fn start_daemon() -> Result<(), String> {
     let daemon_path = match daemon_path {
         Some(p) => p,
         None => {
-            // Fall back to PATH lookup.
             which_vibe_attack().ok_or("vibe-attack binary not found next to config or in PATH")?
         }
     };
 
-    std::process::Command::new(&daemon_path)
+    let mut child = std::process::Command::new(&daemon_path)
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
+        .stderr(std::process::Stdio::piped())
         .spawn()
         .map_err(|e| format!("Failed to start daemon {}: {e}", daemon_path.display()))?;
 
-    Ok(())
+    let stderr = child.stderr.take();
+    let handle = std::thread::spawn(move || {
+        let mut output = String::new();
+        if let Some(mut pipe) = stderr {
+            use std::io::Read;
+            let _ = pipe.read_to_string(&mut output);
+        }
+        output
+    });
+
+    Ok(handle)
 }
 
 fn which_vibe_attack() -> Option<std::path::PathBuf> {
