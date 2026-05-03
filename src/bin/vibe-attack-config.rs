@@ -331,8 +331,14 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
         } else {
             ui.colored_label(
                 egui::Color32::from_rgb(255, 165, 0),
-                "● Daemon: not running (changes will save to disk only)",
+                "● Daemon: not running",
             );
+            if ui.button("Start Daemon").clicked() {
+                match start_daemon() {
+                    Ok(()) => app.config.set_status("Daemon starting…"),
+                    Err(e) => app.config.set_status(format!("Failed to start daemon: {e}")),
+                }
+            }
         }
     });
 
@@ -468,6 +474,45 @@ fn show_main_config(ui: &mut egui::Ui, app: &mut VibeAttackConfigApp) {
         });
 }
 
+/// Locate and spawn the daemon (`vibe-attack`) detached from this process.
+///
+/// Looks for the daemon binary next to the running `vibe-attack-config` executable,
+/// which covers the AppImage layout (both binaries land in `usr/bin/`) and a standard
+/// install (both in the same `bin/`). Falls back to searching `$PATH` if the sibling
+/// isn't found.
+fn start_daemon() -> Result<(), String> {
+    // Find sibling binary next to current exe.
+    let daemon_path = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|d| d.join("vibe-attack")))
+        .filter(|p| p.exists());
+
+    let daemon_path = match daemon_path {
+        Some(p) => p,
+        None => {
+            // Fall back to PATH lookup.
+            which_vibe_attack().ok_or("vibe-attack binary not found next to config or in PATH")?
+        }
+    };
+
+    std::process::Command::new(&daemon_path)
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .map_err(|e| format!("Failed to start daemon {}: {e}", daemon_path.display()))?;
+
+    Ok(())
+}
+
+fn which_vibe_attack() -> Option<std::path::PathBuf> {
+    std::env::var_os("PATH").and_then(|path| {
+        std::env::split_paths(&path)
+            .map(|d| d.join("vibe-attack"))
+            .find(|p| p.exists())
+    })
+}
+
 fn handle_save(app: &mut VibeAttackConfigApp) {
     use vibe_attack::control::client::send_command;
     use vibe_attack::control::protocol::ControlRequest;
@@ -543,9 +588,12 @@ fn main() -> eframe::Result<()> {
     let stderr_filter = tracing_subscriber::EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn"));
 
+    let channel_filter = tracing_subscriber::EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn"));
+
     tracing_subscriber::registry()
         .with(tracing_subscriber::fmt::layer().with_filter(stderr_filter))
-        .with(ChannelLayer { tx: log_tx })
+        .with(ChannelLayer { tx: log_tx }.with_filter(channel_filter))
         .init();
 
     let options = eframe::NativeOptions {
