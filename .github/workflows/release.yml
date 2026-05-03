@@ -134,7 +134,7 @@ jobs:
       - name: Build .deb package
         run: |
           ln -s packaging/debian debian
-          dpkg-buildpackage -uc -us -b
+          dpkg-buildpackage -uc -us -b -d
           mv ../vibe-attack_*.deb .
 
       - name: Upload deb artifact
@@ -182,9 +182,10 @@ jobs:
       - name: Create source tarball for rpmbuild
         run: |
           TAG="${GITHUB_REF_NAME#v}"
+          RPM_VERSION="${TAG//-/~}"
           git archive --format=tar.gz --prefix="vibe-attack-${TAG}/" HEAD \
             -o ~/rpmbuild/SOURCES/vibe-attack-${TAG}.tar.gz
-          sed "s/^Version:.*/Version:        ${TAG}/" packaging/vibe-attack.spec \
+          sed "s/^Version:.*/Version:        ${RPM_VERSION}/" packaging/vibe-attack.spec \
             > ~/rpmbuild/SPECS/vibe-attack.spec
 
       - name: Build RPM package
