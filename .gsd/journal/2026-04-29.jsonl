@@ -1,3 +1,0 @@
-{"ts":"2026-04-29T12:02:43.488Z","flowId":"6405ce41-91a6-4bf6-b39b-cf11dbf5ecc6","seq":0,"eventType":"worktree-merge-start","data":{"milestoneId":"M011","mode":"none"}}
-{"ts":"2026-04-29T12:02:43.556Z","flowId":"c218932f-531d-4520-8185-e3c6e4ded8f0","seq":0,"eventType":"auto-exit","data":{"reason":"all-complete","milestoneId":"M011","milestoneMerged":true,"exitedAt":"2026-04-29T12:02:43.556Z"}}
-{"ts":"2026-04-29T12:02:43.611Z","flowId":"68068052-786f-4329-bd5d-4b78e9b3e4e0","seq":2,"eventType":"terminal","data":{"reason":"no-active-milestone"}}
