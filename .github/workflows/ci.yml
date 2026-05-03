@@ -101,3 +101,30 @@ jobs:
 
       - name: Clippy (gui feature)
         run: cargo clippy --all-targets --features gui -- -D warnings
+
+  validate-pkgbuild:
+    name: Validate AUR PKGBUILD
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate PKGBUILD syntax and required fields
+        run: |
+          # Bash syntax check
+          bash -n packaging/PKGBUILD && echo "PKGBUILD syntax OK"
+          # Source the PKGBUILD and verify required fields are non-empty
+          bash -c "
+            source packaging/PKGBUILD
+            for field in pkgname pkgver pkgrel arch license; do
+              val=\${!field}
+              [ -n \"\$val\" ] || { echo \"PKGBUILD missing required field: \$field\"; exit 1; }
+              echo \"  \$field = \$val\"
+            done
+            echo 'All required fields present'
+            # Verify build() and package() functions are defined
+            declare -f build  > /dev/null || { echo 'Missing build() function'; exit 1; }
+            declare -f package > /dev/null || { echo 'Missing package() function'; exit 1; }
+            echo 'build() and package() functions defined'
+          "

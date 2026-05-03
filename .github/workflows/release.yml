@@ -114,9 +114,22 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libasound2-dev \
             libclang-dev \
-            devscripts \
-            debhelper \
-            dh-cargo
+            debhelper
+
+      - name: Stamp changelog with tag version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          DATE="$(date -R)"
+          # Prepend a new changelog entry so dpkg-buildpackage uses the tag version
+          { echo "vibe-attack (${TAG}-1) unstable; urgency=medium"
+            echo ""
+            echo "  * Release ${TAG}."
+            echo ""
+            echo " -- Chris Chale <chrischale@gmail.com>  ${DATE}"
+            echo ""
+            cat packaging/debian/changelog
+          } > /tmp/changelog.new
+          cp /tmp/changelog.new packaging/debian/changelog
 
       - name: Build .deb package
         run: |
@@ -168,9 +181,11 @@ jobs:
 
       - name: Create source tarball for rpmbuild
         run: |
-          git archive --format=tar.gz --prefix=vibe-attack-1.0.0/ HEAD \
-            -o ~/rpmbuild/SOURCES/vibe-attack-1.0.0.tar.gz
-          cp packaging/vibe-attack.spec ~/rpmbuild/SPECS/
+          TAG="${GITHUB_REF_NAME#v}"
+          git archive --format=tar.gz --prefix="vibe-attack-${TAG}/" HEAD \
+            -o ~/rpmbuild/SOURCES/vibe-attack-${TAG}.tar.gz
+          sed "s/^Version:.*/Version:        ${TAG}/" packaging/vibe-attack.spec \
+            > ~/rpmbuild/SPECS/vibe-attack.spec
 
       - name: Build RPM package
         run: |
