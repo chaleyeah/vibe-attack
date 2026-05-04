@@ -314,12 +314,16 @@ pub fn spawn_pipeline(
     // instead of crashing the process.
     let start_vad = std::time::Instant::now();
     let mut silero = std::panic::catch_unwind(|| {
-        silero_vad_rust::silero_vad::model::load_silero_vad_with_options(
-            silero_vad_rust::silero_vad::model::LoadOptions {
-                force_onnx_cpu: true,
-                ..Default::default()
-            },
-        )
+        match find_silero_model() {
+            Some(path) => silero_vad_rust::silero_vad::model::OnnxModel::from_path(path, true),
+            // Dev builds: fall back to crate's own resolver (uses CARGO_MANIFEST_DIR, valid in-source)
+            None => silero_vad_rust::silero_vad::model::load_silero_vad_with_options(
+                silero_vad_rust::silero_vad::model::LoadOptions {
+                    force_onnx_cpu: true,
+                    ..Default::default()
+                },
+            ),
+        }
     })
     .map_err(|_| {
         anyhow::anyhow!(
@@ -625,5 +629,28 @@ pub fn spawn_pipeline(
     });
 
     Ok(PipelineHandles { pipeline, output, stt, dispatcher })
+}
+
+/// Locate `silero_vad.onnx` from well-known installed paths.
+///
+/// Returns `None` for dev builds — callers fall back to the crate's own resolver
+/// which uses `CARGO_MANIFEST_DIR` (valid only when the cargo registry is present).
+fn find_silero_model() -> Option<std::path::PathBuf> {
+    const MODEL: &str = "silero_vad.onnx";
+    const PKG: &str = "vibe-attack";
+
+    // 1. Standard install location (deb/rpm/PKGBUILD)
+    let system = std::path::Path::new("/usr/share").join(PKG).join(MODEL);
+    if system.exists() {
+        return Some(system);
+    }
+
+    // 2. XDG data dirs (user-local or alternate prefix installs)
+    let xdg = xdg::BaseDirectories::with_prefix(PKG);
+    if let Some(p) = xdg.find_data_file(MODEL) {
+        return Some(p);
+    }
+
+    None
 }
 

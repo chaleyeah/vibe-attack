@@ -54,6 +54,10 @@ install -m644 target/release/libonnxruntime.so %{buildroot}%{_libdir}/%{name}/
 patchelf --set-rpath '$ORIGIN/../%{_lib}/%{name}' %{buildroot}%{_bindir}/%{name}
 patchelf --set-rpath '$ORIGIN/../%{_lib}/%{name}' %{buildroot}%{_bindir}/%{name}-config
 
+# Install Silero VAD ONNX model (baked path in crate points to build machine's cargo registry)
+SILERO_MODEL=$(find "${CARGO_HOME:-${HOME}/.cargo}/registry/src" -name 'silero_vad.onnx' -path '*silero-vad-rust*' 2>/dev/null | head -1)
+install -Dm644 "$SILERO_MODEL" %{buildroot}%{_datadir}/%{name}/silero_vad.onnx
+
 %check
 # Audio hardware not available in build env — skip runtime tests
 
@@ -63,6 +67,7 @@ patchelf --set-rpath '$ORIGIN/../%{_lib}/%{name}' %{buildroot}%{_bindir}/%{name}
 %{_bindir}/%{name}
 %{_bindir}/%{name}-config
 %{_libdir}/%{name}/
+%{_datadir}/%{name}/
 %{_datadir}/applications/vibe-attack.desktop
 %{_datadir}/icons/hicolor/scalable/apps/vibe-attack.svg
 

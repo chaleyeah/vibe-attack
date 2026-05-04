@@ -31,6 +31,9 @@ override_dh_auto_install:
 	# Set rpath so binaries find bundled libs
 	patchelf --set-rpath '$$ORIGIN/../lib/vibe-attack' $(PKGDIR)/usr/bin/vibe-attack
 	patchelf --set-rpath '$$ORIGIN/../lib/vibe-attack' $(PKGDIR)/usr/bin/vibe-attack-config
+	# Install Silero VAD ONNX model (baked path in crate points to build machine's cargo registry)
+	$(eval SILERO_MODEL := $(shell find $${CARGO_HOME:-$${HOME}/.cargo}/registry/src -name 'silero_vad.onnx' -path '*silero-vad-rust*' 2>/dev/null | head -1))
+	install -Dm644 $(SILERO_MODEL) $(PKGDIR)/usr/share/vibe-attack/silero_vad.onnx
 
 override_dh_shlibdeps:
 	dh_shlibdeps -l$(PKGDIR)$(PRIVLIB)

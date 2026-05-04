@@ -50,4 +50,9 @@ package() {
     # Set rpath so binaries find bundled libs
     patchelf --set-rpath "\$ORIGIN/../lib/$pkgname" "$pkgdir/usr/bin/$pkgname"
     patchelf --set-rpath "\$ORIGIN/../lib/$pkgname" "$pkgdir/usr/bin/${pkgname}-config"
+
+    # Install Silero VAD ONNX model (baked path in crate points to build machine's cargo registry)
+    local silero_model
+    silero_model="$(find "${CARGO_HOME:-${HOME}/.cargo}/registry/src" -name 'silero_vad.onnx' -path '*silero-vad-rust*' 2>/dev/null | head -1)"
+    install -Dm644 "$silero_model" "$pkgdir/usr/share/$pkgname/silero_vad.onnx"
 }
