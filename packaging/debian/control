@@ -2,7 +2,7 @@ Source: vibe-attack
 Section: games
 Priority: optional
 Maintainer: Chris Chale <chrischale@gmail.com>
-Build-Depends: debhelper-compat (= 13), cargo, rustc, libclang-dev, libasound2-dev
+Build-Depends: debhelper-compat (= 13), cargo, rustc, libclang-dev, libasound2-dev, patchelf
 Standards-Version: 4.6.2
 Homepage: https://github.com/chaleyeah/vibe-attack
 Rules-Requires-Root: no

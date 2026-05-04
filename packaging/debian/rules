@@ -1,6 +1,10 @@
 #!/usr/bin/make -f
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
+PKGDIR = $(CURDIR)/debian/vibe-attack
+PRIVLIB = /usr/lib/vibe-attack
+SHERPA_LIBS = target/release
+
 %:
 	dh $@
 
@@ -10,15 +14,29 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	install -Dm755 target/release/vibe-attack \
-		$(CURDIR)/debian/vibe-attack/usr/bin/vibe-attack
+		$(PKGDIR)/usr/bin/vibe-attack
 	install -Dm755 target/release/vibe-attack-config \
-		$(CURDIR)/debian/vibe-attack/usr/bin/vibe-attack-config
+		$(PKGDIR)/usr/bin/vibe-attack-config
 	install -Dm644 packaging/appimage/vibe-attack.desktop \
-		$(CURDIR)/debian/vibe-attack/usr/share/applications/vibe-attack.desktop
+		$(PKGDIR)/usr/share/applications/vibe-attack.desktop
 	install -Dm644 assets/vibe-attack.svg \
-		$(CURDIR)/debian/vibe-attack/usr/share/icons/hicolor/scalable/apps/vibe-attack.svg
+		$(PKGDIR)/usr/share/icons/hicolor/scalable/apps/vibe-attack.svg
 	install -Dm644 README.md \
-		$(CURDIR)/debian/vibe-attack/usr/share/doc/vibe-attack/README.md
+		$(PKGDIR)/usr/share/doc/vibe-attack/README.md
+	# Bundle sherpa-onnx + onnxruntime shared libs (not in Debian repos)
+	install -d $(PKGDIR)$(PRIVLIB)
+	install -m644 $(SHERPA_LIBS)/libsherpa-onnx-c-api.so $(PKGDIR)$(PRIVLIB)/
+	install -m644 $(SHERPA_LIBS)/libsherpa-onnx-cxx-api.so $(PKGDIR)$(PRIVLIB)/
+	install -m644 $(SHERPA_LIBS)/libonnxruntime.so $(PKGDIR)$(PRIVLIB)/
+	# Set rpath so binaries find bundled libs
+	patchelf --set-rpath '$$ORIGIN/../lib/vibe-attack' $(PKGDIR)/usr/bin/vibe-attack
+	patchelf --set-rpath '$$ORIGIN/../lib/vibe-attack' $(PKGDIR)/usr/bin/vibe-attack-config
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l$(PKGDIR)$(PRIVLIB)
+
+override_dh_strip:
+	dh_strip -Xusr/lib/vibe-attack
 
 override_dh_auto_test:
 	# Skip test suite — requires audio hardware not present in build env

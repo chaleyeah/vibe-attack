@@ -6,13 +6,12 @@ pkgdesc='Voice-macro daemon for Helldivers 2 on Linux'
 arch=('x86_64')
 url='https://github.com/chaleyeah/vibe-attack'
 license=('AGPL-3.0-only')
-# onnxruntime: libsherpa-onnx-c-api.so links libonnxruntime.so dynamically.
-# The $ORIGIN rpath trick (used in AppImage where both .so files land together)
-# does not apply here — only the binaries are installed to /usr/bin/, so the
-# system onnxruntime package must provide libonnxruntime.so via /usr/lib/.
-depends=('alsa-lib' 'onnxruntime')
+# sherpa-onnx + onnxruntime not in Arch repos — bundled into /usr/lib/vibe-attack/
+# with $ORIGIN rpath set on the binaries via patchelf in package().
+depends=('alsa-lib')
 # clang: required at build time by bindgen/clang-sys (transitive dep of sherpa-onnx-sys)
-makedepends=('rust' 'cargo' 'clang')
+# patchelf: sets rpath on installed binaries to find bundled libs
+makedepends=('rust' 'cargo' 'clang' 'patchelf')
 # source[0]: release tarball (pkgver/sha256 pinned at release time — see docs/distribution-proofs/aur/)
 # source[1]: sherpa-onnx 1.12.39 prebuilt shared-lib archive; fetched by makepkg so the
 #            sherpa-onnx-sys build script can skip its own network download (SHERPA_ONNX_ARCHIVE_DIR)
@@ -41,4 +40,14 @@ package() {
         "$pkgdir/usr/share/icons/hicolor/scalable/apps/vibe-attack.svg"
     install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+    # Bundle sherpa-onnx + onnxruntime shared libs into private libdir
+    install -d "$pkgdir/usr/lib/$pkgname"
+    install -m644 "target/release/libsherpa-onnx-c-api.so" "$pkgdir/usr/lib/$pkgname/"
+    install -m644 "target/release/libsherpa-onnx-cxx-api.so" "$pkgdir/usr/lib/$pkgname/"
+    install -m644 "target/release/libonnxruntime.so" "$pkgdir/usr/lib/$pkgname/"
+
+    # Set rpath so binaries find bundled libs
+    patchelf --set-rpath "\$ORIGIN/../lib/$pkgname" "$pkgdir/usr/bin/$pkgname"
+    patchelf --set-rpath "\$ORIGIN/../lib/$pkgname" "$pkgdir/usr/bin/${pkgname}-config"
 }

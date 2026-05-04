@@ -13,9 +13,14 @@ BuildRequires:  rust
 BuildRequires:  cargo
 BuildRequires:  clang-devel
 BuildRequires:  alsa-lib-devel
+BuildRequires:  patchelf
 
 Requires:       alsa-lib
-Requires:       onnxruntime
+
+# Bundled libs (not in Fedora/RHEL repos): sherpa-onnx + onnxruntime
+# Suppress auto-provides for bundled libs to avoid polluting system
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*\\.so.*$
+%global __requires_exclude ^libsherpa-onnx-.*\\.so.*$|^libonnxruntime\\.so.*$
 
 %description
 Vibe Attack listens for voice commands and injects keyboard macros,
@@ -38,6 +43,17 @@ install -Dm644 packaging/appimage/vibe-attack.desktop \
     %{buildroot}%{_datadir}/applications/vibe-attack.desktop
 install -Dm644 assets/vibe-attack.svg \
     %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/vibe-attack.svg
+
+# Bundle sherpa-onnx + onnxruntime shared libs into private libdir
+install -d %{buildroot}%{_libdir}/%{name}
+install -m644 target/release/libsherpa-onnx-c-api.so %{buildroot}%{_libdir}/%{name}/
+install -m644 target/release/libsherpa-onnx-cxx-api.so %{buildroot}%{_libdir}/%{name}/
+install -m644 target/release/libonnxruntime.so %{buildroot}%{_libdir}/%{name}/
+
+# Set rpath so binaries find bundled libs
+patchelf --set-rpath '$ORIGIN/../%{_lib}/%{name}' %{buildroot}%{_bindir}/%{name}
+patchelf --set-rpath '$ORIGIN/../%{_lib}/%{name}' %{buildroot}%{_bindir}/%{name}-config
+
 %check
 # Audio hardware not available in build env — skip runtime tests
 
@@ -46,6 +62,7 @@ install -Dm644 assets/vibe-attack.svg \
 %doc README.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-config
+%{_libdir}/%{name}/
 %{_datadir}/applications/vibe-attack.desktop
 %{_datadir}/icons/hicolor/scalable/apps/vibe-attack.svg
 
