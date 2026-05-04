@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -25,7 +25,7 @@ jobs:
 
       - name: Cache sherpa-onnx prebuilt libs
         id: sherpa-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.5
         with:
           path: target/sherpa-onnx-prebuilt
           key: sherpa-onnx-1.12.39-linux-x64
@@ -75,7 +75,7 @@ jobs:
           zip -j "hd2-${TAG}.hdpack" profiles/hd2/pack.yaml
 
       - name: Upload AppImage artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: appimage
           path: |
@@ -89,7 +89,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -99,7 +99,7 @@ jobs:
 
       - name: Cache sherpa-onnx prebuilt libs
         id: sherpa-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.5
         with:
           path: target/sherpa-onnx-prebuilt
           key: sherpa-onnx-1.12.39-linux-x64
@@ -138,7 +138,7 @@ jobs:
           mv ../vibe-attack_*.deb .
 
       - name: Upload deb artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: deb
           path: vibe-attack_*.deb
@@ -149,7 +149,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -159,7 +159,7 @@ jobs:
 
       - name: Cache sherpa-onnx prebuilt libs
         id: sherpa-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.5
         with:
           path: target/sherpa-onnx-prebuilt
           key: sherpa-onnx-1.12.39-linux-x64
@@ -194,7 +194,7 @@ jobs:
           cp ~/rpmbuild/RPMS/x86_64/vibe-attack-*.x86_64.rpm .
 
       - name: Upload rpm artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: rpm
           path: vibe-attack-*.x86_64.rpm
@@ -208,17 +208,17 @@ jobs:
 
     steps:
       - name: Download AppImage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: appimage
 
       - name: Download deb artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: deb
 
       - name: Download rpm artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: rpm
 

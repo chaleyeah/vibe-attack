@@ -1,4 +1,4 @@
-# GSD context snapshot (2026-05-03T20:46:57.062Z)
+# GSD context snapshot (2026-05-04T02:07:41.305Z)
 
 ## Top project memories
 - [MEM005] (gotcha) test_pack_export_import_with_sounds fails under parallel cargo test due to shared tmpdir pollution — it passes cleanly with --test-threads=1 and in isolation. This is a pre-existing flake unrelated to any specific change. Always run the full suite with --test-threads=1 on this project to get a clean signal.

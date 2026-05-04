@@ -6,7 +6,7 @@
 **Requirements Status:** 0 active · 6 validated · 0 deferred · 0 out of scope
 
 ## Milestone Registry
-- ✅ **M001:** Migration
+- ✅ **M001:** M001: Migration
 - ✅ **M002:** Rebrand to vibe-attack
 - ✅ **M003:** First-Run GUI Wizard + Setup Script
 - ✅ **M004:** Runtime UX — System Tray + Daemon Control
