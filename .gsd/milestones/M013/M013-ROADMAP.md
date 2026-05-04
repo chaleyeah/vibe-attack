@@ -18,7 +18,7 @@
 - [x] **S02: S02** `risk:low` `depends:[]`
   > After this: ci.yml validate-pkgbuild job runs and passes, showing all required fields and function definitions present
 
-- [ ] **S03: S03** `risk:medium` `depends:[]`
+- [x] **S03: S03** `risk:medium` `depends:[]`
   > After this: GitHub Actions run shows all jobs green; downloaded artifacts have correct version in filename and package metadata
 
 - [x] **S04: S04** `risk:low` `depends:[]`

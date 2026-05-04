@@ -43,12 +43,12 @@
   - Files: `.github/workflows/release.yml`
   - Verify: grep -q 'RPM_VERSION="\${TAG//-/~}"' .github/workflows/release.yml && grep -q 'dpkg-buildpackage -uc -us -b -d' .github/workflows/release.yml && python3 -c 'import yaml; yaml.safe_load(open(".github/workflows/release.yml"))' && ! git ls-remote --tags origin v1.0.1-test 2>/dev/null | grep -q refs/tags/v1.0.1-test && ! git tag -l v1.0.1-test | grep -q v1.0.1-test
 
-- [ ] **T04: Push v1.0.1-test2 tag and confirm CI + Release workflows finish all-green** `est:30m`
+- [x] **T04: Push v1.0.1-test2 tag and confirm CI + Release workflows finish all-green** `est:30m`
   Create and push a fresh disposable test tag `v1.0.1-test2` to the `chaleyeah/vibe-attack` GitHub remote. Using `-test2` rather than reusing `-test` ensures no GitHub Actions cache state, artifact name collision, or release-name collision from the prior failed T02 run. The new tag triggers both `.github/workflows/ci.yml` and the now-fixed `.github/workflows/release.yml`. Monitor both runs and confirm every job succeeds.
   - Files: `.github/workflows/ci.yml`, `.github/workflows/release.yml`
   - Verify: git ls-remote --tags origin v1.0.1-test2 | grep -q refs/tags/v1.0.1-test2 && gh run list --repo chaleyeah/vibe-attack --event push --limit 10 --json headBranch,name,conclusion --jq '[.[] | select(.headBranch=="v1.0.1-test2")] | length' | grep -qx 2 && gh run list --repo chaleyeah/vibe-attack --event push --limit 10 --json headBranch,name,conclusion --jq '[.[] | select(.headBranch=="v1.0.1-test2") | .conclusion] | all(. == "success")' | grep -qx true
 
-- [ ] **T05: Verify v1.0.1-test2 release assets and clean up the test tag** `est:15m`
+- [x] **T05: Verify v1.0.1-test2 release assets and clean up the test tag** `est:15m`
   Confirm the GitHub Release created by the `v1.0.1-test2` tag contains all five expected assets with correct version-stamped filenames. Note the RPM filename uses `~` (tilde) instead of `-` because of the T03 RPM_VERSION substitution. Then delete the test tag and the release from both origin and locally. This task closes the slice.
   - Files: `.gsd/milestones/M013/slices/S03/T05-RESULT.md`
   - Verify: test -f .gsd/milestones/M013/slices/S03/T05-RESULT.md && grep -q 'vibe-attack-v1.0.1-test2-x86_64.AppImage' .gsd/milestones/M013/slices/S03/T05-RESULT.md && grep -q 'vibe-attack-1.0.1~test2-1.x86_64.rpm' .gsd/milestones/M013/slices/S03/T05-RESULT.md && grep -q 'vibe-attack_1.0.1-test2-1_amd64.deb' .gsd/milestones/M013/slices/S03/T05-RESULT.md && grep -q 'cleanup confirmed' .gsd/milestones/M013/slices/S03/T05-RESULT.md && ! git ls-remote --tags origin v1.0.1-test2 2>/dev/null | grep -q refs/tags/v1.0.1-test2

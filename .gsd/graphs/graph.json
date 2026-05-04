@@ -9,8 +9,8 @@
       "sourceFile": "STATE.md"
     },
     {
-      "id": "concept:phase:planning",
-      "label": "Phase: planning",
+      "id": "concept:phase:validating-milestone",
+      "label": "Phase: validating-milestone",
       "type": "concept",
       "confidence": "EXTRACTED",
       "sourceFile": "STATE.md"
@@ -263,6 +263,42 @@
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M002/M002-ROADMAP.md"
+    },
+    {
+      "id": "slice:M002:S01",
+      "label": "M002/S01",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S02",
+      "label": "M002/S02",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S03",
+      "label": "M002/S03",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S04",
+      "label": "M002/S04",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S05",
+      "label": "M002/S05",
+      "type": "slice",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M002:S06",
+      "label": "M002/S06",
+      "type": "slice",
+      "confidence": "EXTRACTED"
     },
     {
       "id": "milestone:M003",
@@ -1265,7 +1301,7 @@
     },
     {
       "id": "milestone:M012",
-      "label": "M012: GUI Redesign — Tactical Field Equipment Aesthetic",
+      "label": "M012: GUI Redesign - Tactical Field Equipment Aesthetic",
       "type": "milestone",
       "confidence": "EXTRACTED",
       "sourceFile": "milestones/M012/M012-ROADMAP.md"
@@ -1390,6 +1426,43 @@
     {
       "id": "task:M013:S02:T01",
       "label": "T01: Add validate-pkgbuild job to ci.yml",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M013:S03",
+      "label": "S03: S03",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M013/slices/S03/S03-PLAN.md"
+    },
+    {
+      "id": "task:M013:S03:T01",
+      "label": "T01: Converted outer /// doc comments in pack_editor.rs to //! inner form to fix clippy::empty_line_after_doc_comments lint",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M013:S03:T02",
+      "label": "T02: Pushed v1.0.1-test tag and triggered CI+Release workflows; CI passed but Release failed on RPM (hyphen in Version field) and Debian (dpkg build-dep check blocks rustup-installed Rust)",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M013:S03:T03",
+      "label": "T03: Fix RPM hyphen and Debian build-dep blockers in release.yml; clean up stale v1.0.1-test tag/release",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M013:S03:T04",
+      "label": "T04: Push v1.0.1-test2 tag and confirm CI + Release workflows finish all-green",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M013:S03:T05",
+      "label": "T05: Verify v1.0.1-test2 release assets and clean up the test tag",
       "type": "task",
       "confidence": "EXTRACTED"
     },
@@ -4213,6 +4286,42 @@
       "confidence": "EXTRACTED"
     },
     {
+      "from": "milestone:M002",
+      "to": "slice:M002:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M002",
+      "to": "slice:M002:S06",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
       "from": "milestone:M003",
       "to": "slice:M003:S01",
       "type": "contains",
@@ -5565,6 +5674,42 @@
     {
       "from": "slice:M013:S02",
       "to": "task:M013:S02:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M013",
+      "to": "slice:M013:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S03",
+      "to": "task:M013:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S03",
+      "to": "task:M013:S03:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S03",
+      "to": "task:M013:S03:T03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S03",
+      "to": "task:M013:S03:T04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M013:S03",
+      "to": "task:M013:S03:T05",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -8425,5 +8570,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-05-03T20:46:45.017Z"
+  "builtAt": "2026-05-03T22:35:21.792Z"
 }

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "unitType": "reactive-execute",
+  "unitId": "M013/S03/reactive+T03,T04",
+  "startedAt": 1777845144623,
+  "updatedAt": 1777846944805,
+  "phase": "recovered",
+  "wrapupWarningSent": true,
+  "continueHereFired": false,
+  "timeoutAt": 1777846944637,
+  "lastProgressAt": 1777846944805,
+  "progressCount": 1,
+  "lastProgressKind": "hard-recovery-retry",
+  "recoveryAttempts": 1,
+  "lastRecoveryReason": "hard"
+}

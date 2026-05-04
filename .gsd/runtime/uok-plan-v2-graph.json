@@ -1,0 +1,195 @@
+{
+  "compiledAt": "2026-05-03T21:52:24.609Z",
+  "milestoneId": "M013",
+  "pipeline": {
+    "clarifyRoundLimit": 3,
+    "researchSynthesized": true,
+    "draftContextIncluded": false,
+    "finalizedContextIncluded": true,
+    "sourcePhase": "executing"
+  },
+  "nodes": [
+    {
+      "id": "execute-task:M013:S01:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        ".github/workflows/release.yml"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S01.T01",
+        "title": "Fixed RPM tarball prefix to derive version from git tag via GITHUB_REF_NAME",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M013:S01:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M013:S01:T01"
+      ],
+      "writes": [
+        ".github/workflows/release.yml"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S01.T02",
+        "title": "Fixed deb changelog version stamping and removed unused dh-cargo build-dep",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M013:S01",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M013:S01:T02"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M013.S01",
+        "title": "S01",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M013:S02:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        ".github/workflows/ci.yml"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S02.T01",
+        "title": "Added validate-pkgbuild job to ci.yml; checks syntax and required PKGBUILD fields on every tag push",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M013:S02",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M013:S02:T01"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M013.S02",
+        "title": "S02",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M013:S03:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        "src/ui/pack_editor.rs"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S03.T01",
+        "title": "Converted outer /// doc comments in pack_editor.rs to //! inner form to fix clippy::empty_line_after_doc_comments lint",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M013:S03:T02",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M013:S03:T01"
+      ],
+      "writes": [
+        ".gsd/milestones/M013/slices/S03/T02-FAILURE.md"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S03.T02",
+        "title": "Pushed v1.0.1-test tag and triggered CI+Release workflows; CI passed but Release failed on RPM (hyphen in Version field) and Debian (dpkg build-dep check blocks rustup-installed Rust)",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "execute-task:M013:S03:T03",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M013:S03:T02"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S03.T03",
+        "title": "Fix RPM hyphen and Debian build-dep blockers in release.yml; clean up stale v1.0.1-test tag/release",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "execute-task:M013:S03:T04",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M013:S03:T03"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S03.T04",
+        "title": "Push v1.0.1-test2 tag and confirm CI + Release workflows finish all-green",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "execute-task:M013:S03:T05",
+      "kind": "unit",
+      "dependsOn": [
+        "execute-task:M013:S03:T04"
+      ],
+      "writes": [],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S03.T05",
+        "title": "Verify v1.0.1-test2 release assets and clean up the test tag",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "complete-slice:M013:S03",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M013:S03:T05"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M013.S03",
+        "title": "S03",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "execute-task:M013:S04:T01",
+      "kind": "unit",
+      "dependsOn": [],
+      "writes": [
+        "README.md"
+      ],
+      "metadata": {
+        "unitType": "execute-task",
+        "unitId": "M013.S04.T01",
+        "title": "Added CI and Release status badges to README below the h1 title",
+        "status": "complete"
+      }
+    },
+    {
+      "id": "complete-slice:M013:S04",
+      "kind": "verification",
+      "dependsOn": [
+        "execute-task:M013:S04:T01"
+      ],
+      "metadata": {
+        "unitType": "complete-slice",
+        "unitId": "M013.S04",
+        "title": "S04",
+        "status": "complete"
+      }
+    }
+  ]
+}
