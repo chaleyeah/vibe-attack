@@ -449,14 +449,17 @@ mod inner {
             return;
         };
 
-        let dest = dir.join("hd2.yaml");
+        // Profiles are subdirectories containing pack.yaml — load_profiles() ignores flat .yaml files.
+        let profile_dir = dir.join("hd2");
+        let dest = profile_dir.join("pack.yaml");
+
         if dest.exists() {
             info!(path = %dest.display(), "hd2 profile already present — skipping");
             return;
         }
 
-        if let Err(e) = std::fs::create_dir_all(&dir) {
-            error!(reason = %e, "Failed to create profiles directory");
+        if let Err(e) = std::fs::create_dir_all(&profile_dir) {
+            error!(reason = %e, "Failed to create hd2 profile directory");
             return;
         }
 

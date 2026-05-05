@@ -85,16 +85,16 @@ pub fn load_fonts(ctx: &egui::Context) {
         )).into(),
     );
 
-    // Replace the default font families with JetBrains Mono.
-    // Medium weight for headings (Proportional family), Regular for mono/body.
-    fonts.families.insert(
-        FontFamily::Proportional,
-        vec![FONT_MEDIUM.to_owned(), FONT_REGULAR.to_owned()],
-    );
-    fonts.families.insert(
-        FontFamily::Monospace,
-        vec![FONT_REGULAR.to_owned(), FONT_MEDIUM.to_owned()],
-    );
+    // Prepend JetBrains Mono to each family so egui's built-in Unicode/emoji
+    // fallback fonts remain available for glyphs JetBrains Mono lacks.
+    fonts.families
+        .entry(FontFamily::Proportional)
+        .or_default()
+        .splice(0..0, [FONT_MEDIUM.to_owned(), FONT_REGULAR.to_owned()]);
+    fonts.families
+        .entry(FontFamily::Monospace)
+        .or_default()
+        .splice(0..0, [FONT_REGULAR.to_owned(), FONT_MEDIUM.to_owned()]);
 
     ctx.set_fonts(fonts);
 }

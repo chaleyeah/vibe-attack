@@ -1,6 +1,3 @@
-{"id":"31847764-508c-4437-b214-54851dad868f","ts":"2026-04-27T11:43:45.611Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
-{"id":"d44fbef5-a6af-4efd-8115-e749835589cd","ts":"2026-04-27T11:43:45.612Z","severity":"warning","message":"Safety: task T04 has verification commands but no bash calls were recorded","source":"notify","read":false}
-{"id":"5a8ec7f4-5af6-4d21-97ca-96305e28d29c","ts":"2026-04-27T11:43:45.620Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"notify","read":false}
 {"id":"a584d6b4-3ab3-4256-bb61-7e20593115b7","ts":"2026-04-27T11:45:48.367Z","severity":"info","message":"Committed: test: Full S02 verification passes: cargo test (40 lib + integration te…","source":"notify","read":false}
 {"id":"ac91b18a-654f-4be5-b1a8-ba27e7be5a59","ts":"2026-04-27T11:45:48.373Z","severity":"warning","message":"[safety] task marked complete with verification commands but no bash calls were executed","source":"workflow-logger","read":false}
 {"id":"65957f19-901d-412d-bd7d-9cd4d4b3461a","ts":"2026-04-27T11:45:48.373Z","severity":"warning","message":"Safety: task T05 has verification commands but no bash calls were recorded","source":"notify","read":false}
@@ -498,3 +495,6 @@
 {"id":"2ee8d5cf-5806-4048-ad00-dc1fd8a11eb7","ts":"2026-05-03T22:22:54.688Z","severity":"info","message":"Auto-mode paused (Escape). Type to interact, or /gsd auto to resume.","source":"notify","read":false}
 {"id":"83ee2df4-cb44-4ed1-bdf9-ffd102e7ca1e","ts":"2026-05-03T22:22:54.752Z","severity":"info","message":"Committed: chore: auto-commit after reactive-execute","source":"notify","read":false}
 {"id":"3fd6c262-238b-4814-a71e-ec807afc0e89","ts":"2026-05-04T02:11:36.822Z","severity":"info","message":"Auto-mode stopped — Graceful exit. Session: $153.18 · 190.37M tokens · 195 units","source":"notify","read":false}
+{"id":"7e3f9f0c-75a7-494f-a744-96cde9fbb8ea","ts":"2026-05-05T00:46:24.136Z","severity":"info","message":"Current version: v2.79.0\nChecking npm registry...","source":"notify","read":false}
+{"id":"38bec8c8-6be5-4e61-9fd2-6a2b974f2052","ts":"2026-05-05T00:46:24.205Z","severity":"info","message":"Updating: v2.79.0 → v2.80.0...","source":"notify","read":false}
+{"id":"ccad8ef9-8f06-4b8f-af10-6b222102110d","ts":"2026-05-05T00:46:30.969Z","severity":"info","message":"Updated to v2.80.0. Restart your GSD session to use the new version.","source":"notify","read":false}
