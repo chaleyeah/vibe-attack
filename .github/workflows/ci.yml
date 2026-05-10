@@ -11,7 +11,7 @@ env:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
@@ -64,7 +64,7 @@ jobs:
 
   clippy:
     name: Clippy
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
@@ -104,7 +104,7 @@ jobs:
 
   validate-pkgbuild:
     name: Validate AUR PKGBUILD
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
