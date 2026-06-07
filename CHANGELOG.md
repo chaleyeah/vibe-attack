@@ -9,6 +9,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.1.0] - 2026-06-07
+
+### Changed
+- **VAD onset algorithm**: replaced consecutive-frame counter with N-of-M sliding-window majority vote (3 of 5 frames by default). A single low-confidence Silero frame during speech onset no longer resets the detector, significantly improving recognition of spoken commands.
+- **VAD defaults tuned**: `start_threshold` 0.60→0.50, `stop_threshold` 0.45→0.30, `end_silence_ms` 200→500ms. New `onset_window_ms: 100` config field controls the window size.
+- **Wake mode VAD**: removed the aggressive `stop_threshold = start - 0.05` formula; uses base stop_threshold for consistency.
+
+### Added
+- **Whisper initial_prompt**: daemon now auto-builds a comma-separated phrase list from the active pack's macros and passes it to Whisper as `initial_prompt` at startup. This biases the model toward known vocabulary, reducing hallucinations on short HD2 stratagem names. Explicit `stt.initial_prompt` in config overrides the auto-built value.
+- **Sound feedback UI**: pack editor SOUND row with Browse/Clear buttons (rfd file dialog). Per-macro sound file paths now round-trip through the UI and persist to pack.yaml.
+- **VAD debug tracing**: per-frame Silero scores logged at DEBUG level (`RUST_LOG=vibe_attack=debug`).
+- **DEVICES nav icon**: replaced unrenderable ⊞ (U+229E, not in egui's bundled font) with 🖥 emoji.
+
+---
+
 ## [1.0.0] - 2026-04-28
 
 ### Added

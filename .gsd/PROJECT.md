@@ -8,9 +8,9 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 **During Helldivers 2 gameplay, the player can fire the right stratagem reliably by voice with minimal delay and without breaking flow** — wake word or push-to-talk, fully **local** speech processing, **Wayland-first** input delivery.
 
-## Current State (2026-04-29)
+## Current State (2026-06-07)
 
-**M011 v1.0 Release — complete ✅**
+**M014 v1.1 — complete ✅**
 
 | Milestone | Status | Delivered |
 |-----------|--------|-----------|
@@ -20,6 +20,9 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 | M009: Pack UX — Editor, Import/Export, Full HD2 Coverage | ✅ complete | Full pack editor UI (CRUD, import/export, Test button); 75-stratagem HD2 pack; hermetic coverage tests |
 | M010: Distribution — AppImage, AUR, First-Run Wizard | ✅ complete | AppImage CI pipeline, AUR PKGBUILD, first-run wizard, proof harness, README rewrite |
 | M011: v1.0 Release | ✅ complete | Retargeted proof harness to 4 current distros; 5 UI/UX bug fixes; 4-job release CI; GitHub Release v1.0.0 live with AppImage + .deb + .rpm + tarball + hdpack; PKGBUILD sha256sums pinned |
+| M012: GUI Redesign | ✅ complete | Tactical dark-panel egui theme + widgets; all 5 config panes, pack editor, wizard |
+| M013: CI Build Revamp | ✅ complete | Release pipeline fixes, RPM/deb version from git tag, CI badges |
+| M014: v1.1 STT + VAD + Sound UI | ✅ complete | N-of-M VAD onset, tuned defaults, Whisper initial_prompt from pack phrases, sound feedback UI, DEVICES icon fix |
 
 ### M011 Slice Detail
 
@@ -47,6 +50,8 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 - STT-03: Configure threshold from config UI — Validated in M008 (threshold_pct slider; SetThreshold dispatch; integration test passes)
 - UI-02: System tray icon with status and controls — Validated in M008 (tray icon + Mode submenu + profile submenu complete)
 - UI-03: Config window for audio/mode/threshold/keybindings — Validated in M008 (egui config window; atomic YAML save; daemon-absent recovery)
+- PACK-05: Multiple named profiles, runtime-switchable — Validated in M008/M009 (SwitchProfile protocol, ProfileManager, tray submenu; runtime switching confirmed)
+- MCRO-04: Sound feedback on macro activation — Validated in M014 (SoundPlayer + Dispatcher wiring; per-macro sound field in pack editor with Browse/Clear UI)
 
 ### Advanced (structural foundation complete, runtime validation pending)
 
@@ -60,9 +65,7 @@ An **open source** Linux desktop application in the spirit of [VoiceAttack](http
 
 ### Active
 
-- [ ] PACK-05: App supports **multiple named profiles** (e.g. one per game or playstyle), switchable at runtime
 - [ ] MCRO-03: Macro engine supports **conditional logic** (if/else, variables) for VoiceAttack-class scripting
-- [ ] MCRO-04: Macros play an optional **sound feedback** on activation (configurable per macro or globally)
 
 ### Out of Scope
 

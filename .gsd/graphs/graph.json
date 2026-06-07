@@ -265,42 +265,6 @@
       "sourceFile": "milestones/M002/M002-ROADMAP.md"
     },
     {
-      "id": "slice:M002:S01",
-      "label": "M002/S01",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S02",
-      "label": "M002/S02",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S03",
-      "label": "M002/S03",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S04",
-      "label": "M002/S04",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S05",
-      "label": "M002/S05",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "id": "slice:M002:S06",
-      "label": "M002/S06",
-      "type": "slice",
-      "confidence": "EXTRACTED"
-    },
-    {
       "id": "milestone:M003",
       "label": "M003: First-Run GUI Wizard + Setup Script",
       "type": "milestone",
@@ -1476,6 +1440,84 @@
     {
       "id": "task:M013:S04:T01",
       "label": "T01: Add CI and Release badges to README",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "milestone:M014",
+      "label": "M014: v1.1 - STT Accuracy, VAD Overhaul, Sound Feedback UI",
+      "type": "milestone",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M014/M014-ROADMAP.md"
+    },
+    {
+      "id": "slice:M014:S01",
+      "label": "S01: Fix broken DEVICES nav icon",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M014/slices/S01/S01-PLAN.md"
+    },
+    {
+      "id": "task:M014:S01:T01",
+      "label": "T01: Replaced broken ⊞ nav icon with 🖥 emoji in widgets.rs",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M014:S02",
+      "label": "S02: VAD overhaul - robust onset and tuned defaults",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M014/slices/S02/S02-PLAN.md"
+    },
+    {
+      "id": "task:M014:S02:T01",
+      "label": "T01: Replaced consecutive-frame onset counter with N-of-M sliding window majority vote in VadSegmenter",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "task:M014:S02:T02",
+      "label": "T02: Updated VAD config defaults and wired onset_window_ms through config.rs and coordinator.rs",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M014:S03",
+      "label": "S03: STT accuracy - initial prompt from active pack",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M014/slices/S03/S03-PLAN.md"
+    },
+    {
+      "id": "task:M014:S03:T01",
+      "label": "T01: Auto-build Whisper initial_prompt from active pack phrases when not explicitly configured",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M014:S04",
+      "label": "S04: Sound feedback UI - per-macro sound file picker",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M014/slices/S04/S04-PLAN.md"
+    },
+    {
+      "id": "task:M014:S04:T01",
+      "label": "T01: Added SOUND row with Browse/Clear buttons to pack editor macro form, wired to MacroUpdates.sound",
+      "type": "task",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "slice:M014:S05",
+      "label": "S05: Tracker cleanup and v1.1.0 release",
+      "type": "slice",
+      "confidence": "EXTRACTED",
+      "sourceFile": "milestones/M014/slices/S05/S05-PLAN.md"
+    },
+    {
+      "id": "task:M014:S05:T01",
+      "label": "T01: Bumped version to 1.1.0 and updated all tracker documents",
       "type": "task",
       "confidence": "EXTRACTED"
     },
@@ -4286,42 +4328,6 @@
       "confidence": "EXTRACTED"
     },
     {
-      "from": "milestone:M002",
-      "to": "slice:M002:S01",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S02",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S03",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S04",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S05",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
-      "from": "milestone:M002",
-      "to": "slice:M002:S06",
-      "type": "contains",
-      "confidence": "EXTRACTED"
-    },
-    {
       "from": "milestone:M003",
       "to": "slice:M003:S01",
       "type": "contains",
@@ -5722,6 +5728,72 @@
     {
       "from": "slice:M013:S04",
       "to": "task:M013:S04:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M014",
+      "to": "slice:M014:S01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M014:S01",
+      "to": "task:M014:S01:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M014",
+      "to": "slice:M014:S02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M014:S02",
+      "to": "task:M014:S02:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M014:S02",
+      "to": "task:M014:S02:T02",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M014",
+      "to": "slice:M014:S03",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M014:S03",
+      "to": "task:M014:S03:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M014",
+      "to": "slice:M014:S04",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M014:S04",
+      "to": "task:M014:S04:T01",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "milestone:M014",
+      "to": "slice:M014:S05",
+      "type": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "from": "slice:M014:S05",
+      "to": "task:M014:S05:T01",
       "type": "contains",
       "confidence": "EXTRACTED"
     },
@@ -8570,5 +8642,5 @@
       "confidence": "EXTRACTED"
     }
   ],
-  "builtAt": "2026-05-03T22:35:21.792Z"
+  "builtAt": "2026-06-07T21:16:18.390Z"
 }

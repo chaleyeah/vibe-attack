@@ -115,6 +115,7 @@ pub fn spawn_pipeline(
     let seg_cfg = SegCfg {
         start_threshold: config.vad.start_threshold,
         stop_threshold: config.vad.stop_threshold,
+        onset_window_frames: ms_to_frames(config.vad.onset_window_ms),
         min_speech_frames: ms_to_frames(config.vad.min_speech_ms),
         end_silence_frames: ms_to_frames(config.vad.end_silence_ms),
         preroll_frames: config.vad.preroll_ms.div_ceil(20) as usize,
@@ -139,8 +140,9 @@ pub fn spawn_pipeline(
     const WAKE_FORCE_FLUSH_MS: u64 = 1200;
     let seg_cfg_wake = SegCfg {
         start_threshold: seg_cfg.start_threshold,
-        // End speech sooner in noisy environments (wake commands are short).
-        stop_threshold: (seg_cfg.start_threshold - 0.05).max(seg_cfg.stop_threshold),
+        stop_threshold: seg_cfg.stop_threshold,
+        // Wake commands are short; use a tighter onset window to trigger faster.
+        onset_window_frames: ms_to_frames(WAKE_MIN_SPEECH_MS).max(2),
         min_speech_frames: ms_to_frames(WAKE_MIN_SPEECH_MS),
         end_silence_frames: ms_to_frames(WAKE_END_SILENCE_MS),
         preroll_frames: ms_to_frames(WAKE_VAD_PREROLL_MS),
@@ -241,6 +243,25 @@ pub fn spawn_pipeline(
         }
     });
 
+    // Build the Whisper initial_prompt: use the explicit config value if set, otherwise
+    // auto-generate from the active macro phrase list so Whisper biases toward known vocabulary.
+    // A comma-separated phrase list dramatically reduces hallucinations on short commands.
+    let effective_initial_prompt: Option<String> = config.stt.initial_prompt.clone().or_else(|| {
+        let phrases: Vec<&str> = config
+            .macros
+            .iter()
+            .filter_map(|m| m.phrase.as_deref())
+            .filter(|p| !p.is_empty())
+            .collect();
+        if phrases.is_empty() {
+            None
+        } else {
+            let prompt = phrases.join(", ");
+            tracing::info!(phrase_count = phrases.len(), "STT initial_prompt auto-built from active pack phrases");
+            Some(prompt)
+        }
+    });
+
     // STT service (optional, feature-gated) is created before threads (fail-fast).
     let stt: Option<SttService> = if config.stt.enabled {
         let model_path = config
@@ -252,6 +273,7 @@ pub fn spawn_pipeline(
         #[cfg(not(feature = "stt"))]
         {
             let _ = model_path;
+            let _ = &effective_initial_prompt;
             return Err(anyhow::anyhow!(
                 "Config enables STT, but this build was compiled without `--features stt`."
             ));
@@ -260,7 +282,7 @@ pub fn spawn_pipeline(
         #[cfg(feature = "stt")]
         {
             Some(
-                SttService::new(model_path, config.stt.initial_prompt.clone(), shutdown.clone())
+                SttService::new(model_path, effective_initial_prompt, shutdown.clone())
                     .context("create STT service")?
                     .spawn()
                     .context("spawn STT thread")?,

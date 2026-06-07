@@ -53,7 +53,15 @@ pub struct VadConfig {
     pub start_threshold: f32,
     /// Silero speech-probability threshold to end an utterance; must be < `start_threshold` (D-10).
     pub stop_threshold: f32,
-    /// Minimum consecutive speech frames before the utterance is committed (D-12).
+    /// Number of frames in the sliding onset window (M in "N of M" majority vote).
+    ///
+    /// A larger window makes onset detection more tolerant of brief score dips during
+    /// real speech onset. Must be >= `min_speech_frames`.
+    pub onset_window_frames: usize,
+    /// Minimum number of speech frames within `onset_window_frames` to commit an utterance (D-12).
+    ///
+    /// Using a sliding window majority vote instead of a consecutive-frame counter prevents
+    /// a single low-confidence frame from resetting the onset gate entirely.
     pub min_speech_frames: usize,
     /// Number of consecutive non-speech frames required to close an utterance (D-11).
     pub end_silence_frames: usize,
@@ -68,16 +76,16 @@ pub struct VadConfig {
 impl Default for VadConfig {
     fn default() -> Self {
         Self {
-            // Thresholds are intentionally conservative defaults; caller can tune.
-            start_threshold: 0.60,
-            stop_threshold: 0.35,
-            // D-12: ~100ms minimum speech
-            min_speech_frames: 5,
-            // D-11: ~400ms silence to cut
-            end_silence_frames: 20,
-            // D-06/D-07: 100–200ms buffers
-            preroll_frames: 8, // 160ms
-            tail_frames: 8,    // 160ms
+            start_threshold: 0.50,
+            stop_threshold: 0.30,
+            // D-12: sliding window — 3 of 5 frames (= 100ms window, 60ms min speech)
+            onset_window_frames: 5,
+            min_speech_frames: 3,
+            // D-11: ~500ms silence to cut (real speech pauses mid-utterance can exceed 200ms)
+            end_silence_frames: 25,
+            // D-06/D-07: 160ms buffers
+            preroll_frames: 8,
+            tail_frames: 8,
             // D-08: hard cap ~10s
             max_utterance_frames: 500,
         }
@@ -115,7 +123,9 @@ pub struct VadSegmenter {
 
     // state
     in_speech: bool,
-    start_run_frames: usize,
+    /// Sliding window of recent onset votes: true = frame was above start_threshold.
+    /// Onset commits when the number of true entries >= min_speech_frames.
+    onset_window: VecDeque<bool>,
     silence_run_frames: usize,
 
     // current utterance under construction
@@ -134,6 +144,7 @@ impl VadSegmenter {
     pub fn new(cfg: VadConfig) -> Self {
         let preroll_cap = cfg.preroll_frames * FRAME_SAMPLES;
         let pending_cap = cfg.end_silence_frames * FRAME_SAMPLES;
+        let onset_cap = cfg.onset_window_frames;
         Self {
             cfg,
             next_utterance_id: 1,
@@ -141,7 +152,7 @@ impl VadSegmenter {
             preroll: VecDeque::with_capacity(preroll_cap),
             pending_silence: VecDeque::with_capacity(pending_cap),
             in_speech: false,
-            start_run_frames: 0,
+            onset_window: VecDeque::with_capacity(onset_cap),
             silence_run_frames: 0,
             cur_audio: Vec::new(),
             cur_start_frame_idx: 0,
@@ -191,15 +202,19 @@ impl VadSegmenter {
         }
 
         if !self.in_speech {
-            if score >= self.cfg.start_threshold {
-                self.start_run_frames += 1;
-            } else {
-                self.start_run_frames = 0;
+            // Sliding-window majority vote: push this frame's vote and evict oldest if full.
+            let is_speech = score >= self.cfg.start_threshold;
+            if self.onset_window.len() >= self.cfg.onset_window_frames {
+                self.onset_window.pop_front();
             }
+            self.onset_window.push_back(is_speech);
 
-            if self.start_run_frames >= self.cfg.min_speech_frames {
+            let speech_count = self.onset_window.iter().filter(|&&v| v).count();
+
+            if speech_count >= self.cfg.min_speech_frames {
                 self.in_speech = true;
                 self.silence_run_frames = 0;
+                self.onset_window.clear();
                 self.pending_silence.clear();
                 self.cur_audio.clear();
 
@@ -283,7 +298,7 @@ impl VadSegmenter {
 
         // Reset state for next utterance.
         self.in_speech = false;
-        self.start_run_frames = 0;
+        self.onset_window.clear();
         self.silence_run_frames = 0;
         self.pending_silence.clear();
         self.preroll.clear();
@@ -312,6 +327,12 @@ impl VadSegmenter {
         let was_in_speech = self.in_speech;
         let t0 = Instant::now();
         let score = self.score_with_silero(model, frame)?;
+        tracing::debug!(
+            score,
+            in_speech = self.in_speech,
+            frame_idx = self.frame_idx,
+            "VAD frame score"
+        );
         let res = self.push_scored_frame(frame, score);
         let dt_ms = t0.elapsed().as_millis() as u64;
 
@@ -332,7 +353,7 @@ impl VadSegmenter {
     pub fn force_flush(&mut self) -> Option<UtteranceJob> {
         if !self.in_speech {
             // Nothing in progress; reset any partial start state.
-            self.start_run_frames = 0;
+            self.onset_window.clear();
             self.silence_run_frames = 0;
             self.pending_silence.clear();
             return None;
@@ -352,7 +373,8 @@ mod tests {
 
     #[test]
     fn min_speech_required_before_starting_utterance() {
-        let cfg = VadConfig { min_speech_frames: 5, preroll_frames: 2, ..VadConfig::default() };
+        // onset_window=5, min_speech=5: need all 5 frames above threshold (no tolerance for dips).
+        let cfg = VadConfig { onset_window_frames: 5, min_speech_frames: 5, preroll_frames: 2, ..VadConfig::default() };
         let mut seg = VadSegmenter::new(cfg.clone());
 
         // 4 frames above start threshold: not enough to commit.
@@ -362,7 +384,7 @@ mod tests {
                 .is_none());
         }
 
-        // 5th frame commits start; still no job emitted.
+        // 5th frame: window now has 5 speech frames, commits start; still no job emitted.
         assert!(seg
             .push_scored_frame(&frame_with(0.2), cfg.start_threshold + 0.01)
             .is_none());
@@ -370,8 +392,26 @@ mod tests {
     }
 
     #[test]
+    fn onset_tolerates_single_dip_in_sliding_window() {
+        // onset_window=5, min_speech=3: 3 of 5 frames above threshold suffices.
+        let cfg = VadConfig { onset_window_frames: 5, min_speech_frames: 3, preroll_frames: 0, ..VadConfig::default() };
+        let mut seg = VadSegmenter::new(cfg.clone());
+
+        // Frame 1: speech
+        assert!(seg.push_scored_frame(&frame_with(1.0), cfg.start_threshold + 0.1).is_none());
+        // Frame 2: dip (would reset the old consecutive counter)
+        assert!(seg.push_scored_frame(&frame_with(0.0), 0.0).is_none());
+        assert!(!seg.in_speech, "single dip should not trigger onset yet");
+        // Frame 3: speech
+        assert!(seg.push_scored_frame(&frame_with(1.0), cfg.start_threshold + 0.1).is_none());
+        // Frame 4: speech — now 3 of 4 frames are speech, >= min_speech_frames
+        assert!(seg.push_scored_frame(&frame_with(1.0), cfg.start_threshold + 0.1).is_none());
+        assert!(seg.in_speech, "3-of-4 speech frames must trigger onset despite the dip");
+    }
+
+    #[test]
     fn end_requires_silence_and_includes_only_tail_not_full_silence() {
-        let cfg = VadConfig { preroll_frames: 2, tail_frames: 2, min_speech_frames: 1, end_silence_frames: 4, ..VadConfig::default() };
+        let cfg = VadConfig { preroll_frames: 2, tail_frames: 2, onset_window_frames: 1, min_speech_frames: 1, end_silence_frames: 4, ..VadConfig::default() };
         let mut seg = VadSegmenter::new(cfg.clone());
 
         // Start speech immediately.
@@ -415,7 +455,7 @@ mod tests {
 
     #[test]
     fn max_length_forces_cut() {
-        let cfg = VadConfig { min_speech_frames: 1, max_utterance_frames: 3, end_silence_frames: 100, preroll_frames: 0, tail_frames: 0, ..VadConfig::default() };
+        let cfg = VadConfig { onset_window_frames: 1, min_speech_frames: 1, max_utterance_frames: 3, end_silence_frames: 100, preroll_frames: 0, tail_frames: 0, ..VadConfig::default() };
         let mut seg = VadSegmenter::new(cfg.clone());
 
         // Start.

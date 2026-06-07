@@ -25,10 +25,11 @@ pipeline:
   listen_window_secs: 5     # after wake word trigger, stay LISTENING for this many seconds
 
 vad:
-  start_threshold: 0.60     # speech start threshold (hysteresis high)
-  stop_threshold: 0.45      # speech stop threshold (hysteresis low)
-  min_speech_ms: 100        # require at least this much speech before committing an utterance
-  end_silence_ms: 200       # require this much silence to end an utterance
+  start_threshold: 0.50     # speech start threshold (hysteresis high)
+  stop_threshold: 0.30      # speech stop threshold (hysteresis low)
+  onset_window_ms: 100      # sliding window size for onset detection (N-of-M majority vote)
+  min_speech_ms: 60         # frames within onset_window_ms that must be speech to trigger
+  end_silence_ms: 500       # require this much silence to end an utterance
   preroll_ms: 150           # prepend up to this much audio before detected speech start
   tail_ms: 150              # append up to this much audio after detected speech end
   max_utterance_secs: 10    # cap utterance length; longer speech is force-flushed with a warning

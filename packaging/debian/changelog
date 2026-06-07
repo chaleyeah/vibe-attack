@@ -1,3 +1,9 @@
+vibe-attack (1.1.0-1) unstable; urgency=medium
+
+  * Version 1.1.0 release: VAD N-of-M onset algorithm, tuned thresholds, Whisper initial_prompt from pack phrases, sound feedback UI, fixed DEVICES nav icon.
+
+ -- Chris Chale <chrischale@gmail.com>  Sat, 07 Jun 2026 00:00:00 +0000
+
 vibe-attack (1.0.5-1) unstable; urgency=medium
 
   * Version 1.0.5 release.

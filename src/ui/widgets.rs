@@ -63,7 +63,7 @@ pub struct NavItem {
 }
 
 pub static NAV_ITEMS: &[NavItem] = &[
-    NavItem { id: NavId::Devices,  icon: "⊞", label: "DEVICES"  },
+    NavItem { id: NavId::Devices,  icon: "🖥", label: "DEVICES"  },
     NavItem { id: NavId::Voice,    icon: "🎤", label: "VOICE"   },
     NavItem { id: NavId::Packs,    icon: "📦", label: "PACKS"   },
     NavItem { id: NavId::Hotkeys,  icon: "⌨", label: "HOTKEYS" },

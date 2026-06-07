@@ -39,6 +39,8 @@ mod inner {
         pub form_set_flag: String,
         /// Form input: comma-separated key sequence.
         pub form_keys: String,
+        /// Form input: optional sound file path played on macro activation.
+        pub form_sound: Option<PathBuf>,
         /// True while the category rename confirmation UI is visible.
         pub show_rename_warning: bool,
         /// Staging field for the new category name in Add Category toolbar.
@@ -67,6 +69,7 @@ mod inner {
                 form_if_flag: String::new(),
                 form_set_flag: String::new(),
                 form_keys: String::new(),
+                form_sound: None,
                 show_rename_warning: false,
                 form_new_category: String::new(),
                 pending_remove_macro: false,
@@ -308,6 +311,7 @@ mod inner {
                                             state.form_if_flag  = m.if_flag.clone().unwrap_or_default();
                                             state.form_set_flag = m.set_flag.clone().unwrap_or_default();
                                             state.form_keys = m.keys.iter().map(|k| k.key.as_str()).collect::<Vec<_>>().join(", ");
+                                            state.form_sound = m.sound.clone();
                                         }
                                     }
                                 }
@@ -369,6 +373,27 @@ mod inner {
                     ui.label(egui::RichText::new("KEYS").color(Palette::FG_MUTED).size(11.0));
                     ui.text_edit_singleline(&mut state.form_keys);
                     ui.end_row();
+
+                    ui.label(egui::RichText::new("SOUND").color(Palette::FG_MUTED).size(11.0));
+                    ui.horizontal(|ui| {
+                        let label = state.form_sound.as_deref()
+                            .and_then(|p| p.file_name())
+                            .and_then(|n| n.to_str())
+                            .unwrap_or("none");
+                        ui.label(egui::RichText::new(label).color(Palette::FG_FAINT).size(11.0));
+                        if ui.small_button("Browse…").clicked() {
+                            if let Some(path) = FileDialog::new()
+                                .add_filter("Audio", &["wav", "ogg", "mp3", "flac"])
+                                .pick_file()
+                            {
+                                state.form_sound = Some(path);
+                            }
+                        }
+                        if state.form_sound.is_some() && ui.small_button("Clear").clicked() {
+                            state.form_sound = None;
+                        }
+                    });
+                    ui.end_row();
                 });
 
                 // Per-key timing display
@@ -417,7 +442,7 @@ mod inner {
                                         let phrase = opt_from_str(&state.form_phrase);
                                         let if_flag = opt_from_str(&state.form_if_flag);
                                         let set_flag = opt_from_str(&state.form_set_flag);
-                                        let updates = crate::pack::MacroUpdates { phrase: Some(phrase), if_flag: Some(if_flag), set_flag: Some(set_flag), sound: None, keys: Some(keys) };
+                                        let updates = crate::pack::MacroUpdates { phrase: Some(phrase), if_flag: Some(if_flag), set_flag: Some(set_flag), sound: Some(state.form_sound.clone()), keys: Some(keys) };
                                         match state.editor.edit_macro(&cat, &mac, updates) {
                                             Ok(()) => state.last_error = None,
                                             Err(e) => state.last_error = Some(e.to_string()),
@@ -460,7 +485,7 @@ mod inner {
                         if ui.add(confirm_btn).clicked() {
                             if let (Some(cat), Some(mac)) = (state.selected_category.clone(), state.selected_macro.clone()) {
                                 match state.editor.remove_macro(&cat, &mac) {
-                                    Ok(()) => { state.last_error = None; state.selected_macro = None; state.pending_remove_macro = false; state.form_name.clear(); state.form_phrase.clear(); state.form_if_flag.clear(); state.form_set_flag.clear(); state.form_keys.clear(); }
+                                    Ok(()) => { state.last_error = None; state.selected_macro = None; state.pending_remove_macro = false; state.form_name.clear(); state.form_phrase.clear(); state.form_if_flag.clear(); state.form_set_flag.clear(); state.form_keys.clear(); state.form_sound = None; }
                                     Err(e) => { state.last_error = Some(e.to_string()); state.pending_remove_macro = false; }
                                 }
                             }

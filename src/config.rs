@@ -153,16 +153,25 @@ impl Default for PipelineConfig {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct VadConfig {
-    /// Probability threshold above which a frame is considered speech onset. Default: 0.60.
+    /// Probability threshold above which a frame is considered speech onset. Default: 0.50.
     #[serde(default = "default_vad_start_threshold")]
     pub start_threshold: f32,
-    /// Probability threshold below which a frame is considered silence (ends utterance). Default: 0.45.
+    /// Probability threshold below which a frame is considered silence (ends utterance). Default: 0.30.
     #[serde(default = "default_vad_stop_threshold")]
     pub stop_threshold: f32,
-    /// Minimum consecutive speech duration (ms) before an utterance is accepted. Default: 100.
+    /// Size of the sliding onset-detection window (ms). Default: 100 (5 frames).
+    ///
+    /// Onset triggers when `min_speech_ms` worth of frames within this window are above
+    /// `start_threshold`. A larger window makes onset more tolerant of brief score dips.
+    #[serde(default = "default_onset_window_ms")]
+    pub onset_window_ms: u64,
+    /// Minimum speech duration within `onset_window_ms` to accept an utterance. Default: 60.
+    ///
+    /// Combined with `onset_window_ms` this forms an N-of-M majority vote: e.g. 3 of 5 frames
+    /// (60ms of 100ms) above `start_threshold` triggers onset.
     #[serde(default = "default_min_speech_ms")]
     pub min_speech_ms: u64,
-    /// Silence duration (ms) required after speech before the utterance is considered complete. Default: 200.
+    /// Silence duration (ms) required after speech before the utterance is considered complete. Default: 500.
     #[serde(default = "default_end_silence_ms")]
     pub end_silence_ms: u64,
     /// Audio pre-rolled (ms) before the speech onset frame to avoid clipping leading phonemes. Default: 150.
@@ -177,16 +186,19 @@ pub struct VadConfig {
 }
 
 fn default_vad_start_threshold() -> f32 {
-    0.60
+    0.50
 }
 fn default_vad_stop_threshold() -> f32 {
-    0.45
+    0.30
 }
-fn default_min_speech_ms() -> u64 {
+fn default_onset_window_ms() -> u64 {
     100
 }
+fn default_min_speech_ms() -> u64 {
+    60
+}
 fn default_end_silence_ms() -> u64 {
-    200
+    500
 }
 fn default_preroll_ms() -> u64 {
     150
@@ -203,6 +215,7 @@ impl Default for VadConfig {
         VadConfig {
             start_threshold: default_vad_start_threshold(),
             stop_threshold: default_vad_stop_threshold(),
+            onset_window_ms: default_onset_window_ms(),
             min_speech_ms: default_min_speech_ms(),
             end_silence_ms: default_end_silence_ms(),
             preroll_ms: default_preroll_ms(),
