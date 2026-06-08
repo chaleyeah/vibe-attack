@@ -1,7 +1,6 @@
 # vibe-attack
 
 [![CI](https://github.com/chaleyeah/vibe-attack/actions/workflows/ci.yml/badge.svg)](https://github.com/chaleyeah/vibe-attack/actions/workflows/ci.yml)
-[![Release](https://github.com/chaleyeah/vibe-attack/actions/workflows/release.yml/badge.svg)](https://github.com/chaleyeah/vibe-attack/actions/workflows/release.yml)
 
 vibe-attack is an open-source voice-macro daemon for Helldivers 2 on Linux. Hold a push-to-talk key, speak a stratagem name, and the daemon injects the keystrokes automatically — no second monitor, no proprietary tools.
 
