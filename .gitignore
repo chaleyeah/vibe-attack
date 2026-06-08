@@ -29,3 +29,6 @@ vendor/
 coverage/
 .cache/
 tmp/
+/config.yaml
+*.AppImage
+/.gsd/

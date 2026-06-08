@@ -1,9 +1,0 @@
-# GSD context snapshot (2026-05-04T02:07:41.305Z)
-
-## Top project memories
-- [MEM005] (gotcha) test_pack_export_import_with_sounds fails under parallel cargo test due to shared tmpdir pollution — it passes cleanly with --test-threads=1 and in isolation. This is a pre-existing flake unrelated to any specific change. Always run the full suite with --test-threads=1 on this project to get a clean signal.
-- [MEM006] (architecture) Profile loading uses a {name}/pack.yaml subdirectory convention — not flat *.yaml files. All three profile-touching surfaces (load_profiles UI list, handle_switch_profile control plane, Pack::load_from_dir loader) now agree on this format after the S01 fix. Any new code that reads profiles must iterate directories and check for pack.yaml inside each.
-- [MEM007] (environment) cargo clippy is not installed on this dev machine (no rustup, no rust-clippy package). Use RUSTFLAGS="-D warnings" cargo check --all-targets as the local substitute. CI runs the authoritative clippy check via a rustup-provisioned toolchain in .github/workflows/ci.yml.
-- [MEM009] (gotcha) sha2 remains in Cargo.lock as a transitive dependency of zip (via pbkdf2) even after removing it from Cargo.toml [dependencies]. This is expected — it is not a stale lock entry and requires no action. Only the direct-dependency pin was removed.
-- [MEM012] (architecture) The dual get_socket_path functions in control/mod.rs (server) and control/client.rs (client) are intentionally different: mod.rs uses place_runtime_file (creates XDG runtime dir) while client.rs uses find_runtime_file (read-only, errors if absent). Each now cross-references the other by file path in its comment.
-- [MEM013] (gotcha) cargo clippy is not installed in this system apt Rust environment (no rustup). Use cargo check --all-targets as the nearest available substitute for compilation verification. The clippy component must be installed via rustup if lint-level checks are required.
