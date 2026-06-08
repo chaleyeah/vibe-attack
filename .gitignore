@@ -32,3 +32,4 @@ tmp/
 /config.yaml
 *.AppImage
 /.gsd/
+/.planning/
