@@ -1,6 +1,6 @@
 [package]
 name = "vibe-attack"
-version = "1.1.0"
+version = "1.1.1"
 edition = "2021"
 description = "Voice-macro daemon for Helldivers 2 on Linux"
 license = "AGPL-3.0-only"
@@ -50,6 +50,8 @@ ratatui = "0.30"
 crossterm = "0.28"
 ksni = { version = "0.3.4", optional = true, features = ["tokio"] }
 rfd = { version = "0.17", optional = true }
+image = { version = "0.25", default-features = false, features = ["png"] }
+
 
 [dev-dependencies]
 tempfile = "3"

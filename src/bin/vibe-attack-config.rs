@@ -318,8 +318,6 @@ impl eframe::App for VibeAttackConfigApp {
             }
         }
 
-        ui.heading("Vibe Attack");
-        ui.separator();
 
         let was_incomplete = !self.first_run.is_setup_complete();
 
@@ -935,6 +933,18 @@ fn handle_save(app: &mut VibeAttackConfigApp) {
     }
 }
 
+fn load_icon() -> Option<egui::IconData> {
+    let icon_bytes = include_bytes!("../../assets/vibe-attack.png");
+    let image = image::load_from_memory(icon_bytes).ok()?;
+    let image = image.into_rgba8();
+    let (width, height) = image.dimensions();
+    Some(egui::IconData {
+        rgba: image.into_raw(),
+        width,
+        height,
+    })
+}
+
 fn main() -> eframe::Result<()> {
     use tracing_subscriber::prelude::*;
 
@@ -964,10 +974,16 @@ fn main() -> eframe::Result<()> {
         .with(ChannelLayer { tx: log_tx }.with_filter(channel_filter))
         .init();
 
+    let icon = load_icon();
+    let mut viewport = egui::ViewportBuilder::default()
+        .with_title("Vibe Attack Config")
+        .with_inner_size([720.0, 520.0]);
+    if let Some(icon) = icon {
+        viewport = viewport.with_icon(icon);
+    }
+
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_title("Vibe Attack Config")
-            .with_inner_size([720.0, 520.0]),
+        viewport,
         ..Default::default()
     };
 
@@ -980,3 +996,4 @@ fn main() -> eframe::Result<()> {
         }),
     )
 }
+
